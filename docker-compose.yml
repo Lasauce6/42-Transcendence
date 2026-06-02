@@ -1,0 +1,56 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    restart: always
+    env_file: .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - transcendence-network
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    networks:
+      - transcendence-network
+
+  backend:
+    build: ./backend
+    restart: always
+    env_file: .env
+    volumes:
+      - ./backend:/app # Hot-reload : on lie le code local au container
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - transcendence-network
+
+  frontend:
+    build: ./frontend
+    restart: always
+    volumes:
+      - ./frontend:/app # Hot-reload
+      - /app/node_modules # evite que le node_modules local écrase celui du container
+    networks:
+      - transcendence-network
+
+  nginx:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - "80:80" # basic http pour le dev
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - transcendence-network
+
+volumes:
+  postgres_data:
+
+networks:
+  transcendence-network:
+    driver: bridge
