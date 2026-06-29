@@ -3,6 +3,10 @@ djangorestframework>=3.17
 django-cors-headers>=4.9
 django-filter>=25.2
 dj-database-url>=3.1
-psycopg2==2.9.12
+psycopg2-binary>=2.9.12
 hvac==2.4.0
 djangorestframework-simplejwt>=5.5
+channels==4.2.*
+channels_redis==4.2.*
+daphne==4.2.*
+redis==4.6.0
