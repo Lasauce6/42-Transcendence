@@ -21,6 +21,9 @@ while ! nc -z postgres 5432; do
 done
 echo "PostgreSQL lance !"
 
+echo "Génération des migrations..."
+python manage.py makemigrations --noinput
+
 echo "Lancement des migrations..."
 python manage.py migrate
 

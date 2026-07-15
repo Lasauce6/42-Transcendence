@@ -46,7 +46,14 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "api",
     "chat",
+    "users",
 ]
+
+AUTH_USER_MODEL = 'users.User'
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = BASE_DIR / 'media'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

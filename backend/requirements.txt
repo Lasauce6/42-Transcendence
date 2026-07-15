@@ -10,3 +10,4 @@ channels==4.2.*
 channels_redis==4.2.*
 daphne==4.2.*
 redis==4.6.0
+Pillow>=11.0,<13.0
