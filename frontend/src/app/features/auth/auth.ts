@@ -9,13 +9,14 @@ export class AuthService {
   http = inject(HttpClient);
   private readonly _isLoggedIn = signal<boolean>(false);
   readonly isLoggedIn = this._isLoggedIn.asReadonly();
+  private readonly _token = signal<string | null>(null);
+  readonly token = this._token.asReadonly();
 
   login(credentials: LoginModel) {
-    return this.http.post<{ access: string; refresh: string }>('/api/token/', credentials).pipe(
+    return this.http.post<{ token: string }>('...', credentials).pipe(
       tap((response) => {
+        this._token.set(response.token);
         this._isLoggedIn.set(true);
-        localStorage.setItem('access', response.access);
-        localStorage.setItem('refresh', response.refresh);
       }),
     );
   }
