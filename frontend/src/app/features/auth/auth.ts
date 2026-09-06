@@ -24,6 +24,11 @@ export class AuthService {
   register(payload: RegisterPayload) {
     return this.http.post('/api/register/', payload);
   }
+
+  logout() {
+    this._token.set(null);
+    this._isLoggedIn.set(false);
+  }
 }
 
 export interface LoginModel {
