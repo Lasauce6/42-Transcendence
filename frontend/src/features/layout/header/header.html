@@ -1,0 +1,10 @@
+<header>
+  <a routerLink="/">ft_transcendence</a>
+
+  @if (isLoggedIn()) {
+    <button (click)="onLogout()">Déconnexion</button>
+  } @else {
+    <a routerLink="/login">Connexion</a>
+    <a routerLink="/register">Inscription</a>
+  }
+</header>
