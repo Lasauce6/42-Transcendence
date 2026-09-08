@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { required, email, form, FormField, submit } from '@angular/forms/signals';
+import { required, email, form, FormField, submit, maxLength } from '@angular/forms/signals';
 import { AuthService, LoginModel } from '../auth';
 import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -21,6 +21,7 @@ export class Login {
     required(path.email);
     email(path.email);
     required(path.password);
+    maxLength(path.password, 72, { message: 'Mot de passe trop long' });
   });
 
   onSubmit(event: Event) {
