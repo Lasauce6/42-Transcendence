@@ -1,4 +1,15 @@
 services:
+  vault:
+    image: hashicorp/vault:2.0
+    container_name: vault
+    cap_add:
+      - IPC_LOCK
+    ports: 
+      - "8200:8200"
+    env_file: .env
+    networks:
+      - transcendence-network
+
   postgres:
     image: postgres:15-alpine
     restart: always
@@ -23,6 +34,7 @@ services:
     depends_on:
       - postgres
       - redis
+      - vault
     networks:
       - transcendence-network
 
