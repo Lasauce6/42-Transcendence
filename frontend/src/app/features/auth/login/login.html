@@ -6,4 +6,7 @@
     <p class="error">{{ errorMessage() }}</p>
   }
   <a routerLink="/register">Pas de compte ? S'inscrire</a>
+  <button type="button" (click)="onOAuthLogin('google')">Continuer avec Google</button>
+  <button type="button" (click)="onOAuthLogin('github')">Continuer avec GitHub</button>
+  <button type="button" (click)="onOAuthLogin('fortytwo')">Continuer avec 42</button>
 </form>

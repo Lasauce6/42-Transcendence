@@ -4,7 +4,7 @@ interface OAuthProviderConfig {
   scope: string;
 }
 
-const OAUTH_PROVIDERS: Record<string, OAuthProviderConfig> = {
+export const OAUTH_PROVIDERS: Record<string, OAuthProviderConfig> = {
   google: {
     clientId: 'TODO_CLIENT_ID',
     authorizeUrl: 'https://accounts.google.com/o/oauth2/v2/auth',

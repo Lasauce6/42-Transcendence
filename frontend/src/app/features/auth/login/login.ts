@@ -3,6 +3,7 @@ import { required, email, form, FormField, submit, maxLength } from '@angular/fo
 import { AuthService, LoginModel } from '../auth';
 import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { OAUTH_PROVIDERS } from '../../../core/oauth.config';
 
 @Component({
   selector: 'app-login',
@@ -34,5 +35,18 @@ export class Login {
         this.errorMessage.set('Identifiants invalides.');
       }
     });
+  }
+  onOAuthLogin(provider: 'google' | 'github' | 'fortytwo') {
+    const state = crypto.randomUUID();
+    sessionStorage.setItem('oauth_state', state);
+    const config = OAUTH_PROVIDERS[provider];
+    const params = new URLSearchParams({
+      client_id: config.clientId,
+      redirect_uri: `${window.location.origin}/auth/callback/${provider}`,
+      scope: config.scope,
+      state: state,
+      response_type: 'code',
+    });
+    window.location.href = `${config.authorizeUrl}?${params.toString()}`;
   }
 }
