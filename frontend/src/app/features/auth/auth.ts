@@ -21,6 +21,17 @@ export class AuthService {
     );
   }
 
+  loginWithOAuth(provider: string, code: string) {
+    return this.http
+      .post<{ token: string }>(`/api/auth/oauth/${provider}/callback/`, { code })
+      .pipe(
+        tap((response) => {
+          this._token.set(response.token);
+          this._isLoggedIn.set(true);
+        }),
+      );
+  }
+
   register(payload: RegisterPayload) {
     return this.http.post('/api/register/', payload);
   }
