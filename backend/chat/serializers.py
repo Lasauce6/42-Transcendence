@@ -12,4 +12,4 @@ class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = ['id', 'channel', 'sender', 'sender_username', 'content', 'created_at']
-        read_only_fields = ['channel', 'sender']
+        read_only_fields = ['sender']
