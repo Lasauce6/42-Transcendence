@@ -13,6 +13,9 @@ export class TwoFactor {
   confirmTwoFactorSetup(code: string) {
     return this.http.post<TwoFactorConfirmResponse>('/api/auth/2fa/confirm/', { code });
   }
+  verifyLogin(tempToken: string, code: string) {
+    return this.http.post<TwoFactorVerifyLogin>('/api/auth/2fa/verify/', { tempToken, code });
+  }
 }
 
 interface TwoFactorSetupResponse {
@@ -22,4 +25,8 @@ interface TwoFactorSetupResponse {
 
 interface TwoFactorConfirmResponse {
   success: boolean;
+}
+
+interface TwoFactorVerifyLogin {
+  token: string;
 }

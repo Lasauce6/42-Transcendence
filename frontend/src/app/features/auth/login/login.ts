@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { required, email, form, FormField, submit, maxLength } from '@angular/forms/signals';
 import { AuthService, LoginModel } from '../auth';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { OAUTH_PROVIDERS } from '../../../core/oauth.config';
 
@@ -13,6 +13,7 @@ import { OAUTH_PROVIDERS } from '../../../core/oauth.config';
 })
 export class Login {
   private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
   readonly errorMessage = signal<string>('');
   readonly loginData = signal<LoginModel>({
     email: '',
@@ -30,7 +31,14 @@ export class Login {
     submit(this.loginForm, async () => {
       try {
         this.errorMessage.set('');
-        await firstValueFrom(this.authService.login(this.loginData()));
+        const response = await firstValueFrom(this.authService.login(this.loginData()));
+        if ('requires2FA' in response) {
+          this.router.navigate(['/auth/2fa/verify'], {
+            state: { tempToken: response.tempToken },
+          });
+        } else {
+          this.router.navigate(['/']);
+        }
       } catch (error) {
         this.errorMessage.set('Identifiants invalides.');
       }
