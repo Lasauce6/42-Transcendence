@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { Login } from './features/auth/login/login';
 import { Register } from './features/auth/register/register';
 import { OauthCallback } from './features/oauth-callback/oauth-callback';
+import { TwoFactorSetup } from './features/two-factor-setup/two-factor-setup';
 
 export const routes: Routes = [
   {
@@ -19,6 +20,11 @@ export const routes: Routes = [
     path: 'auth/callback/:provider',
     component: OauthCallback,
     title: 'Connexion en cours',
+  },
+  {
+    path: 'auth/2fa/setup',
+    component: TwoFactorSetup,
+    title: 'Configuration 2FA',
   },
   {
     path: '',
