@@ -1,2 +1,11 @@
-<app-header></app-header>
-<router-outlet></router-outlet>
+<header>
+  <a routerLink="/">{{ 'APP.NAME' | translate }}</a>
+
+  <nav>
+    <a routerLink="/">{{ 'NAV.HOME' | translate }}</a>
+  </nav>
+</header>
+
+<main>
+  <router-outlet />
+</main>
