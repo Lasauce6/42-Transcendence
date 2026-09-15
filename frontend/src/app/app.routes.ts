@@ -3,6 +3,7 @@ import { Login } from './features/auth/login/login';
 import { Register } from './features/auth/register/register';
 import { OauthCallback } from './features/oauth-callback/oauth-callback';
 import { TwoFactorSetup } from './features/two-factor-setup/two-factor-setup';
+import { TwoFactorVerify } from './features/two-factor-verify/two-factor-verify';
 
 export const routes: Routes = [
   {
@@ -25,6 +26,11 @@ export const routes: Routes = [
     path: 'auth/2fa/setup',
     component: TwoFactorSetup,
     title: 'Configuration 2FA',
+  },
+  {
+    path: 'auth/2fa/verify',
+    component: TwoFactorVerify,
+    title: 'Vérification 2FA',
   },
   {
     path: '',
