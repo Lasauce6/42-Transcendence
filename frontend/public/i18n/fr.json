@@ -1,0 +1,21 @@
+{
+  "APP": {
+    "NAME": "Transcendence"
+  },
+  "NAV": {
+    "HOME": "Accueil",
+    "PROFILE": "Profil",
+    "LOGIN": "Connexion",
+    "LOGOUT": "Déconnexion"
+  },
+  "COMMON": {
+    "LOADING": "Chargement...",
+    "SAVE": "Enregistrer",
+    "CANCEL": "Annuler",
+    "LANGUAGE": "Langue"
+  },
+  "HOME": {
+    "TITLE": "Accueil",
+    "WELCOME": "Bienvenue, {{name}} !"
+  }
+}
