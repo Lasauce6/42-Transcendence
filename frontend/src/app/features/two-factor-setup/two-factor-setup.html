@@ -1,0 +1,19 @@
+@if (qrcodeurl()) {
+  <p>Scanne ce QR code avec ton application d'authentification :</p>
+  <img [src]="qrcodeurl()" alt="QR code 2FA" />
+
+  <form (submit)="onSubmit(); $event.preventDefault()">
+    <input type="text" [formField]="twoFactorForm.code" placeholder="Code à 6 chiffres" />
+    <button type="submit">Confirmer</button>
+  </form>
+
+  @if (confirmed()) {
+    <p>2FA activé avec succès.</p>
+  } @else if (confirmError()) {
+    <p class="error">{{ confirmError() }}</p>
+  }
+} @else if (httpError()) {
+  <p class="error">{{ httpError() }}</p>
+} @else {
+  <p>Génération du QR code en cours...</p>
+}

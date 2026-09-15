@@ -13,18 +13,36 @@ export class AuthService {
   readonly token = this._token.asReadonly();
 
   login(credentials: LoginModel) {
-    return this.http.post<{ token: string }>('...', credentials).pipe(
+    return this.http.post<LoginResponse>('...', credentials).pipe(
       tap((response) => {
-        this._token.set(response.token);
-        this._isLoggedIn.set(true);
+        if ('token' in response) {
+          this._token.set(response.token);
+          this._isLoggedIn.set(true);
+        }
       }),
     );
+  }
+
+  loginWithOAuth(provider: string, code: string) {
+    return this.http
+      .post<{ token: string }>(`/api/auth/oauth/${provider}/callback/`, { code })
+      .pipe(
+        tap((response) => {
+          this._token.set(response.token);
+          this._isLoggedIn.set(true);
+        }),
+      );
   }
 
   register(payload: RegisterPayload) {
     return this.http.post('/api/register/', payload);
   }
 
+  completeTwoFactorLogin(token: string) {
+    this._token.set(token);
+    this._isLoggedIn.set(true);
+  }
+  
   logout() {
     this._token.set(null);
     this._isLoggedIn.set(false);
@@ -48,3 +66,5 @@ export interface RegisterPayload {
   email: string;
   password: string;
 }
+
+export type LoginResponse = { token: string } | { requires2FA: true; tempToken: string };
