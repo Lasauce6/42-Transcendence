@@ -14,7 +14,7 @@ export class Language {
     localStorage.setItem('lang', lang);
     document.documentElement.lang = lang;
     this.current.set(lang);
-    }
+  }
 
   init() {
     const saved = localStorage.getItem('lang');
