@@ -25,10 +25,11 @@ export class AuthService {
 
   loginWithOAuth(provider: string, code: string) {
     return this.http
-      .post<{ token: string }>(`/api/auth/oauth/${provider}/callback/`, { code })
+      .post<{ access: string; refresh: string }>(`/api/auth/oauth/${provider}/callback/`, { code })
       .pipe(
         tap((response) => {
-          this._token.set(response.token);
+          this._token.set(response.access);
+          this._refreshToken.set(response.refresh);
           this._isLoggedIn.set(true);
         }),
       );
