@@ -25,13 +25,14 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 from rest_framework import routers
-from users.views import RegisterView, UserViewSet
+from users.views import RegisterView, UserViewSet, FriendshipViewSet
 from chat.views import ChannelViewSet, MessageViewSet
 
 router = routers.DefaultRouter()
 router.register(r'channels', ChannelViewSet)
 router.register(r'messages', MessageViewSet)
 router.register(r'users', UserViewSet, basename='user')
+router.register(r'friendships', FriendshipViewSet, basename='friendship')
 
 urlpatterns = [
     path("admin/", admin.site.urls),
