@@ -11,6 +11,7 @@ import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { routes } from './app.routes';
 import { Language } from './core/services/language';
+import { authInterceptor } from '../auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [

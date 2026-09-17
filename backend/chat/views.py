@@ -9,6 +9,9 @@ class ChannelViewSet(viewsets.ModelViewSet):
     serializer_class = ChannelSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
     @action(detail=True, methods=['get'])
     def messages(self, request, pk=None):
         # GET /api/channels/{id}/messages/

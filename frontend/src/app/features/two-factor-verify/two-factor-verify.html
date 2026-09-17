@@ -1,0 +1,11 @@
+<h2>Vérification en deux étapes</h2>
+<p>Entre le code à 6 chiffres généré par ton application d'authentification.</p>
+
+<form (submit)="onSubmit(); $event.preventDefault()">
+  <input type="text" [formField]="verifyForm.code" placeholder="Code à 6 chiffres" />
+  <button type="submit">Vérifier</button>
+</form>
+
+@if (verifyError()) {
+  <p class="error">{{ verifyError() }}</p>
+}

@@ -1,0 +1,30 @@
+<form (submit)="onSubmit($event)">
+  <label for="username">Nom d'utilisateur</label>
+  <input id="username" type="text" [formField]="registerForm.username" />
+  @if (registerForm.username().touched() && registerForm.username().invalid()) {
+    <span class="error">Le nom d'utilisateur est requis.</span>
+  }
+
+  <label for="email">Email</label>
+  <input id="email" type="email" [formField]="registerForm.email" />
+  @if (registerForm.email().touched() && registerForm.email().invalid()) {
+    <span class="error">Email requis et valide.</span>
+  }
+
+  <label for="password">Mot de passe</label>
+  <input id="password" type="password" [formField]="registerForm.password" />
+  @if (registerForm.password().touched() && registerForm.password().invalid()) {
+    <span class="error">Le mot de passe est requis.</span>
+  }
+
+  <label for="confirmPassword">Confirmer le mot de passe</label>
+  <input id="confirmPassword" type="password" [formField]="registerForm.confirmPassword" />
+  @if (registerForm.confirmPassword().touched() && registerForm.confirmPassword().invalid()) {
+    <span class="error">Les mots de passe ne correspondent pas.</span>
+  }
+  <button type="submit" [disabled]="registerForm().invalid()">S'inscrire</button>
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+  <a routerLink="/login">Déjà un compte ? Se connecter</a>
+</form>

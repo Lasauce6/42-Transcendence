@@ -15,6 +15,7 @@ class User(AbstractUser):
         SPANISH = 'ES', 'Español'
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    username = models.TextField(max_length=100, unique=True)
     email = models.EmailField(unique=True)
     avatar = models.ImageField(upload_to='avatars/', default='avatars/default.png')
     bio = models.TextField(max_length=500, blank=True)
@@ -30,6 +31,33 @@ class User(AbstractUser):
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+class Friendship(models.Model):
+    class Status(models.TextChoices):
+        PENDING = 'PENDING', 'Pending'
+        ACCEPTED = 'ACCEPTED', 'Accepted'
+        BLOCKED = 'BLOCKED', 'Blocked'
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    requester = models.ForeignKey(User, on_delete=models.CASCADE, related_name='friendship_request_sent')
+    addressee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='friendship_request_received')
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
+
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["requester", "addressee"], name="unique_friendship"
+            )
+        ]
+    
+
+# mon_user = User.objects.get(username='test')
+# demandes_envoyees = mon_user.friendship_requests_sent.all()
+# demandes_recues = mon_user.friendship_requests_received.all()
 
 
 
