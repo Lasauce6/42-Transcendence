@@ -1,0 +1,13 @@
+@if (profile()) {
+  <div class="profile">
+    <h2>{{ profile()!.username }}</h2>
+    <p>{{ profile()!.email }}</p>
+    @if (profile()!.avatarUrl) {
+      <img [src]="profile()!.avatarUrl" alt="Avatar" />
+    }
+  </div>
+} @else if (error()) {
+  <p class="error">{{ error() }}</p>
+} @else {
+  <p>Chargement du profil...</p>
+}
