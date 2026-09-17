@@ -14,8 +14,11 @@ export class AuthService {
   readonly token = this._token.asReadonly();
 
   login(credentials: LoginModel) {
-    return this.http.post<{ access: string; refresh: string }>('/api/token/', credentials).pipe(
+    return this.http.post<LoginResponse>('/api/token/', credentials).pipe(
       tap((response) => {
+        if ('requires2FA' in response) {
+          return;
+        }
         this._token.set(response.access);
         this._refreshToken.set(response.refresh);
         this._isLoggedIn.set(true);
@@ -76,4 +79,7 @@ export interface RegisterPayload {
   password: string;
 }
 
-export type LoginResponse = { token: string } | { requires2FA: true; tempToken: string };
+// export type LoginResponse = { token: string } | { requires2FA: true; tempToken: string };
+export type LoginResponse =
+  | { access: string; refresh: string }
+  | { requires2FA: true; tempToken: string };
