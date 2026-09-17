@@ -11,4 +11,3 @@ export class Home {
   // TODO: remplacer par le user du service auth (ticket auth)
   readonly user = signal({ login: 'user42' });
 }
-

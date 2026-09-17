@@ -20,11 +20,9 @@ describe('Home', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
-
 });
 
-  await TestBed.configureTestingModule({
-    imports: [Home],
-    providers: [provideTranslateService()],
-  }).compileComponents();
+await TestBed.configureTestingModule({
+  imports: [Home],
+  providers: [provideTranslateService()],
+}).compileComponents();
