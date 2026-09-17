@@ -10,15 +10,15 @@ export class AuthService {
   private readonly _isLoggedIn = signal<boolean>(false);
   readonly isLoggedIn = this._isLoggedIn.asReadonly();
   private readonly _token = signal<string | null>(null);
+  private readonly _refreshToken = signal<string | null>(null);
   readonly token = this._token.asReadonly();
 
   login(credentials: LoginModel) {
-    return this.http.post<LoginResponse>('...', credentials).pipe(
+    return this.http.post<{ access: string; refresh: string }>('/api/token/', credentials).pipe(
       tap((response) => {
-        if ('token' in response) {
-          this._token.set(response.token);
-          this._isLoggedIn.set(true);
-        }
+        this._token.set(response.access);
+        this._refreshToken.set(response.refresh);
+        this._isLoggedIn.set(true);
       }),
     );
   }
@@ -38,13 +38,22 @@ export class AuthService {
     return this.http.post('/api/register/', payload);
   }
 
+  refreshAccessToken() {
+    return this.http
+      .post<{ access: string }>('/api/token/refresh/', { refresh: this._refreshToken() })
+      .pipe(
+        tap((response) => {
+          this._token.set(response.access);
+        }),
+      );
+  }
   completeTwoFactorLogin(token: string) {
     this._token.set(token);
     this._isLoggedIn.set(true);
   }
-  
   logout() {
     this._token.set(null);
+    this._refreshToken.set(null);
     this._isLoggedIn.set(false);
   }
 }
