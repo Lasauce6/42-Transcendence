@@ -10,6 +10,9 @@ export class User {
   getMe() {
     return this.http.get<UserProfile>('/api/users/me/');
   }
+  updateMe(payload: UpdateProfilePayload) {
+    return this.http.patch<UserProfile>('/api/users/me/', payload);
+  }
 }
 
 export interface UserProfile {
@@ -18,4 +21,9 @@ export interface UserProfile {
   email: string;
   avatarUrl: string | null;
   role: string;
+}
+
+export interface UpdateProfilePayload {
+  username?: string;
+  email?: string;
 }
