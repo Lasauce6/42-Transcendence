@@ -1,17 +1,18 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { environment } from '@env/environment';
 
 @Injectable({
   providedIn: 'root',
 })
-export class User {
+export class UserService {
   private readonly http = inject(HttpClient);
 
   getMe() {
-    return this.http.get<UserProfile>('/api/users/me/');
+    return this.http.get<UserProfile>(`${environment.apiUrl}/users/me/`);
   }
   updateMe(payload: UpdateProfilePayload) {
-    return this.http.patch<UserProfile>('/api/users/me/', payload);
+    return this.http.patch<UserProfile>(`${environment.apiUrl}/users/me/`, payload);
   }
 }
 

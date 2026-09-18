@@ -1,10 +1,11 @@
-@if (profile()) {
+@if (profile(); as p) {
   <div class="profile">
     <h2>{{ profile()!.username }}</h2>
     <p>{{ profile()!.email }}</p>
     @if (profile()!.avatarUrl) {
       <img [src]="profile()!.avatarUrl" alt="Avatar" />
     }
+    <app-profile-edit [profile]="p" />
   </div>
 } @else if (error()) {
   <p class="error">{{ error() }}</p>

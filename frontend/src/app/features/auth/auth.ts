@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +15,7 @@ export class AuthService {
   readonly token = this._token.asReadonly();
 
   login(credentials: LoginModel) {
-    return this.http.post<LoginResponse>('/api/token/', credentials).pipe(
+    return this.http.post<LoginResponse>(`${environment.apiUrl}/token/`, credentials).pipe(
       tap((response) => {
         if ('requires2FA' in response) {
           return;
@@ -28,7 +29,7 @@ export class AuthService {
 
   loginWithOAuth(provider: string, code: string) {
     return this.http
-      .post<{ access: string; refresh: string }>(`/api/auth/oauth/${provider}/callback/`, { code })
+      .post<{ access: string; refresh: string }>(`${environment.apiUrl}/auth/oauth/${provider}/callback/`, { code })
       .pipe(
         tap((response) => {
           this._token.set(response.access);
@@ -39,12 +40,12 @@ export class AuthService {
   }
 
   register(payload: RegisterPayload) {
-    return this.http.post('/api/register/', payload);
+    return this.http.post(`${environment.apiUrl}/register/`, payload);
   }
 
   refreshAccessToken() {
     return this.http
-      .post<{ access: string }>('/api/token/refresh/', { refresh: this._refreshToken() })
+      .post<{ access: string }>(`${environment.apiUrl}/token/refresh/`, { refresh: this._refreshToken() })
       .pipe(
         tap((response) => {
           this._token.set(response.access);

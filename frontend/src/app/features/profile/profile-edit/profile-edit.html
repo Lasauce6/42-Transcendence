@@ -1,0 +1,5 @@
+<form (ngSubmit)="onSubmit()">
+  <input type="text" [value]="username()" (input)="username.set($any($event.target).value)" />
+  <input type="email" [value]="email()" (input)="email.set($any($event.target).value)" />
+  <button type="submit">Enregistrer</button>
+</form>
