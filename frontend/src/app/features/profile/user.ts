@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { UserProfile } from '@core/models/user.model';
 
 @Injectable({
   providedIn: 'root',
@@ -12,10 +13,4 @@ export class User {
   }
 }
 
-export interface UserProfile {
-  id: string;
-  username: string;
-  email: string;
-  avatarUrl: string | null;
-  role: string;
-}
+export type { UserProfile } from '@core/models/user.model';

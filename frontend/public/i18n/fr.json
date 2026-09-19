@@ -17,5 +17,14 @@
   "HOME": {
     "TITLE": "Accueil",
     "WELCOME": "Bienvenue, {{name}} !"
+  },
+  "ADMIN": {
+    "NAV": "Admin",
+    "TITLE": "Administration"
+  },
+  "FORBIDDEN": {
+    "TITLE": "Accès refusé",
+    "MESSAGE": "Tu n'as pas les droits nécessaires pour accéder à cette page.",
+    "BACK_HOME": "Retour à l'accueil"
   }
 }

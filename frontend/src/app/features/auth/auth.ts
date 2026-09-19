@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { tap } from 'rxjs';
+import { CurrentUser } from '@core/services/current-user';
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +13,7 @@ export class AuthService {
   private readonly _token = signal<string | null>(null);
   private readonly _refreshToken = signal<string | null>(null);
   readonly token = this._token.asReadonly();
+  private readonly currentUser = inject(CurrentUser);
 
   login(credentials: LoginModel) {
     return this.http.post<LoginResponse>('/api/token/', credentials).pipe(
@@ -59,6 +61,7 @@ export class AuthService {
     this._token.set(null);
     this._refreshToken.set(null);
     this._isLoggedIn.set(false);
+    this.currentUser.clear();
   }
 }
 
@@ -80,7 +83,6 @@ export interface RegisterPayload {
   password: string;
 }
 
-// export type LoginResponse = { token: string } | { requires2FA: true; tempToken: string };
 export type LoginResponse =
   | { access: string; refresh: string }
   | { requires2FA: true; tempToken: string };
