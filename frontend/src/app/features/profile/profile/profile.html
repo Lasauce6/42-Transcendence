@@ -1,11 +1,11 @@
 @if (profile(); as p) {
   <div class="profile">
-    <h2>{{ profile()!.username }}</h2>
-    <p>{{ profile()!.email }}</p>
-    @if (profile()!.avatarUrl) {
-      <img [src]="profile()!.avatarUrl" alt="Avatar" />
+    <h2>{{ p.username }}</h2>
+    <p>{{ p.email }}</p>
+    @if (p.avatarUrl) {
+      <img [src]="p.avatarUrl" alt="Avatar" />
     }
-    <app-profile-edit [profile]="p" />
+    <app-profile-edit [profile]="p" (profileUpdated)="profile.set($event)" />
   </div>
 } @else if (error()) {
   <p class="error">{{ error() }}</p>
