@@ -5,6 +5,7 @@
       [class.toast--success]="toast.type === 'success'"
       [class.toast--error]="toast.type === 'error'"
       [class.toast--info]="toast.type === 'info'"
+      [style.--toast-duration]="toast.duration + 'ms'"
       role="alert"
       aria-live="polite"
     >
@@ -18,6 +19,9 @@
       >
         &times;
       </button>
+      @if (toast.duration > 0) {
+        <span class="toast__progress" aria-hidden="true"></span>
+      }
     </div>
   }
 </div>
