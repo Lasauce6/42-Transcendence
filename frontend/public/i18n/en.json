@@ -26,5 +26,68 @@
     "TITLE": "Access denied",
     "MESSAGE": "You don't have the required permissions to view this page.",
     "BACK_HOME": "Back to home"
+  },
+  "AUTH": {
+    "LOGIN": {
+      "EMAIL_LABEL": "Email",
+      "EMAIL_PLACEHOLDER": "your@email.com",
+      "PASSWORD_LABEL": "Password",
+      "PASSWORD_PLACEHOLDER": "Your password",
+      "SUBMIT": "Sign in",
+      "NO_ACCOUNT": "No account? Sign up"
+    },
+    "REGISTER": {
+      "USERNAME_LABEL": "Username",
+      "EMAIL_LABEL": "Email",
+      "PASSWORD_LABEL": "Password",
+      "CONFIRM_LABEL": "Confirm password",
+      "SUBMIT": "Sign up",
+      "HAVE_ACCOUNT": "Already have an account? Sign in"
+    },
+    "OAUTH": {
+      "CONTINUE_WITH": "Continue with {{provider}}",
+      "PROVIDERS": { "GOOGLE": "Google", "GITHUB": "GitHub", "FORTYTWO": "42" }
+    },
+    "CALLBACK": { "LOADING": "Signing you in..." },
+    "TWOFA": {
+      "SETUP": {
+        "INSTRUCTION": "Scan this QR code with your authenticator app:",
+        "QR_ALT": "2FA QR code",
+        "CODE_PLACEHOLDER": "6-digit code",
+        "CONFIRM": "Confirm",
+        "SUCCESS": "2FA enabled successfully.",
+        "GENERATING": "Generating QR code..."
+      },
+      "VERIFY": {
+        "TITLE": "Two-factor verification",
+        "INSTRUCTION": "Enter the 6-digit code from your authenticator app.",
+        "CODE_PLACEHOLDER": "6-digit code",
+        "SUBMIT": "Verify"
+      }
+    }
+  },
+  "PROFILE": {
+    "LOADING": "Loading profile...",
+    "AVATAR_ALT": "Avatar",
+    "LOAD_FAILED": "Could not load the profile. Please try again later."
+  },
+  "ERRORS": {
+    "USERNAME_REQUIRED": "Username is required.",
+    "EMAIL_INVALID": "A valid email is required.",
+    "PASSWORD_REQUIRED": "Password is required.",
+    "PASSWORD_MISMATCH": "Passwords do not match.",
+    "INVALID_CREDENTIALS": "Invalid credentials.",
+    "INVALID_CODE": "Invalid code, try again.",
+    "QRCODE_FAILED": "Could not generate the QR code.",
+    "GENERIC": "Something went wrong, please try again."
+  },
+  "TITLES": {
+    "LOGIN": "Sign in",
+    "REGISTER": "Sign up",
+    "OAUTH_CALLBACK": "Signing in",
+    "TWOFA_SETUP": "2FA setup",
+    "TWOFA_VERIFY": "2FA verification",
+    "PROFILE": "Profile",
+    "FORBIDDEN": "Access denied"
   }
 }
