@@ -1,10 +1,11 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../auth/auth';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-oauth-callback',
-  imports: [],
+  imports: [TranslatePipe],
   templateUrl: './oauth-callback.html',
   styleUrl: './oauth-callback.scss',
 })

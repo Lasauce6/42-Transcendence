@@ -3,11 +3,11 @@
     <h2>{{ profile()!.username }}</h2>
     <p>{{ profile()!.email }}</p>
     @if (profile()!.avatarUrl) {
-      <img [src]="profile()!.avatarUrl" alt="Avatar" />
+      <img [src]="profile()!.avatarUrl" [alt]="'PROFILE.AVATAR_ALT' | translate" />
     }
   </div>
 } @else if (error()) {
-  <p class="error">{{ error() }}</p>
+  <p class="error">{{ error()! | translate }}</p>
 } @else {
-  <p>Chargement du profil...</p>
+  <p>{{ 'PROFILE.LOADING' | translate }}</p>
 }

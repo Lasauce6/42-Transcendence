@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { provideTranslateService } from '@ngx-translate/core';
 
 import { Register } from './register';
 
@@ -10,9 +11,8 @@ describe('Register', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Register],
-      providers: [provideRouter([])],
-    })
-    .compileComponents();
+      providers: [provideRouter([]), provideTranslateService()],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(Register);
     component = fixture.componentInstance;
