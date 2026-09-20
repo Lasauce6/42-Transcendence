@@ -13,10 +13,11 @@ import {
 import { AuthService, RegisterFormModel } from '../auth';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-register',
-  imports: [FormField, RouterLink],
+  imports: [FormField, RouterLink, TranslatePipe],
   templateUrl: './register.html',
   styleUrl: './register.scss',
 })
@@ -64,7 +65,7 @@ export class Register {
         await firstValueFrom(this.authService.register(payload));
         this.router.navigate(['/login']);
       } catch (error) {
-        this.errorMessage.set('Une erreur est survenue, réessayez.');
+        this.errorMessage.set('ERRORS.GENERIC');
       }
     });
   }

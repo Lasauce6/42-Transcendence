@@ -4,10 +4,11 @@ import { AuthService, LoginModel } from '../auth';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { OAUTH_PROVIDERS } from '../../../core/oauth.config';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-login',
-  imports: [FormField, RouterLink],
+  imports: [FormField, RouterLink, TranslatePipe],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
@@ -40,7 +41,7 @@ export class Login {
           this.router.navigate(['/']);
         }
       } catch (error) {
-        this.errorMessage.set('Identifiants invalides.');
+        this.errorMessage.set('ERRORS.INVALID_CREDENTIALS');
       }
     });
   }
