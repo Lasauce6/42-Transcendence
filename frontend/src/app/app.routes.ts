@@ -11,40 +11,40 @@ export const routes: Routes = [
   {
     path: 'login',
     component: Login,
-    title: 'Connexion',
+    title: 'TITLES.LOGIN',
   },
   {
     path: 'register',
     component: Register,
-    title: 'Inscription',
+    title: 'TITLES.REGISTER',
   },
 
   {
     path: 'auth/callback/:provider',
     component: OauthCallback,
-    title: 'Connexion en cours',
+    title: 'TITLES.OAUTH_CALLBACK',
   },
   {
     path: 'auth/2fa/setup',
     component: TwoFactorSetup,
-    title: 'Configuration 2FA',
+    title: 'TITLES.TWOFA_SETUP',
     canActivate: [authGuard],
   },
   {
     path: 'auth/2fa/verify',
     component: TwoFactorVerify,
-    title: 'Vérification 2FA',
+    title: 'TITLES.TWOFA_VERIFY',
   },
   {
     path: 'profile',
     loadComponent: () => import('@features/profile/profile/profile').then((m) => m.Profile),
-    title: 'Profil',
+    title: 'TITLES.PROFILE',
     canActivate: [authGuard],
   },
   {
     path: 'forbidden',
     loadComponent: () => import('@features/forbidden/forbidden').then((m) => m.Forbidden),
-    title: 'Accès refusé',
+    title: 'TITLES.FORBIDDEN',
   },
   {
     path: '',

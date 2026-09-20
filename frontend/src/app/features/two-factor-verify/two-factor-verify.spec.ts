@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { provideTranslateService } from '@ngx-translate/core';
 
 import { TwoFactorVerify } from './two-factor-verify';
 
@@ -10,7 +11,7 @@ describe('TwoFactorVerify', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TwoFactorVerify],
-      providers: [provideRouter([{ path: 'login', children: [] }])],
+      providers: [provideRouter([{ path: 'login', children: [] }]), provideTranslateService()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TwoFactorVerify);

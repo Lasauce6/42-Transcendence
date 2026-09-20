@@ -1,10 +1,19 @@
 import { Component, inject, OnInit, Signal, signal } from '@angular/core';
 import { TwoFactor } from '../two-factor';
-import { form, maxLength, minLength, pattern, required, validate, FormField } from '@angular/forms/signals';
+import {
+  form,
+  maxLength,
+  minLength,
+  pattern,
+  required,
+  validate,
+  FormField,
+} from '@angular/forms/signals';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-two-factor-setup',
-  imports: [FormField],
+  imports: [FormField, TranslatePipe],
   templateUrl: './two-factor-setup.html',
   styleUrl: './two-factor-setup.scss',
 })
@@ -26,7 +35,7 @@ export class TwoFactorSetup implements OnInit {
         this.confirmed.set(true);
       },
       error: () => {
-        this.confirmError.set('Code invalide, réessaie.');
+        this.confirmError.set('ERRORS.INVALID_CODE');
       },
     });
   }
@@ -51,7 +60,7 @@ export class TwoFactorSetup implements OnInit {
         this.qrcodeurl.set(response.qrCodeUrl);
       },
       error: (httpError) => {
-        this.httpError.set('Erreur lors de la génération du QR code');
+        this.httpError.set('ERRORS.QRCODE_FAILED');
       },
     });
   }

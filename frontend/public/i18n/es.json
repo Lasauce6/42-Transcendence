@@ -26,5 +26,68 @@
     "TITLE": "Acceso denegado",
     "MESSAGE": "No tienes los permisos necesarios para ver esta página.",
     "BACK_HOME": "Volver al inicio"
+  },
+  "AUTH": {
+    "LOGIN": {
+      "EMAIL_LABEL": "Correo electrónico",
+      "EMAIL_PLACEHOLDER": "tu@email.com",
+      "PASSWORD_LABEL": "Contraseña",
+      "PASSWORD_PLACEHOLDER": "Tu contraseña",
+      "SUBMIT": "Iniciar sesión",
+      "NO_ACCOUNT": "¿No tienes cuenta? Regístrate"
+    },
+    "REGISTER": {
+      "USERNAME_LABEL": "Nombre de usuario",
+      "EMAIL_LABEL": "Correo electrónico",
+      "PASSWORD_LABEL": "Contraseña",
+      "CONFIRM_LABEL": "Confirmar contraseña",
+      "SUBMIT": "Registrarse",
+      "HAVE_ACCOUNT": "¿Ya tienes cuenta? Inicia sesión"
+    },
+    "OAUTH": {
+      "CONTINUE_WITH": "Continuar con {{provider}}",
+      "PROVIDERS": { "GOOGLE": "Google", "GITHUB": "GitHub", "FORTYTWO": "42" }
+    },
+    "CALLBACK": { "LOADING": "Iniciando sesión..." },
+    "TWOFA": {
+      "SETUP": {
+        "INSTRUCTION": "Escanea este código QR con tu aplicación de autenticación:",
+        "QR_ALT": "Código QR 2FA",
+        "CODE_PLACEHOLDER": "Código de 6 dígitos",
+        "CONFIRM": "Confirmar",
+        "SUCCESS": "2FA activado correctamente.",
+        "GENERATING": "Generando el código QR..."
+      },
+      "VERIFY": {
+        "TITLE": "Verificación en dos pasos",
+        "INSTRUCTION": "Introduce el código de 6 dígitos de tu aplicación de autenticación.",
+        "CODE_PLACEHOLDER": "Código de 6 dígitos",
+        "SUBMIT": "Verificar"
+      }
+    }
+  },
+  "PROFILE": {
+    "LOADING": "Cargando el perfil...",
+    "AVATAR_ALT": "Avatar",
+    "LOAD_FAILED": "No se pudo cargar el perfil. Inténtalo más tarde."
+  },
+  "ERRORS": {
+    "USERNAME_REQUIRED": "El nombre de usuario es obligatorio.",
+    "EMAIL_INVALID": "Se requiere un correo electrónico válido.",
+    "PASSWORD_REQUIRED": "La contraseña es obligatoria.",
+    "PASSWORD_MISMATCH": "Las contraseñas no coinciden.",
+    "INVALID_CREDENTIALS": "Credenciales inválidas.",
+    "INVALID_CODE": "Código inválido, inténtalo de nuevo.",
+    "QRCODE_FAILED": "Error al generar el código QR.",
+    "GENERIC": "Se ha producido un error, inténtalo de nuevo."
+  },
+  "TITLES": {
+    "LOGIN": "Iniciar sesión",
+    "REGISTER": "Registrarse",
+    "OAUTH_CALLBACK": "Iniciando sesión",
+    "TWOFA_SETUP": "Configuración 2FA",
+    "TWOFA_VERIFY": "Verificación 2FA",
+    "PROFILE": "Perfil",
+    "FORBIDDEN": "Acceso denegado"
   }
 }

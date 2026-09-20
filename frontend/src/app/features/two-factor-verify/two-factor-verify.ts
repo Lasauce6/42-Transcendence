@@ -3,10 +3,11 @@ import { form, required, minLength, maxLength, pattern, FormField } from '@angul
 import { Router } from '@angular/router';
 import { TwoFactor } from '../two-factor';
 import { AuthService } from '../auth/auth';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-two-factor-verify',
-  imports: [FormField],
+  imports: [FormField, TranslatePipe],
   templateUrl: './two-factor-verify.html',
   styleUrl: './two-factor-verify.scss',
 })
@@ -48,7 +49,7 @@ export class TwoFactorVerify {
         this.router.navigate(['/']);
       },
       error: () => {
-        this.verifyError.set('Code invalide, réessaie.');
+        this.verifyError.set('ERRORS.INVALID_CODE');
       },
     });
   }
