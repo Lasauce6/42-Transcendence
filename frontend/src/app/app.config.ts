@@ -14,12 +14,13 @@ import { Language } from './core/services/language';
 import { authInterceptor } from '../auth.interceptor';
 
 import { TranslatedTitleStrategy } from './core/translated-title-strategy';
+import { errorInterceptor } from './core/interceptors/error-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([errorInterceptor, authInterceptor])),
     provideTranslateService({
       loader: provideTranslateHttpLoader({
         prefix: '/i18n/',
