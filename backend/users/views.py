@@ -2,9 +2,11 @@ from django.db.models import Q
 from django.utils import timezone
 from api.views import Notification
 from users.models import Friendship
+from asgiref.sync import async_to_sync
 from rest_framework.views import APIView
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from channels.layers import get_channel_layer
 from django.contrib.auth import get_user_model
 from rest_framework import generics, viewsets, permissions, status
 from .serializers import RegisterSerializer, UserSerializer, FriendshipSerializer
@@ -52,12 +54,30 @@ class FriendshipViewSet(viewsets.ModelViewSet):
             Q(requester=user) | Q(addressee=user)
         )
 
+    def _push_notification(self, notification):
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'user_{notification.recipient.username}',
+            {
+                'type': 'notification_message',
+                'notification': {
+                    'id': str(notification.id),
+                    'type': notification.type,
+                    'entity_type': notification.entity_type,
+                    'entity_id': str(notification.entity_id) if notification.entity_id else None,
+                    'payload': notification.payload,
+                    'is_read': notification.is_read,
+                    'created_at': notification.created_at.isoformat(),
+                },
+            }
+        )
+
     def perform_create(self, serializer):
         friendship = serializer.save(
             requester=self.request.user,
             status=Friendship.Status.PENDING
         )
-        Notification.objects.create(
+        notification = Notification.objects.create(
             recipient=friendship.addressee,
             type=Notification.Type.FRIEND,
             entity_type='Friendship',
@@ -67,6 +87,7 @@ class FriendshipViewSet(viewsets.ModelViewSet):
                 'action': 'request',
             },
         )
+        self._push_notification(notification)
 
     def perform_destroy(self, instance):
         if self.request.user not in (instance.requester, instance.addressee):
@@ -91,7 +112,7 @@ class FriendshipViewSet(viewsets.ModelViewSet):
         friendship.status = Friendship.Status.ACCEPTED
         friendship.save()
 
-        Notification.objects.create(
+        notification = Notification.objects.create(
             recipient=friendship.requester,
             type=Notification.Type.FRIEND,
             entity_type='Friendship',
@@ -101,6 +122,8 @@ class FriendshipViewSet(viewsets.ModelViewSet):
                 'action': 'accepted',
             },
         )
+        self._push_notification(notification)
+
         return Response(FriendshipSerializer(friendship).data)
 
     @action(detail=True, methods=['post'])

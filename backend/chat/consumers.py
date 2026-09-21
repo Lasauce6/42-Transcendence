@@ -9,19 +9,29 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return
 
         self.room_name = self.scope['url_route']['kwargs']['room_name']
+
         self.room_group_name = f'chat_{self.room_name}'
+        self.user_group_name = f'user_{self.user.username}'
 
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
         )
-
+        await self.channel_layer.group_add(
+            self.user_group_name,
+            self.channel_name
+        )
         await self.accept()
 
     async def disconnect(self, close_code):
         if hasattr(self, 'room_group_name'):
             await self.channel_layer.group_discard(
                 self.room_group_name,
+                self.channel_name
+            )
+        if hasattr(self, 'user_group_name'):
+            await self.channel_layer.group_discard(
+                self.user_group_name,
                 self.channel_name
             )
 
@@ -45,4 +55,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'message': message,
             'sender': sender
+        }))
+
+    async def notification_message(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'notification',
+            'notification': event['notification'],
         }))
