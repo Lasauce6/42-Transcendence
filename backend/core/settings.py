@@ -10,9 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
-from pathlib import Path
 import os
-import dj_database_url
+from pathlib import Path
+
+from core.vault_client import get_vault_secret
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,12 +23,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-_me_)%piyig^mxkqg+3g)&9^_jk%r6u=a#@d^u)v%f-e@5m)xe"
+SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', 'backend']
+ALLOWED_HOSTS = ["localhost", "backend"]
 
 
 # Application definition
@@ -41,23 +42,70 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",  # <-- obligatoire pour allauth
     "corsheaders",
     "rest_framework",
     "rest_framework_simplejwt",
     "api",
     "chat",
     "users",
+    # OAuth
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
+    "allauth.socialaccount.providers.github",
+    "authentication.apps.AuthenticationConfig",  # <-- après allauth
 ]
 
-AUTH_USER_MODEL = 'users.User'
+SITE_ID = 1
 
-MEDIA_URL = '/media/'
+OAUTH_42_CLIENT_ID = get_vault_secret("OAUTH_42_CLIENT_ID")
+OAUTH_42_CLIENT_SECRET = get_vault_secret("OAUTH_42_CLIENT_SECRET")
+OAUTH_GOOGLE_CLIENT_ID = get_vault_secret("OAUTH_GOOGLE_CLIENT_ID")
+OAUTH_GOOGLE_CLIENT_SECRET = get_vault_secret("OAUTH_GOOGLE_CLIENT_SECRET")
+OAUTH_GITHUB_CLIENT_ID = get_vault_secret("OAUTH_GITHUB_CLIENT_ID")
+OAUTH_GITHUB_CLIENT_SECRET = get_vault_secret("OAUTH_GITHUB_CLIENT_SECRET")
 
-MEDIA_ROOT = BASE_DIR / 'media'
+SOCIALACCOUNT_PROVIDERS = {
+    "fortytwo": {
+        "APP": {
+            "client_id": OAUTH_42_CLIENT_ID,
+            "secret": OAUTH_42_CLIENT_SECRET,
+        },
+        "SCOPE": ["public"],
+    },
+    "google": {
+        "APP": {
+            "client_id": OAUTH_GOOGLE_CLIENT_ID,
+            "secret": OAUTH_GOOGLE_CLIENT_SECRET,
+        },
+        "SCOPE": ["openid", "profile", "email"],
+        "CALLBACK_URL": "/api/auth/oauth/google/callback",
+        "AUTH_PARAMS": {"access_type": "online"},
+    },
+    "github": {
+        "APP": {
+            "client_id": OAUTH_GITHUB_CLIENT_ID,
+            "secret": OAUTH_GITHUB_CLIENT_SECRET,
+        },
+        "SCOPE": ["read:user", "user:email"],
+        "CALLBACK_URL": "/api/auth/oauth/github/callback",
+    },
+}
+
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
+
+AUTH_USER_MODEL = "users.User"
+
+MEDIA_URL = "/media/"
+
+MEDIA_ROOT = BASE_DIR / "media"
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     )
 }
 
@@ -70,6 +118,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # OAuth
+    "allauth.account.middleware.AccountMiddleware",
+    # Last Seen
     "users.middleware.LastSeenMiddleware",
 ]
 
@@ -101,7 +152,14 @@ ASGI_APPLICATION = "core.asgi.application"
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    "default": dj_database_url.parse(os.environ.get('DATABASE_URL', f"postgres://{os.environ.get('POSTGRES_USER')}:{os.environ.get('POSTGRES_PASSWORD')}@postgres:5432/{os.environ.get('POSTGRES_DB')}"))
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ["POSTGRES_DB"],
+        "USER": os.environ["POSTGRES_USER"],
+        "PASSWORD": os.environ["POSTGRES_PASSWORD"],
+        "HOST": "postgres",
+        "PORT": "5432",
+    }
 }
 
 # Password validation
