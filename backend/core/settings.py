@@ -120,6 +120,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # OAuth
     "allauth.account.middleware.AccountMiddleware",
+    # Last Seen
+    "users.middleware.LastSeenMiddleware",
 ]
 
 # SECURITY WARNING: don't run with cors allow all origins on in production!

@@ -3,9 +3,19 @@
 
   <nav>
     <a routerLink="/">{{ 'NAV.HOME' | translate }}</a>
+
+    @if (isLoggedIn()) {
+      <a routerLink="/profile">{{ 'NAV.PROFILE' | translate }}</a>
+    }
+
+    @if (isAdmin()) {
+      <a routerLink="/admin">{{ 'ADMIN.NAV' | translate }}</a>
+    }
   </nav>
+  <app-language-switcher />
 </header>
 
 <main>
   <router-outlet />
 </main>
+<app-toast />

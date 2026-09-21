@@ -1,3 +1,5 @@
+from django.db.models import Q
+from users.models import Friendship
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
@@ -52,3 +54,41 @@ class UserSerializer(serializers.ModelSerializer):
             instance.set_password(password)
         instance.save()
         return instance
+
+class FriendshipSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Friendship
+        fields = ('id', 'addressee', 'requester', 'status', 'created_at', 'updated_at')
+        read_only_fields = ('requester', 'status', 'created_at', 'updated_at')
+
+    def validate(self, data):
+        request = self.context.get('request')
+        if request is None:
+            return data
+
+        user = request.user
+        addressee = data.get('addressee')
+
+        if addressee == user:
+            raise serializers.ValidationError(
+                {"addressee": "Vous ne pouvez pas vous ajouter vous-même."}
+            )
+
+        existing = Friendship.objects.filter(
+            Q(requester=user, addressee=addressee) |
+            Q(requester=addressee, addressee=user)
+        ).first()
+
+        if existing:
+            if existing.status == Friendship.Status.ACCEPTED:
+                msg = "Vous êtes déjà amis."
+            elif existing.status == Friendship.Status.PENDING:
+                msg = "Une demande est déjà en cours."
+            elif existing.status == Friendship.Status.BLOCKED:
+                msg = "Vous ne pouvez pas interagir avec cet utilisateur."
+            else:
+                msg = "Une relation existe déjà."
+            raise serializers.ValidationError({"addressee": msg})
+
+        return data

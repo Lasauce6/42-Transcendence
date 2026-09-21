@@ -17,5 +17,88 @@
   "HOME": {
     "TITLE": "Accueil",
     "WELCOME": "Bienvenue, {{name}} !"
+  },
+  "ADMIN": {
+    "NAV": "Admin",
+    "TITLE": "Administration"
+  },
+  "FORBIDDEN": {
+    "TITLE": "Accès refusé",
+    "MESSAGE": "Tu n'as pas les droits nécessaires pour accéder à cette page.",
+    "BACK_HOME": "Retour à l'accueil"
+  },
+  "AUTH": {
+    "LOGIN": {
+      "EMAIL_LABEL": "Email",
+      "EMAIL_PLACEHOLDER": "ton@email.com",
+      "PASSWORD_LABEL": "Mot de passe",
+      "PASSWORD_PLACEHOLDER": "Ton mot de passe",
+      "SUBMIT": "Se connecter",
+      "NO_ACCOUNT": "Pas de compte ? S'inscrire"
+    },
+    "REGISTER": {
+      "USERNAME_LABEL": "Nom d'utilisateur",
+      "EMAIL_LABEL": "Email",
+      "PASSWORD_LABEL": "Mot de passe",
+      "CONFIRM_LABEL": "Confirmer le mot de passe",
+      "SUBMIT": "S'inscrire",
+      "HAVE_ACCOUNT": "Déjà un compte ? Se connecter"
+    },
+    "OAUTH": {
+      "CONTINUE_WITH": "Continuer avec {{provider}}",
+      "PROVIDERS": { "GOOGLE": "Google", "GITHUB": "GitHub", "FORTYTWO": "42" }
+    },
+    "CALLBACK": { "LOADING": "Connexion en cours..." },
+    "TWOFA": {
+      "SETUP": {
+        "INSTRUCTION": "Scanne ce QR code avec ton application d'authentification :",
+        "QR_ALT": "QR code 2FA",
+        "CODE_PLACEHOLDER": "Code à 6 chiffres",
+        "CONFIRM": "Confirmer",
+        "SUCCESS": "2FA activé avec succès.",
+        "GENERATING": "Génération du QR code en cours..."
+      },
+      "VERIFY": {
+        "TITLE": "Vérification en deux étapes",
+        "INSTRUCTION": "Entre le code à 6 chiffres généré par ton application d'authentification.",
+        "CODE_PLACEHOLDER": "Code à 6 chiffres",
+        "SUBMIT": "Vérifier"
+      }
+    }
+  },
+  "PROFILE": {
+    "LOADING": "Chargement du profil...",
+    "AVATAR_ALT": "Avatar",
+    "LOAD_FAILED": "Impossible de charger le profil. Réessaie plus tard."
+  },
+  "ERRORS": {
+    "USERNAME_REQUIRED": "Le nom d'utilisateur est requis.",
+    "EMAIL_INVALID": "Email requis et valide.",
+    "PASSWORD_REQUIRED": "Le mot de passe est requis.",
+    "PASSWORD_MISMATCH": "Les mots de passe ne correspondent pas.",
+    "INVALID_CREDENTIALS": "Identifiants invalides.",
+    "INVALID_CODE": "Code invalide, réessaie.",
+    "QRCODE_FAILED": "Erreur lors de la génération du QR code.",
+    "GENERIC": "Une erreur est survenue, réessayez."
+  },
+  "TITLES": {
+    "LOGIN": "Connexion",
+    "REGISTER": "Inscription",
+    "OAUTH_CALLBACK": "Connexion en cours",
+    "TWOFA_SETUP": "Configuration 2FA",
+    "TWOFA_VERIFY": "Vérification 2FA",
+    "PROFILE": "Profil",
+    "FORBIDDEN": "Accès refusé"
+  },
+  "TOAST": {
+    "REGION_LABEL": "Notifications",
+    "CLOSE": "Fermer",
+    "ERROR": {
+      "NETWORK": "Serveur injoignable. Vérifie ta connexion.",
+      "FORBIDDEN": "Tu n'as pas les droits pour faire ça.",
+      "NOT_FOUND": "Ressource introuvable.",
+      "SERVER": "Le serveur a rencontré un problème. Réessaie plus tard.",
+      "GENERIC": "Une erreur est survenue, réessaye."
+    }
   }
 }

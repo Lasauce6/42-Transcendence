@@ -1,11 +1,15 @@
-<h2>Vérification en deux étapes</h2>
-<p>Entre le code à 6 chiffres généré par ton application d'authentification.</p>
+<h2>{{ 'AUTH.TWOFA.VERIFY.TITLE' | translate }}</h2>
+<p>{{ 'AUTH.TWOFA.VERIFY.INSTRUCTION' | translate }}</p>
 
 <form (submit)="onSubmit(); $event.preventDefault()">
-  <input type="text" [formField]="verifyForm.code" placeholder="Code à 6 chiffres" />
-  <button type="submit">Vérifier</button>
+  <input
+    type="text"
+    [formField]="verifyForm.code"
+    [placeholder]="'AUTH.TWOFA.VERIFY.CODE_PLACEHOLDER' | translate"
+  />
+  <button type="submit">{{ 'AUTH.TWOFA.VERIFY.SUBMIT' | translate }}</button>
 </form>
 
 @if (verifyError()) {
-  <p class="error">{{ verifyError() }}</p>
+  <p class="error">{{ verifyError()! | translate }}</p>
 }

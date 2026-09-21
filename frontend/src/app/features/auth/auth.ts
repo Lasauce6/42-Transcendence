@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import { CurrentUser } from '@core/services/current-user';
 
 @Injectable({
   providedIn: 'root',
@@ -10,42 +12,57 @@ export class AuthService {
   private readonly _isLoggedIn = signal<boolean>(false);
   readonly isLoggedIn = this._isLoggedIn.asReadonly();
   private readonly _token = signal<string | null>(null);
+  private readonly _refreshToken = signal<string | null>(null);
   readonly token = this._token.asReadonly();
+  private readonly currentUser = inject(CurrentUser);
 
   login(credentials: LoginModel) {
-    return this.http.post<LoginResponse>('...', credentials).pipe(
+    return this.http.post<LoginResponse>(`${environment.apiUrl}/token/`, credentials).pipe(
       tap((response) => {
-        if ('token' in response) {
-          this._token.set(response.token);
-          this._isLoggedIn.set(true);
+        if ('requires2FA' in response) {
+          return;
         }
+        this._token.set(response.access);
+        this._refreshToken.set(response.refresh);
+        this._isLoggedIn.set(true);
       }),
     );
   }
 
   loginWithOAuth(provider: string, code: string) {
     return this.http
-      .post<{ token: string }>(`/api/auth/oauth/${provider}/callback/`, { code })
+      .post<{ access: string; refresh: string }>(`${environment.apiUrl}/auth/oauth/${provider}/callback/`, { code })
       .pipe(
         tap((response) => {
-          this._token.set(response.token);
+          this._token.set(response.access);
+          this._refreshToken.set(response.refresh);
           this._isLoggedIn.set(true);
         }),
       );
   }
 
   register(payload: RegisterPayload) {
-    return this.http.post('/api/register/', payload);
+    return this.http.post(`${environment.apiUrl}/register/`, payload);
   }
 
+  refreshAccessToken() {
+    return this.http
+      .post<{ access: string }>(`${environment.apiUrl}/token/refresh/`, { refresh: this._refreshToken() })
+      .pipe(
+        tap((response) => {
+          this._token.set(response.access);
+        }),
+      );
+  }
   completeTwoFactorLogin(token: string) {
     this._token.set(token);
     this._isLoggedIn.set(true);
   }
-  
   logout() {
     this._token.set(null);
+    this._refreshToken.set(null);
     this._isLoggedIn.set(false);
+    this.currentUser.clear();
   }
 }
 
@@ -67,4 +84,6 @@ export interface RegisterPayload {
   password: string;
 }
 
-export type LoginResponse = { token: string } | { requires2FA: true; tempToken: string };
+export type LoginResponse =
+  | { access: string; refresh: string }
+  | { requires2FA: true; tempToken: string };

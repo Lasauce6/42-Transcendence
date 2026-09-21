@@ -24,12 +24,18 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
     TokenVerifyView,
 )
-from users.views import RegisterView, UserViewSet
+from users.views import FriendshipViewSet, RegisterView, UserViewSet
 
 router = routers.DefaultRouter()
 router.register(r"channels", ChannelViewSet)
 router.register(r"messages", MessageViewSet)
 router.register(r"users", UserViewSet, basename="user")
+
+router = routers.DefaultRouter()
+router.register(r"channels", ChannelViewSet)
+router.register(r"messages", MessageViewSet)
+router.register(r"users", UserViewSet, basename="user")
+router.register(r"friendships", FriendshipViewSet, basename="friendship")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -38,7 +44,6 @@ urlpatterns = [
     path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
     path("api/register/", RegisterView.as_view(), name="register"),
     path("api/", include(router.urls)),
-
     path("api/auth/oauth/", include("authentication.oauth_urls")),
     path("accounts/", include("allauth.urls")),
 ]
