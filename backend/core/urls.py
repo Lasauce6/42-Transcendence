@@ -24,6 +24,7 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
     TokenVerifyView,
 )
+from api.views import NotificationViewSet
 from users.views import FriendshipViewSet, RegisterView, UserViewSet, LogoutView
 
 router = routers.DefaultRouter()
@@ -36,6 +37,7 @@ router.register(r"channels", ChannelViewSet)
 router.register(r"messages", MessageViewSet)
 router.register(r"users", UserViewSet, basename="user")
 router.register(r"friendships", FriendshipViewSet, basename="friendship")
+router.register(r'notifications', NotificationViewSet, basename='notification')
 
 urlpatterns = [
     path("admin/", admin.site.urls),
