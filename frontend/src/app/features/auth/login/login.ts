@@ -4,6 +4,7 @@ import { AuthService, LoginModel } from '../auth';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { TranslatePipe } from '@ngx-translate/core';
+import { environment } from '@env/environment';
 
 @Component({
   selector: 'app-login',
@@ -46,6 +47,6 @@ export class Login {
   onOAuthLogin(provider: 'google' | 'github' | 'fortytwo') {
     const backendProvider = provider === 'fortytwo' ? '42' : provider;
 
-    window.location.href = `${window.location.origin}/api/auth/oauth/${backendProvider}/login/`;
+    window.location.href = `${window.location.origin}/${environment.apiUrl}/auth/oauth/${backendProvider}/login/`;
   }
 }
