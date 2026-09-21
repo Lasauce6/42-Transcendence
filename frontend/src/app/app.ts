@@ -7,10 +7,11 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { LanguageSwitcher } from './shared/components/language-switcher/language-switcher';
 import { CurrentUser } from '@core/services/current-user';
 import { AuthService } from '@features/auth/auth';
+import { Toast } from './shared/components/toast/toast';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, TranslatePipe, LanguageSwitcher],
+  imports: [RouterOutlet, RouterLink, TranslatePipe, LanguageSwitcher, Toast],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })

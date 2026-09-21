@@ -1,0 +1,27 @@
+<div class="toasts" role="region" [attr.aria-label]="'TOAST.REGION_LABEL' | translate">
+  @for (toast of toasts(); track toast.id) {
+    <div
+      class="toast"
+      [class.toast--success]="toast.type === 'success'"
+      [class.toast--error]="toast.type === 'error'"
+      [class.toast--info]="toast.type === 'info'"
+      [style.--toast-duration]="toast.duration + 'ms'"
+      role="alert"
+      aria-live="polite"
+    >
+      <span class="toast__text">{{ toast.key | translate: toast.params }}</span>
+
+      <button
+        type="button"
+        class="toast__close"
+        (click)="dismiss(toast.id)"
+        [attr.aria-label]="'TOAST.CLOSE' | translate"
+      >
+        &times;
+      </button>
+      @if (toast.duration > 0) {
+        <span class="toast__progress" aria-hidden="true"></span>
+      }
+    </div>
+  }
+</div>

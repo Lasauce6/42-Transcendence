@@ -89,5 +89,16 @@
     "TWOFA_VERIFY": "Verificación 2FA",
     "PROFILE": "Perfil",
     "FORBIDDEN": "Acceso denegado"
+  },
+  "TOAST": {
+    "REGION_LABEL": "Notificaciones",
+    "CLOSE": "Cerrar",
+    "ERROR": {
+      "NETWORK": "Servidor inaccesible. Comprueba tu conexión.",
+      "FORBIDDEN": "No tienes permiso para hacer eso.",
+      "NOT_FOUND": "Recurso no encontrado.",
+      "SERVER": "El servidor ha tenido un problema. Inténtalo más tarde.",
+      "GENERIC": "Se ha producido un error, inténtalo de nuevo."
+    }
   }
 }

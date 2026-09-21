@@ -89,5 +89,16 @@
     "TWOFA_VERIFY": "2FA verification",
     "PROFILE": "Profile",
     "FORBIDDEN": "Access denied"
+  },
+  "TOAST": {
+    "REGION_LABEL": "Notifications",
+    "CLOSE": "Close",
+    "ERROR": {
+      "NETWORK": "Server unreachable. Check your connection.",
+      "FORBIDDEN": "You are not allowed to do that.",
+      "NOT_FOUND": "Resource not found.",
+      "SERVER": "The server ran into a problem. Please try again later.",
+      "GENERIC": "Something went wrong, please try again."
+    }
   }
 }

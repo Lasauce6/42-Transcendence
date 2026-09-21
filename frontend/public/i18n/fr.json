@@ -89,5 +89,16 @@
     "TWOFA_VERIFY": "Vérification 2FA",
     "PROFILE": "Profil",
     "FORBIDDEN": "Accès refusé"
+  },
+  "TOAST": {
+    "REGION_LABEL": "Notifications",
+    "CLOSE": "Fermer",
+    "ERROR": {
+      "NETWORK": "Serveur injoignable. Vérifie ta connexion.",
+      "FORBIDDEN": "Tu n'as pas les droits pour faire ça.",
+      "NOT_FOUND": "Ressource introuvable.",
+      "SERVER": "Le serveur a rencontré un problème. Réessaie plus tard.",
+      "GENERIC": "Une erreur est survenue, réessaye."
+    }
   }
 }
