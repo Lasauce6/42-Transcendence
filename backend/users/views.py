@@ -1,9 +1,11 @@
 from django.db.models import Q
+from django.utils import timezone
 from users.models import Friendship
+from rest_framework.views import APIView
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
-from rest_framework import generics, viewsets, permissions
+from rest_framework import generics, viewsets, permissions, status
 from .serializers import RegisterSerializer, UserSerializer, FriendshipSerializer
 
 User = get_user_model()
@@ -130,4 +132,13 @@ class FriendshipViewSet(viewsets.ModelViewSet):
         )
         serializer = self.get_serializer(friendships, many=True)
         return Response(serializer.data)
-    
+
+class LogoutView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        user.is_online = False
+        user.last_seen = timezone.now()
+        user.save(update_fields=['is_online', 'last_seen'])
+        return Response(status=status.HTTP_204_NO_CONTENT)

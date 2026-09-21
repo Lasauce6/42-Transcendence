@@ -24,7 +24,7 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
     TokenVerifyView,
 )
-from users.views import FriendshipViewSet, RegisterView, UserViewSet
+from users.views import FriendshipViewSet, RegisterView, UserViewSet, LogoutView
 
 router = routers.DefaultRouter()
 router.register(r"channels", ChannelViewSet)
@@ -39,11 +39,12 @@ router.register(r"friendships", FriendshipViewSet, basename="friendship")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("api/", include(router.urls)),
+    path("accounts/", include("allauth.urls")),
+	path("api/logout/", LogoutView.as_view(), name='logout'),
+    path("api/auth/oauth/", include("authentication.oauth_urls")),
+    path("api/register/", RegisterView.as_view(), name="register"),
+    path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
-    path("api/register/", RegisterView.as_view(), name="register"),
-    path("api/", include(router.urls)),
-    path("api/auth/oauth/", include("authentication.oauth_urls")),
-    path("accounts/", include("allauth.urls")),
 ]
