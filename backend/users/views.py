@@ -1,5 +1,6 @@
 from django.db.models import Q
 from django.utils import timezone
+from api.views import Notification
 from users.models import Friendship
 from rest_framework.views import APIView
 from rest_framework.decorators import action
@@ -52,9 +53,19 @@ class FriendshipViewSet(viewsets.ModelViewSet):
         )
 
     def perform_create(self, serializer):
-        serializer.save(
+        friendship = serializer.save(
             requester=self.request.user,
             status=Friendship.Status.PENDING
+        )
+        Notification.objects.create(
+            recipient=friendship.addressee,
+            type=Notification.Type.FRIEND,
+            entity_type='Friendship',
+            entity_id=friendship.id,
+            payload={
+                'from_username': self.request.user.username,
+                'action': 'request',
+            },
         )
 
     def perform_destroy(self, instance):
@@ -79,6 +90,17 @@ class FriendshipViewSet(viewsets.ModelViewSet):
             )
         friendship.status = Friendship.Status.ACCEPTED
         friendship.save()
+
+        Notification.objects.create(
+            recipient=friendship.requester,
+            type=Notification.Type.FRIEND,
+            entity_type='Friendship',
+            entity_id=friendship.id,
+            payload={
+                'from_username': request.user.username,
+                'action': 'accepted',
+            },
+        )
         return Response(FriendshipSerializer(friendship).data)
 
     @action(detail=True, methods=['post'])
