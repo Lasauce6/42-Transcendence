@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { required, email, form, FormField, submit, maxLength } from '@angular/forms/signals';
+import { required, form, FormField, submit, maxLength } from '@angular/forms/signals';
 import { AuthService, LoginModel } from '../auth';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -17,12 +17,11 @@ export class Login {
   private readonly router = inject(Router);
   readonly errorMessage = signal<string>('');
   readonly loginData = signal<LoginModel>({
-    email: '',
+    username: '',
     password: '',
   });
   readonly loginForm = form(this.loginData, (path) => {
-    required(path.email);
-    email(path.email);
+    required(path.username);
     required(path.password);
     maxLength(path.password, 72, { message: 'Mot de passe trop long' });
   });

@@ -1,16 +1,18 @@
 <form (submit)="onSubmit($event)">
-  <label for="email">{{ 'AUTH.LOGIN.EMAIL_LABEL' | translate }}</label>
+  <label for="username">{{ 'AUTH.REGISTER.USERNAME_LABEL' | translate }}</label>
   <input
-    id="email"
-    type="email"
-    [formField]="loginForm.email"
-    [placeholder]="'AUTH.LOGIN.EMAIL_PLACEHOLDER' | translate"
+    id="username"
+    type="text"
+    autocomplete="username"
+    [formField]="loginForm.username"
+    [placeholder]="'AUTH.LOGIN.USERNAME_PLACEHOLDER' | translate"
   />
 
   <label for="password">{{ 'AUTH.LOGIN.PASSWORD_LABEL' | translate }}</label>
   <input
     id="password"
     type="password"
+    autocomplete="current-password"
     [formField]="loginForm.password"
     [placeholder]="'AUTH.LOGIN.PASSWORD_PLACEHOLDER' | translate"
   />
