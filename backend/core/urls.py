@@ -15,29 +15,30 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from django.conf import settings
+from chat.views import ChannelViewSet, MessageViewSet
 from django.contrib import admin
-from django.urls import path, include
-from django.conf.urls.static import static
+from django.urls import include, path
+from rest_framework import routers
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
     TokenVerifyView,
 )
-from rest_framework import routers
 from users.views import RegisterView, UserViewSet
-from chat.views import ChannelViewSet, MessageViewSet
 
 router = routers.DefaultRouter()
-router.register(r'channels', ChannelViewSet)
-router.register(r'messages', MessageViewSet)
-router.register(r'users', UserViewSet, basename='user')
+router.register(r"channels", ChannelViewSet)
+router.register(r"messages", MessageViewSet)
+router.register(r"users", UserViewSet, basename="user")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/token/", TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path("api/token/refresh/", TokenRefreshView.as_view(), name='token_refresh'),
-    path("api/token/verify/", TokenVerifyView.as_view(), name='token_verify'),
-    path("api/register/", RegisterView.as_view(), name='register'),
+    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
+    path("api/register/", RegisterView.as_view(), name="register"),
     path("api/", include(router.urls)),
+
+    path("api/auth/oauth/", include("authentication.oauth_urls")),
+    path("accounts/", include("allauth.urls")),
 ]
