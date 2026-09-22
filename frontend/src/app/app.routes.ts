@@ -55,12 +55,12 @@ export const routes: Routes = [
     path: '',
     loadComponent: () => import('@features/home/home').then((m) => m.Home),
   },
-  // {
-  //   path: 'admin',
-  //   loadChildren: () => import('@features/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
-  //   canActivate: [authGuard, roleGuard],
-  //   data: { roles: ['ADMIN'] },
-  // },
+  {
+    path: 'admin',
+    loadChildren: () => import('@features/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ADMIN'] },
+  },
   // {
   //   path: 'chat',
   //   loadComponent: () => import('@features/chat/chat').then(m => m.Chat),
