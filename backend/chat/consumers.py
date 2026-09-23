@@ -1,4 +1,5 @@
 import json
+from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -48,6 +49,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
             }
         )
 
+        try:
+            channel = await self._get_channel()
+            if channel:
+                notifications = await self._create_notifications(channel, message)
+                for notification in notifications:
+                    await self._push_notification(notification)
+        except Exception as e:
+            print(f"Notification error: {e}", flush=True)
+
     async def chat_message(self, event):
         message = event['message']
         sender = event['sender']
@@ -62,3 +72,53 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'type': 'notification',
             'notification': event['notification'],
         }))
+
+    @database_sync_to_async
+    def _get_channel(self):
+        from chat.models import Channel
+        try:
+            return Channel.objects.get(name=self.room_name)
+        except Channel.DoesNotExist:
+            return None
+
+    @database_sync_to_async
+    def _create_notifications(self, channel, message_preview):
+        from chat.models import ChannelMember
+        from api.models import Notification
+
+        members = ChannelMember.objects.filter(channel=channel).exclude(user=self.user)
+
+        notifications = []
+        for member in members:
+            notification = Notification.objects.create(
+                recipient=member.user,
+                type=Notification.Type.MESSAGE,
+                entity_type='Channel',
+                entity_id=channel.id,
+                payload={
+                    'from_id': str(self.user.id),
+                    'from_username': self.user.username,
+                    'channel_id': str(channel.id),
+                    'channel_name': channel.name or str(channel.id),
+                    'preview': message_preview[:80],
+                },
+            )
+            notifications.append(notification)
+        return notifications
+
+    async def _push_notification(self, notification):
+        await self.channel_layer.group_send(
+            f'user_{notification.recipient.username}',
+            {
+                'type': 'notification_message',
+                'notification': {
+                    'id': str(notification.id),
+                    'type': notification.type,
+                    'entity_type': notification.entity_type,
+                    'entity_id': str(notification.entity_id) if notification.entity_id else None,
+                    'payload': notification.payload,
+                    'is_read': notification.is_read,
+                    'created_at': notification.created_at.isoformat(),
+                },
+            }
+        )
