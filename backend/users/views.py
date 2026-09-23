@@ -4,6 +4,7 @@ from rest_framework import mixins
 from api.models import Notification
 from users.models import Friendship
 from asgiref.sync import async_to_sync
+from .permissions import IsSelfOrAdmin
 from rest_framework.views import APIView
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -47,6 +48,8 @@ class UserViewSet(
     def get_permissions(self):
         if self.action == 'destroy':
             return [permissions.IsAdminUser()]
+        if self.action in ('update', 'partial_update'):
+            return [permissions.IsAuthenticated(), IsSelfOrAdmin()]
         return [permissions.IsAuthenticated()]
 
     def get_queryset(self):
