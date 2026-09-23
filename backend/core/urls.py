@@ -25,12 +25,7 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 from api.views import NotificationViewSet
-from users.views import FriendshipViewSet, RegisterView, UserViewSet, LogoutView
-
-router = routers.DefaultRouter()
-router.register(r"channels", ChannelViewSet)
-router.register(r"messages", MessageViewSet)
-router.register(r"users", UserViewSet, basename="user")
+from users.views import FriendshipViewSet, RegisterView, UserViewSet, LogoutView, ChangePasswordView
 
 router = routers.DefaultRouter()
 router.register(r"channels", ChannelViewSet)
@@ -41,6 +36,7 @@ router.register(r'notifications', NotificationViewSet, basename='notification')
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+	path("api/users/change_password/", ChangePasswordView.as_view(), name='change_password'),
     path("api/", include(router.urls)),
     path("accounts/", include("allauth.urls")),
 	path("api/logout/", LogoutView.as_view(), name='logout'),
