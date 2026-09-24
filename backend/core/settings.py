@@ -34,6 +34,7 @@ ALLOWED_HOSTS = ["localhost", "backend"]
 # Application definition
 
 INSTALLED_APPS = [
+	"drf_spectacular", # Doc API
     "channels",
     "daphne",
     "django.contrib.admin",
@@ -57,6 +58,13 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.github",
     "authentication.apps.AuthenticationConfig",  # <-- après allauth
 ]
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'ft_transcendence API',
+    'DESCRIPTION': 'API REST + WebSocket pour le projet ft_transcendence',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
 
 SITE_ID = 1
 
@@ -106,7 +114,8 @@ MEDIA_ROOT = BASE_DIR / "media"
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
-    )
+    ),
+	'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 MIDDLEWARE = [
