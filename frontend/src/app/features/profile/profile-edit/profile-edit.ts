@@ -2,6 +2,8 @@ import { Component, effect, inject, input, OnDestroy, output, signal } from '@an
 import { UpdateProfilePayload, UserProfile, UserService } from '../user.service';
 import { form, maxLength, required, FormField, submit, minLength } from '@angular/forms/signals';
 import { firstValueFrom } from 'rxjs';
+import { AuthService } from '@features/auth/auth';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile-edit',
@@ -10,6 +12,8 @@ import { firstValueFrom } from 'rxjs';
   styleUrl: './profile-edit.scss',
 })
 export class ProfileEdit implements OnDestroy {
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
   private readonly userService = inject(UserService);
   readonly profile = input.required<UserProfile>();
   readonly profileUpdated = output<UserProfile>();
@@ -49,6 +53,11 @@ export class ProfileEdit implements OnDestroy {
     maxLength(path.last_name, 150);
     maxLength(path.bio, 500);
   });
+
+  onLogout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 
   constructor() {
     effect(() => {
@@ -132,7 +141,7 @@ export class ProfileEdit implements OnDestroy {
       try {
         await firstValueFrom(
           this.userService.changePassword({
-            current_password: data.currentPassword,
+            old_password: data.currentPassword,
             new_password: data.newPassword,
           }),
         );
@@ -144,6 +153,8 @@ export class ProfileEdit implements OnDestroy {
         });
 
         this.passwordSuccess.set('Mot de passe modifié avec succès.');
+        this.authService.logout();
+        this.router.navigate(['/login']);
       } catch {
         this.passwordError.set(
           'Impossible de modifier le mot de passe. Vérifie ton mot de passe actuel et réessaie.',
