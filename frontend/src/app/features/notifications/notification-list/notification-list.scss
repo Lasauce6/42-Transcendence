@@ -1,0 +1,45 @@
+.notifications {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 1rem;
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    border-bottom: 1px solid #eee;
+
+    &.unread {
+      background: #f2f8ff;
+      font-weight: 600;
+    }
+
+    button {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      width: 100%;
+      padding: 0.75rem;
+      border: 0;
+      background: none;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+  }
+
+  time {
+    color: #666;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+}

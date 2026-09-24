@@ -6,6 +6,7 @@
 
     @if (isLoggedIn()) {
       <a routerLink="/profile">{{ 'NAV.PROFILE' | translate }}</a>
+      <app-notification-bell />
     }
 
     @if (isAdmin()) {
