@@ -15,6 +15,17 @@ export class Profile implements OnInit {
   readonly profile = signal<UserProfile | null>(null);
   readonly error = signal<string | null>(null);
 
+  isEditing = signal(false);
+
+  startEdit(): void {
+    this.isEditing.set(true);
+  }
+
+  onProfileUpdated(updated: UserProfile): void {
+    this.profile.set(updated);
+    this.isEditing.set(false);
+  }
+
   ngOnInit() {
     this.userService.getMe().subscribe({
       next: (data) => this.profile.set(data),

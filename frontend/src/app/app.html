@@ -11,6 +11,10 @@
     @if (isAdmin()) {
       <a routerLink="/admin">{{ 'ADMIN.NAV' | translate }}</a>
     }
+    @if (!isLoggedIn()) {
+      <a routerLink="/login">Connexion</a>
+      <a routerLink="/register">Inscription</a>
+    }
   </nav>
   <app-language-switcher />
 </header>

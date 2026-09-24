@@ -46,11 +46,11 @@ export const routes: Routes = [
     loadComponent: () => import('@features/forbidden/forbidden').then((m) => m.Forbidden),
     title: 'TITLES.FORBIDDEN',
   },
-  {
-    path: '',
-    redirectTo: '/login',
-    pathMatch: 'full',
-  },
+  // {
+  //   path: '',
+  //   redirectTo: '/login',
+  //   pathMatch: 'full',
+  // },
   {
     path: '',
     loadComponent: () => import('@features/home/home').then((m) => m.Home),
