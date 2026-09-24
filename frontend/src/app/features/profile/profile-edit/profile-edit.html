@@ -1,8 +1,62 @@
-<form (ngSubmit)="onSubmit()">
-  <input type="text" [value]="username()" (input)="username.set($any($event.target).value)" />
-  <input type="email" [value]="email()" (input)="email.set($any($event.target).value)" />
-  <button [disabled]="saving()" type="submit">Enregistrer</button>
+<form (submit)="onSubmit($event)">
+  <label for="username">Nom d'utilisateur</label>
+  <input id="username" type="text" [formField]="profileForm.username" />
+
+  <label for="first_name">Prénom</label>
+  <input id="first_name" type="text" [formField]="profileForm.first_name" />
+
+  <label for="last_name">Nom</label>
+  <input id="last_name" type="text" [formField]="profileForm.last_name" />
+
+  <label for="bio">Bio</label>
+  <textarea id="bio" [formField]="profileForm.bio"></textarea>
+
+  <label for="avatar">Avatar</label>
+  <input id="avatar" type="file" accept="image/*" (change)="onAvatarSelected($event)" />
+
+  @if (avatarPreviewUrl(); as url) {
+    <img [src]="url" alt="Aperçu avatar" />
+  }
+
+  <button type="submit" [disabled]="saving()">Enregistrer le profil</button>
+
+  @if (error()) {
+    <p role="alert">{{ error() }}</p>
+  }
 </form>
-@if (error()) {
-  <p role="alert">{{ error() }}</p>
-}
+
+<form (submit)="onPasswordSubmit($event)">
+  <label for="current-password">Mot de passe actuel</label>
+  <input
+    id="current-password"
+    type="password"
+    autocomplete="current-password"
+    [formField]="passwordForm.currentPassword"
+  />
+
+  <label for="new-password">Nouveau mot de passe</label>
+  <input
+    id="new-password"
+    type="password"
+    autocomplete="new-password"
+    [formField]="passwordForm.newPassword"
+  />
+
+  <label for="confirm-password">Confirmer le nouveau mot de passe</label>
+  <input
+    id="confirm-password"
+    type="password"
+    autocomplete="new-password"
+    [formField]="passwordForm.confirmPassword"
+  />
+
+  <button type="submit" [disabled]="changingPassword()">Modifier le mot de passe</button>
+
+  @if (passwordError()) {
+    <p role="alert">{{ passwordError() }}</p>
+  }
+
+  @if (passwordSuccess()) {
+    <p role="status">{{ passwordSuccess() }}</p>
+  }
+</form>

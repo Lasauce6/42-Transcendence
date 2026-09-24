@@ -1,4 +1,5 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { CurrentUser } from '@core/services/current-user';
 import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
@@ -8,6 +9,6 @@ import { TranslatePipe } from '@ngx-translate/core';
   styleUrl: './home.scss',
 })
 export class Home {
-  // TODO: remplacer par le user du service auth (ticket auth)
-  readonly user = signal({ login: 'user42' });
+  private readonly currentUser = inject(CurrentUser);
+  readonly profile = this.currentUser.profile;
 }
