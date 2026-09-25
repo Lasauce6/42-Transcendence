@@ -13,3 +13,6 @@ redis==4.6.0
 Pillow>=11.0,<13.0
 django-allauth>=0.60
 requests
+pyotp
+qrcode
+cryptography

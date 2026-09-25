@@ -10,8 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+from operator import ge
 import os
 from pathlib import Path
+
+from requests.api import get
 
 from core.vault_client import get_vault_secret
 
@@ -67,6 +70,9 @@ OAUTH_GOOGLE_CLIENT_SECRET = get_vault_secret("OAUTH_GOOGLE_CLIENT_SECRET")
 OAUTH_GITHUB_CLIENT_ID = get_vault_secret("OAUTH_GITHUB_CLIENT_ID")
 OAUTH_GITHUB_CLIENT_SECRET = get_vault_secret("OAUTH_GITHUB_CLIENT_SECRET")
 
+TOTP_ENCRYPTION_KEY = get_vault_secret("TOTP_ENCRYPTION_KEY")
+TOTP_ISSURER_NAME = get_vault_secret("TOTP_ISSURER_NAME")
+
 SOCIALACCOUNT_PROVIDERS = {
     "fortytwo": {
         "APP": {
@@ -104,9 +110,13 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
+    "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
-    )
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+        "users.permissions.Is2FADone"
+    ],
 }
 
 MIDDLEWARE = [

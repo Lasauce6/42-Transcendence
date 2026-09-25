@@ -3,13 +3,12 @@ from datetime import timedelta
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.exceptions import InvalidToken, AuthenticationFailed
+from rest_framework_simplejwt.exceptions import AuthenticationFailed, InvalidToken
 
 User = get_user_model()
 
 
 class LastSeenMiddleware:
-
     def __init__(self, get_response):
         self.jwt_auth = JWTAuthentication()
         self.get_response = get_response
@@ -23,7 +22,7 @@ class LastSeenMiddleware:
         return self.get_response(request)
 
     def _resolve_user(self, request):
-        if hasattr(request, 'user') and request.user.is_authenticated:
+        if hasattr(request, "user") and request.user.is_authenticated:
             return request.user
 
         try:
