@@ -1,13 +1,14 @@
-from rest_framework import mixins, viewsets, permissions
+from rest_framework import mixins, permissions, viewsets
+
 from .models import Notification
 from .serializers import NotificationSerializer
 
 
 class NotificationViewSet(
-    mixins.ListModelMixin,       # GET /api/notifications/
-    mixins.RetrieveModelMixin,   # GET /api/notifications/{id}/
-    mixins.UpdateModelMixin,     # PATCH /api/notifications/{id}/
-    mixins.DestroyModelMixin,    # DELETE /api/notifications/{id}/
+    mixins.ListModelMixin,  # GET /api/notifications/
+    mixins.RetrieveModelMixin,  # GET /api/notifications/{id}/
+    mixins.UpdateModelMixin,  # PATCH /api/notifications/{id}/
+    mixins.DestroyModelMixin,  # DELETE /api/notifications/{id}/
     viewsets.GenericViewSet,
 ):
     serializer_class = NotificationSerializer

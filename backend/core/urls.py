@@ -15,22 +15,27 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+from api.views import NotificationViewSet
 from chat.views import ChannelViewSet, MessageViewSet
 from django.contrib import admin
 from django.urls import include, path
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
+)
 from rest_framework import routers
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
     TokenVerifyView,
 )
-from api.views import NotificationViewSet
-from users.views import FriendshipViewSet, RegisterView, UserViewSet, LogoutView, ChangePasswordView
-
-from drf_spectacular.views import (
-    SpectacularAPIView,
-    SpectacularSwaggerView,
-    SpectacularRedocView,
+from users.views import (
+    ChangePasswordView,
+    FriendshipViewSet,
+    LogoutView,
+    RegisterView,
+    UserViewSet,
 )
 
 router = routers.DefaultRouter()
@@ -38,23 +43,30 @@ router.register(r"channels", ChannelViewSet)
 router.register(r"messages", MessageViewSet)
 router.register(r"users", UserViewSet, basename="user")
 router.register(r"friendships", FriendshipViewSet, basename="friendship")
-router.register(r'notifications', NotificationViewSet, basename='notification')
+router.register(r"notifications", NotificationViewSet, basename="notification")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-	path("api/users/change_password/", ChangePasswordView.as_view(), name='change_password'),
+    path(
+        "api/users/change_password/",
+        ChangePasswordView.as_view(),
+        name="change_password",
+    ),
     path("api/", include(router.urls)),
     path("accounts/", include("allauth.urls")),
-	path("api/logout/", LogoutView.as_view(), name='logout'),
+    path("api/logout/", LogoutView.as_view(), name="logout"),
     path("api/auth/oauth/", include("authentication.oauth_urls")),
     path("api/register/", RegisterView.as_view(), name="register"),
     path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/users/", include("users.urls")),
-
     # Documentation API
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
-    path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
+    path(
+        "api/docs/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
+    ),
     path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
 ]

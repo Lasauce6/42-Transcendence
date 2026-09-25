@@ -125,9 +125,7 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
         "users.permissions.Is2FADone",
     ],
-    "DEFAULT_SCHEMA_CLASS": [
-        "drf_spectacular.openapi.AutoSchema",
-    ],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 MIDDLEWARE = [
