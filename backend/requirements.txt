@@ -16,3 +16,4 @@ requests
 pyotp
 qrcode
 cryptography
+drf-spectacular

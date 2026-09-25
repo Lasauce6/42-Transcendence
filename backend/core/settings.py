@@ -10,8 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
-from operator import ge
 import os
+from operator import ge
 from pathlib import Path
 
 from requests.api import get
@@ -37,6 +37,7 @@ ALLOWED_HOSTS = ["localhost", "backend"]
 # Application definition
 
 INSTALLED_APPS = [
+    "drf_spectacular",  # Doc API
     "channels",
     "daphne",
     "django.contrib.admin",
@@ -60,6 +61,13 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.github",
     "authentication.apps.AuthenticationConfig",  # <-- après allauth
 ]
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "ft_transcendence API",
+    "DESCRIPTION": "API REST + WebSocket pour le projet ft_transcendence",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+}
 
 SITE_ID = 1
 
@@ -115,7 +123,10 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
-        "users.permissions.Is2FADone"
+        "users.permissions.Is2FADone",
+    ],
+    "DEFAULT_SCHEMA_CLASS": [
+        "drf_spectacular.openapi.AutoSchema",
     ],
 }
 

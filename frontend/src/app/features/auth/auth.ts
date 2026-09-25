@@ -14,24 +14,26 @@ export class AuthService {
   private readonly _token = signal<string | null>(null);
   private readonly _refreshToken = signal<string | null>(null);
   readonly token = this._token.asReadonly();
-  private readonly currentUser = inject(CurrentUser);
+  private readonly currentUser = inject(CurrentUser); // déjà présent
 
   login(credentials: LoginModel) {
     return this.http.post<LoginResponse>(`${environment.apiUrl}/token/`, credentials).pipe(
       tap((response) => {
-        if ('requires2FA' in response) {
-          return;
-        }
+        if ('requires2FA' in response) return;
         this._token.set(response.access);
         this._refreshToken.set(response.refresh);
         this._isLoggedIn.set(true);
+        this.currentUser.load().subscribe(); // <-- ajout
       }),
     );
   }
 
   loginWithOAuth(provider: string, code: string) {
     return this.http
-      .post<{ access: string; refresh: string }>(`${environment.apiUrl}/auth/oauth/${provider}/callback/`, { code })
+      .post<{
+        access: string;
+        refresh: string;
+      }>(`${environment.apiUrl}/auth/oauth/${provider}/callback/`, { code })
       .pipe(
         tap((response) => {
           this._token.set(response.access);
@@ -47,7 +49,9 @@ export class AuthService {
 
   refreshAccessToken() {
     return this.http
-      .post<{ access: string }>(`${environment.apiUrl}/token/refresh/`, { refresh: this._refreshToken() })
+      .post<{
+        access: string;
+      }>(`${environment.apiUrl}/token/refresh/`, { refresh: this._refreshToken() })
       .pipe(
         tap((response) => {
           this._token.set(response.access);
@@ -67,7 +71,7 @@ export class AuthService {
 }
 
 export interface LoginModel {
-  email: string;
+  username: string;
   password: string;
 }
 

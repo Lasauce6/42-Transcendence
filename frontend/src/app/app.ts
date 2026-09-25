@@ -8,10 +8,12 @@ import { LanguageSwitcher } from './shared/components/language-switcher/language
 import { CurrentUser } from '@core/services/current-user';
 import { AuthService } from '@features/auth/auth';
 import { Toast } from './shared/components/toast/toast';
+import { NotificationBell } from '@features/notifications/notification-bell/notification-bell';
+import { NotificationService } from '@core/services/notification';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, TranslatePipe, LanguageSwitcher, Toast],
+  imports: [RouterOutlet, RouterLink, TranslatePipe, LanguageSwitcher, Toast, NotificationBell],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
@@ -22,12 +24,16 @@ export class App {
   readonly isLoggedIn = this.auth.isLoggedIn;
   readonly isAdmin = this.currentUser.isAdmin;
 
+  private readonly notifications = inject(NotificationService);
+
   constructor() {
     effect(() => {
       if (this.isLoggedIn()) {
         this.currentUser.load().subscribe({ error: () => {} });
+        this.notifications.load().subscribe({ error: () => {} });
       } else {
         this.currentUser.clear();
+        this.notifications.clear();
       }
     });
   }

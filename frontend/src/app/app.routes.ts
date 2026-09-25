@@ -47,10 +47,24 @@ export const routes: Routes = [
     title: 'TITLES.FORBIDDEN',
   },
   {
+    path: 'notifications',
+    loadComponent: () =>
+      import('@features/notifications/notification-list/notification-list').then(
+        (m) => m.NotificationList,
+      ),
+    title: 'TITLES.NOTIFICATIONS',
+    canActivate: [authGuard],
+  },
+  {
     path: '',
     redirectTo: '/login',
     pathMatch: 'full',
   },
+  // {
+  //   path: '',
+  //   redirectTo: '/login',
+  //   pathMatch: 'full',
+  // },
   {
     path: '',
     loadComponent: () => import('@features/home/home').then((m) => m.Home),

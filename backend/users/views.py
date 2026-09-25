@@ -1,29 +1,58 @@
 from django.db.models import Q
+from django.utils import timezone
+from rest_framework import mixins
+from api.models import Notification
 from users.models import Friendship
+from asgiref.sync import async_to_sync
+from .permissions import IsSelfOrAdmin
+from rest_framework.views import APIView
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from channels.layers import get_channel_layer
 from django.contrib.auth import get_user_model
-from rest_framework import generics, viewsets, permissions
-from .serializers import RegisterSerializer, UserSerializer, FriendshipSerializer
+from rest_framework import generics, viewsets, permissions, status
+from .serializers import RegisterSerializer, UserSerializer, FriendshipSerializer, ChangePasswordSerializer
 
 User = get_user_model()
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
 
-class UserViewSet(viewsets.ModelViewSet):
+class ChangePasswordView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        serializer = ChangePasswordSerializer(
+            data=request.data,
+            context={'request': request},
+        )
+        serializer.is_valid(raise_exception=True)
+
+        user = request.user
+        user.set_password(serializer.validated_data['new_password'])
+        user.save(update_fields=['password'])
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class UserViewSet(
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_permissions(self):
-        # Suppression réservée aux admins
         if self.action == 'destroy':
             return [permissions.IsAdminUser()]
+        if self.action in ('update', 'partial_update'):
+            return [permissions.IsAuthenticated(), IsSelfOrAdmin()]
         return [permissions.IsAuthenticated()]
 
     def get_queryset(self):
-        # Un utilisateur non-admin ne voit pas les superusers
         if self.request.user.is_staff:
             return User.objects.all()
         return User.objects.filter(is_superuser=False)
@@ -49,11 +78,40 @@ class FriendshipViewSet(viewsets.ModelViewSet):
             Q(requester=user) | Q(addressee=user)
         )
 
+    def _push_notification(self, notification):
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'user_{notification.recipient.username}',
+            {
+                'type': 'notification_message',
+                'notification': {
+                    'id': str(notification.id),
+                    'type': notification.type,
+                    'entity_type': notification.entity_type,
+                    'entity_id': str(notification.entity_id) if notification.entity_id else None,
+                    'payload': notification.payload,
+                    'is_read': notification.is_read,
+                    'created_at': notification.created_at.isoformat(),
+                },
+            }
+        )
+
     def perform_create(self, serializer):
-        serializer.save(
+        friendship = serializer.save(
             requester=self.request.user,
             status=Friendship.Status.PENDING
         )
+        notification = Notification.objects.create(
+            recipient=friendship.addressee,
+            type=Notification.Type.FRIEND,
+            entity_type='Friendship',
+            entity_id=friendship.id,
+            payload={
+                'from_username': self.request.user.username,
+                'action': 'request',
+            },
+        )
+        self._push_notification(notification)
 
     def perform_destroy(self, instance):
         if self.request.user not in (instance.requester, instance.addressee):
@@ -77,6 +135,19 @@ class FriendshipViewSet(viewsets.ModelViewSet):
             )
         friendship.status = Friendship.Status.ACCEPTED
         friendship.save()
+
+        notification = Notification.objects.create(
+            recipient=friendship.requester,
+            type=Notification.Type.FRIEND,
+            entity_type='Friendship',
+            entity_id=friendship.id,
+            payload={
+                'from_username': request.user.username,
+                'action': 'accepted',
+            },
+        )
+        self._push_notification(notification)
+
         return Response(FriendshipSerializer(friendship).data)
 
     @action(detail=True, methods=['post'])
@@ -130,4 +201,13 @@ class FriendshipViewSet(viewsets.ModelViewSet):
         )
         serializer = self.get_serializer(friendships, many=True)
         return Response(serializer.data)
-    
+
+class LogoutView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        user.is_online = False
+        user.last_seen = timezone.now()
+        user.save(update_fields=['is_online', 'last_seen'])
+        return Response(status=status.HTTP_204_NO_CONTENT)
