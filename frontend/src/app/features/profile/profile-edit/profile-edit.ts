@@ -42,6 +42,8 @@ export class ProfileEdit implements OnDestroy {
 
   readonly avatarFile = signal<File | null>(null);
   readonly avatarPreviewUrl = signal<string | null>(null);
+  private readonly MAX_AVATAR_SIZE = 5 * 1024 * 1024;
+  private readonly ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
   readonly changingPassword = signal(false);
   readonly passwordError = signal<string | null>(null);
@@ -76,16 +78,30 @@ export class ProfileEdit implements OnDestroy {
     const file = input.files?.[0];
 
     if (!file) {
-      return; // l'utilisateur a annulé la sélection, on ne touche à rien
+      return;
+    }
+
+    // Validation indicative (UX) : le backend doit revalider le contenu réel du fichier
+    if (!this.ALLOWED_TYPES.includes(file.type)) {
+      this.error.set('Format non supporté (JPEG, PNG ou WebP uniquement).');
+      input.value = ''; // reset l'input pour permettre une nouvelle sélection du même fichier
+      return;
+    }
+
+    if (file.size > this.MAX_AVATAR_SIZE) {
+      this.error.set('Fichier trop volumineux (5 Mo max).');
+      input.value = '';
+      return;
     }
 
     const previousUrl = this.avatarPreviewUrl();
     if (previousUrl) {
-      URL.revokeObjectURL(previousUrl); // libère l'ancienne référence AVANT de la remplacer
+      URL.revokeObjectURL(previousUrl);
     }
 
     this.avatarFile.set(file);
     this.avatarPreviewUrl.set(URL.createObjectURL(file));
+    this.error.set(null); // efface une éventuelle erreur précédente si la nouvelle sélection est valide
   }
 
   ngOnDestroy(): void {
