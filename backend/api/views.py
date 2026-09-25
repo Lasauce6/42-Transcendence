@@ -1,4 +1,5 @@
 from rest_framework import mixins, permissions, viewsets
+from users.permissions import Is2FADone
 
 from .models import Notification
 from .serializers import NotificationSerializer
@@ -12,7 +13,7 @@ class NotificationViewSet(
     viewsets.GenericViewSet,
 ):
     serializer_class = NotificationSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, Is2FADone]
 
     def get_queryset(self):
         return Notification.objects.filter(recipient=self.request.user)
