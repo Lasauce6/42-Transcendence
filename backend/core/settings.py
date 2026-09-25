@@ -11,7 +11,10 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 import os
+from operator import ge
 from pathlib import Path
+
+from requests.api import get
 
 from core.vault_client import get_vault_secret
 
@@ -34,7 +37,7 @@ ALLOWED_HOSTS = ["localhost", "backend"]
 # Application definition
 
 INSTALLED_APPS = [
-	"drf_spectacular", # Doc API
+    "drf_spectacular",  # Doc API
     "channels",
     "daphne",
     "django.contrib.admin",
@@ -60,10 +63,10 @@ INSTALLED_APPS = [
 ]
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'ft_transcendence API',
-    'DESCRIPTION': 'API REST + WebSocket pour le projet ft_transcendence',
-    'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,
+    "TITLE": "ft_transcendence API",
+    "DESCRIPTION": "API REST + WebSocket pour le projet ft_transcendence",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
 }
 
 SITE_ID = 1
@@ -74,6 +77,9 @@ OAUTH_GOOGLE_CLIENT_ID = get_vault_secret("OAUTH_GOOGLE_CLIENT_ID")
 OAUTH_GOOGLE_CLIENT_SECRET = get_vault_secret("OAUTH_GOOGLE_CLIENT_SECRET")
 OAUTH_GITHUB_CLIENT_ID = get_vault_secret("OAUTH_GITHUB_CLIENT_ID")
 OAUTH_GITHUB_CLIENT_SECRET = get_vault_secret("OAUTH_GITHUB_CLIENT_SECRET")
+
+TOTP_ENCRYPTION_KEY = get_vault_secret("TOTP_ENCRYPTION_KEY")
+TOTP_ISSURER_NAME = get_vault_secret("TOTP_ISSURER_NAME")
 
 SOCIALACCOUNT_PROVIDERS = {
     "fortytwo": {
@@ -112,10 +118,13 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
+    "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
-    ),
-	'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 MIDDLEWARE = [

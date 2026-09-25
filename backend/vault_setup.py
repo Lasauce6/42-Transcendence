@@ -21,6 +21,9 @@ oauth_google_client_secret = os.environ.get("OAUTH_GOOGLE_CLIENT_SECRET")
 oauth_github_client_id = os.environ.get("OAUTH_GITHUB_CLIENT_ID")
 oauth_github_client_secret = os.environ.get("OAUTH_GITHUB_CLIENT_SECRET")
 
+# 2FA secrets depuis le .env
+totp_encryption_key = os.environ.get("TOTP_ENCRYPTION_KEY")
+totp_issuer_name = os.environ.get("TOTP_ISSUER_NAME")
 
 required = [vault_addr, vault_token, db_user, db_pass, db_name, django_key,
             oauth42_client_id, oauth42_client_secret]
@@ -41,6 +44,8 @@ payload = json.dumps({
         "OAUTH_GOOGLE_CLIENT_SECRET": oauth_google_client_secret,
         "OAUTH_GITHUB_CLIENT_ID": oauth_github_client_id,
         "OAUTH_GITHUB_CLIENT_SECRET": oauth_github_client_secret,
+        "TOTP_ENCRYPTION_KEY": totp_encryption_key,
+        "TOTP_ISSUER_NAME": totp_issuer_name,
     }
 }).encode("utf-8")
 
