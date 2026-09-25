@@ -1,23 +1,66 @@
-@if (qrcodeurl()) {
-  <p>{{ 'AUTH.TWOFA.SETUP.INSTRUCTION' | translate }}</p>
-  <img [src]="qrcodeurl()" [alt]="'AUTH.TWOFA.SETUP.QR_ALT' | translate" />
+<section aria-labelledby="two-factor-setup-title">
+  <h2 id="two-factor-setup-title">
+    {{ 'AUTH.TWOFA.SETUP.TITLE' | translate }}
+  </h2>
 
-  <form (submit)="onSubmit(); $event.preventDefault()">
-    <input
-      type="text"
-      [formField]="twoFactorForm.code"
-      [placeholder]="'AUTH.TWOFA.SETUP.CODE_PLACEHOLDER' | translate"
+  @if (qrcodeurl()) {
+    <p id="two-factor-setup-instruction">
+      {{ 'AUTH.TWOFA.SETUP.INSTRUCTION' | translate }}
+    </p>
+
+    <img
+      [src]="qrcodeurl()!"
+      [alt]="'AUTH.TWOFA.SETUP.QR_ALT' | translate"
     />
-    <button type="submit">{{ 'AUTH.TWOFA.SETUP.CONFIRM' | translate }}</button>
-  </form>
 
-  @if (confirmed()) {
-    <p>{{ 'AUTH.TWOFA.SETUP.SUCCESS' | translate }}</p>
-  } @else if (confirmError()) {
-    <p class="error">{{ confirmError()! | translate }}</p>
+    @if (!confirmed()) {
+      <form (submit)="onSubmit(); $event.preventDefault()" novalidate>
+        <label for="two-factor-setup-code">
+          {{ 'AUTH.TWOFA.SETUP.CODE_LABEL' | translate }}
+        </label>
+
+        <input
+          id="two-factor-setup-code"
+          type="text"
+          inputmode="numeric"
+          autocomplete="one-time-code"
+          [formField]="twoFactorForm.code"
+          [placeholder]="'AUTH.TWOFA.SETUP.CODE_PLACEHOLDER' | translate"
+          aria-describedby="two-factor-setup-instruction two-factor-setup-errors"
+        />
+
+        @if (twoFactorForm.code().touched() && twoFactorForm.code().invalid()) {
+          <div id="two-factor-setup-errors" role="alert" aria-live="polite">
+            @for (error of twoFactorForm.code().errors(); track error) {
+              <p class="error">
+                {{ error.message || error.kind }}
+              </p>
+            }
+          </div>
+        }
+
+        @if (confirmError()) {
+          <p class="error" role="alert" aria-live="assertive">
+            {{ confirmError()! | translate }}
+          </p>
+        }
+
+        <button type="submit" [disabled]="twoFactorForm().invalid()">
+          {{ 'AUTH.TWOFA.SETUP.CONFIRM' | translate }}
+        </button>
+      </form>
+    } @else {
+      <p role="status" aria-live="polite">
+        {{ 'AUTH.TWOFA.SETUP.SUCCESS' | translate }}
+      </p>
+    }
+  } @else if (httpError()) {
+    <p class="error" role="alert" aria-live="assertive">
+      {{ httpError()! | translate }}
+    </p>
+  } @else {
+    <p role="status" aria-live="polite">
+      {{ 'AUTH.TWOFA.SETUP.GENERATING' | translate }}
+    </p>
   }
-} @else if (httpError()) {
-  <p class="error">{{ httpError()! | translate }}</p>
-} @else {
-  <p>{{ 'AUTH.TWOFA.SETUP.GENERATING' | translate }}</p>
-}
+</section>

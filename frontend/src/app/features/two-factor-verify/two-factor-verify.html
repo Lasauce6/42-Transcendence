@@ -1,15 +1,43 @@
-<h2>{{ 'AUTH.TWOFA.VERIFY.TITLE' | translate }}</h2>
-<p>{{ 'AUTH.TWOFA.VERIFY.INSTRUCTION' | translate }}</p>
+<section aria-labelledby="two-factor-title">
+  <h2 id="two-factor-title">
+    {{ 'AUTH.TWOFA.VERIFY.TITLE' | translate }}
+  </h2>
 
-<form (submit)="onSubmit(); $event.preventDefault()">
-  <input
-    type="text"
-    [formField]="verifyForm.code"
-    [placeholder]="'AUTH.TWOFA.VERIFY.CODE_PLACEHOLDER' | translate"
-  />
-  <button type="submit">{{ 'AUTH.TWOFA.VERIFY.SUBMIT' | translate }}</button>
-</form>
+  <p id="two-factor-instruction">
+    {{ 'AUTH.TWOFA.VERIFY.INSTRUCTION' | translate }}
+  </p>
 
-@if (verifyError()) {
-  <p class="error">{{ verifyError()! | translate }}</p>
-}
+  <form (submit)="onSubmit(); $event.preventDefault()" novalidate>
+    <label for="two-factor-code">
+      {{ 'AUTH.TWOFA.VERIFY.CODE_LABEL' | translate }}
+    </label>
+
+    <input
+      id="two-factor-code"
+      type="text"
+      inputmode="numeric"
+      autocomplete="one-time-code"
+      [formField]="verifyForm.code"
+      [placeholder]="'AUTH.TWOFA.VERIFY.CODE_PLACEHOLDER' | translate"
+      aria-describedby="two-factor-instruction two-factor-errors"
+    />
+
+    @if (verifyForm.code().touched() && verifyForm.code().invalid()) {
+      <div id="two-factor-errors" role="alert" aria-live="polite">
+        @for (error of verifyForm.code().errors(); track error.kind) {
+          <p class="error">{{ error.message }}</p>
+        }
+      </div>
+    }
+
+    @if (verifyError()) {
+      <p class="error" role="alert" aria-live="assertive">
+        {{ verifyError()! | translate }}
+      </p>
+    }
+
+    <button type="submit" [disabled]="verifyForm().invalid()">
+      {{ 'AUTH.TWOFA.VERIFY.SUBMIT' | translate }}
+    </button>
+  </form>
+</section>

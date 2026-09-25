@@ -17,8 +17,7 @@ export class TwoFactorVerify {
   readonly verifyError = signal<string | null>(null);
   readonly codeData = signal({ code: '' });
   private readonly router = inject(Router);
-  private readonly tempToken: string | null =
-    this.router.currentNavigation()?.extras.state?.['tempToken'] ?? null;
+  readonly tempToken = this.authService.tempToken;
   readonly verifyForm = form(this.codeData, (path) => {
     required(path.code, {
       message: 'Le code est requis',
@@ -34,18 +33,22 @@ export class TwoFactorVerify {
     });
   });
   constructor() {
-    if (!this.tempToken) {
+    if (!this.tempToken()) {
       this.router.navigate(['/login']);
     }
   }
+
   onSubmit() {
-    if (!this.tempToken) {
+    const tempToken = this.tempToken();
+
+    if (!tempToken) {
       this.router.navigate(['/login']);
       return;
     }
-    this.twofactor.verifyLogin(this.tempToken, this.codeData().code).subscribe({
+
+    this.twofactor.verifyLogin(tempToken, this.codeData().code).subscribe({
       next: (response) => {
-        this.authService.completeTwoFactorLogin(response.token);
+        this.authService.completeTwoFactorLogin(response.access, response.refresh);
         this.router.navigate(['/']);
       },
       error: () => {

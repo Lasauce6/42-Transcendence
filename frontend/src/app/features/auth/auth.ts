@@ -15,17 +15,25 @@ export class AuthService {
   private readonly _refreshToken = signal<string | null>(null);
   readonly token = this._token.asReadonly();
   private readonly currentUser = inject(CurrentUser); // déjà présent
+  private readonly _tempToken = signal<string | null>(null);
+  readonly tempToken = this._tempToken.asReadonly();
 
   login(credentials: LoginModel) {
-    return this.http.post<LoginResponse>(`${environment.apiUrl}/token/`, credentials).pipe(
-      tap((response) => {
-        if ('requires2FA' in response) return;
-        this._token.set(response.access);
-        this._refreshToken.set(response.refresh);
-        this._isLoggedIn.set(true);
-        this.currentUser.load().subscribe(); // <-- ajout
-      }),
-    );
+    return this.http
+      .post<LoginResponse>(`${environment.apiUrl}/users/auth/login/`, credentials)
+      .pipe(
+        tap((response) => {
+          this._tempToken.set(null);
+          if (response.two_fa_pending) {
+            this._tempToken.set(response.access);
+            return;
+          }
+          this._token.set(response.access);
+          this._refreshToken.set(response.refresh);
+          this._isLoggedIn.set(true);
+          this.currentUser.load().subscribe(); // <-- ajout
+        }),
+      );
   }
 
   loginWithOAuth(provider: string, code: string) {
@@ -58,13 +66,17 @@ export class AuthService {
         }),
       );
   }
-  completeTwoFactorLogin(token: string) {
-    this._token.set(token);
+  completeTwoFactorLogin(access: string, refresh: string) {
+    this._token.set(access);
+    this._refreshToken.set(refresh);
+    this._tempToken.set(null);
     this._isLoggedIn.set(true);
+    this.currentUser.load().subscribe();
   }
   logout() {
     this._token.set(null);
     this._refreshToken.set(null);
+    this._tempToken.set(null);
     this._isLoggedIn.set(false);
     this.currentUser.clear();
   }
@@ -88,6 +100,8 @@ export interface RegisterPayload {
   password: string;
 }
 
-export type LoginResponse =
-  | { access: string; refresh: string }
-  | { requires2FA: true; tempToken: string };
+export interface LoginResponse {
+  access: string;
+  refresh: string;
+  two_fa_pending: boolean;
+}

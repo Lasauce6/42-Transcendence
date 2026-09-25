@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, Signal, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { TwoFactor } from '../two-factor';
 import {
   form,
@@ -6,7 +6,6 @@ import {
   minLength,
   pattern,
   required,
-  validate,
   FormField,
 } from '@angular/forms/signals';
 import { TranslatePipe } from '@ngx-translate/core';
