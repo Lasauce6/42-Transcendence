@@ -75,10 +75,13 @@ export const routes: Routes = [
   //   canActivate: [authGuard, roleGuard],
   //   data: { roles: ['ADMIN'] },
   // },
-  // {
-  //   path: 'chat',
-  //   loadComponent: () => import('@features/chat/chat').then(m => m.Chat),
-  // },
+  {
+    path: 'chat',
+    loadComponent: () =>
+      import('@features/chat/chat-list/chat-list').then((m) => m.ChatList),
+    title: 'TITLES.CHAT',
+    canActivate: [authGuard],
+  },
   // {
   //   path: 'admin',
   //   loadChildren: () => import('@features/admin/admin.routes').then(m => m.ADMIN_ROUTES),

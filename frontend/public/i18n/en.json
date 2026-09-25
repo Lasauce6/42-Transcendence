@@ -89,7 +89,8 @@
     "TWOFA_VERIFY": "2FA verification",
     "PROFILE": "Profile",
     "FORBIDDEN": "Access denied",
-    "NOTIFICATIONS": "Notifications"
+    "NOTIFICATIONS": "Notifications",
+    "CHAT": "Messages"
   },
   "TOAST": {
     "REGION_LABEL": "Notifications",
@@ -116,5 +117,16 @@
         "DEFAULT": "New message from {{username}}."
       }
     }
+  }, 
+  "CHAT": {
+    "TITLE": "Messages",
+    "SEARCH": "Search conversations",
+    "LOADING": "Loading…",
+    "ERROR": "Could not load conversations.",
+    "RETRY": "Retry",
+    "EMPTY": "No conversations yet.",
+    "NO_RESULT": "No matching conversation.",
+    "UNNAMED": "Unnamed conversation",
+    "NO_MESSAGE": "No messages"
   }
 }
