@@ -33,7 +33,7 @@ export class AuthService {
       .post<{
         access: string;
         refresh: string;
-      }>(`${environment.apiUrl}/auth/oauth/${provider}/callback/`, { code })
+      }>(`${environment.apiUrl}auth/oauth/${provider}/callback/`, { code })
       .pipe(
         tap((response) => {
           this._token.set(response.access);
