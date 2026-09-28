@@ -104,6 +104,13 @@ SOCIALACCOUNT_PROVIDERS = {
     },
 }
 
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "mailpit"
+EMAIL_PORT = 1025
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = False
+DEFAULT_FROM_EMAIL = "noreply@transcendence.local"
+
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
