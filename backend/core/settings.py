@@ -34,9 +34,9 @@ ALLOWED_HOSTS = ["localhost", "backend"]
 # Application definition
 
 INSTALLED_APPS = [
-	"drf_spectacular", # Doc API
-    "channels",
     "daphne",
+    "channels",
+	"drf_spectacular", # Doc API
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

@@ -16,7 +16,7 @@ Including another URLconf
 """
 
 from api.views import NotificationViewSet
-from chat.views import ChannelViewSet, MessageViewSet
+from chat.views import ChannelViewSet
 from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import (
@@ -39,8 +39,7 @@ from users.views import (
 )
 
 router = routers.DefaultRouter()
-router.register(r"channels", ChannelViewSet)
-router.register(r"messages", MessageViewSet)
+router.register(r"channels", ChannelViewSet, basename="channel")
 router.register(r"users", UserViewSet, basename="user")
 router.register(r"friendships", FriendshipViewSet, basename="friendship")
 router.register(r"notifications", NotificationViewSet, basename="notification")

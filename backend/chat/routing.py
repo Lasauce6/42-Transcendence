@@ -4,7 +4,7 @@ from . import consumers
 
 websocket_urlpatterns = [
     # Global socket for notifications
-    path("ws/notifications/", consumers.UserConsumer.as_asgi()),
+    path("ws/notifications/", consumers.ChatConsumer.as_asgi()),
     # Socket for channel
     path("ws/chat/<uuid:channel_id>/", consumers.ChatConsumer.as_asgi()),
 ]
