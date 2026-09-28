@@ -6,7 +6,8 @@
     "HOME": "Accueil",
     "PROFILE": "Profil",
     "LOGIN": "Connexion",
-    "LOGOUT": "Déconnexion"
+    "LOGOUT": "Déconnexion",
+    "CHAT": "Messages"
   },
   "COMMON": {
     "LOADING": "Chargement...",
@@ -127,6 +128,10 @@
     "EMPTY": "Aucune conversation pour l'instant.",
     "NO_RESULT": "Aucune conversation ne correspond.",
     "UNNAMED": "Conversation sans nom",
-    "NO_MESSAGE": "Aucun message"
+    "NO_MESSAGE": "Aucun message",
+    "CHAT": "Messages",
+    "NEW_PLACEHOLDER": "Nom d'utilisateur",
+    "NEW_BUTTON": "Démarrer",
+    "NEW_ERROR": "Impossible de créer la conversation."
   }
 }

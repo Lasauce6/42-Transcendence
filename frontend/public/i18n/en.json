@@ -6,7 +6,8 @@
     "HOME": "Home",
     "PROFILE": "Profile",
     "LOGIN": "Sign in",
-    "LOGOUT": "Sign out"
+    "LOGOUT": "Sign out",
+    "CHAT": "Messages"
   },
   "COMMON": {
     "LOADING": "Loading...",
@@ -127,6 +128,10 @@
     "EMPTY": "No conversations yet.",
     "NO_RESULT": "No matching conversation.",
     "UNNAMED": "Unnamed conversation",
-    "NO_MESSAGE": "No messages"
+    "NO_MESSAGE": "No messages",
+    "CHAT": "Messages",
+    "NEW_PLACEHOLDER": "Username",
+    "NEW_BUTTON": "Start",
+    "NEW_ERROR": "Could not create the conversation."
   }
 }

@@ -10,6 +10,21 @@
     (input)="onSearch($event)"
   />
 
+  <form class="new-conversation" (submit)="$event.preventDefault(); startConversation()">
+    <input
+      type="text"
+      [placeholder]="'CHAT.NEW_PLACEHOLDER' | translate"
+      [value]="newUsername()"
+      (input)="onNewUsernameInput($event)"
+    />
+    <button type="submit" [disabled]="creating() || !newUsername().trim()">
+      {{ 'CHAT.NEW_BUTTON' | translate }}
+    </button>
+    @if (createError()) {
+      <span class="error">{{ 'CHAT.NEW_ERROR' | translate }}</span>
+    }
+  </form>
+
   @if (loading()) {
     <p class="state">{{ 'CHAT.LOADING' | translate }}</p>
   } @else if (error()) {
