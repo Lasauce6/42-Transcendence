@@ -34,6 +34,7 @@ ALLOWED_HOSTS = ["localhost", "backend"]
 # Application definition
 
 INSTALLED_APPS = [
+	"drf_spectacular", # Doc API
     "channels",
     "daphne",
     "django.contrib.admin",
@@ -55,8 +56,15 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
     "allauth.socialaccount.providers.github",
-    "authentication.apps.AuthenticationConfig",  # <-- après allauth
+    "authentication.apps.AuthenticationConfig",
 ]
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'ft_transcendence API',
+    'DESCRIPTION': 'API REST + WebSocket pour le projet ft_transcendence',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
 
 SITE_ID = 1
 
@@ -74,6 +82,7 @@ SOCIALACCOUNT_PROVIDERS = {
             "secret": OAUTH_42_CLIENT_SECRET,
         },
         "SCOPE": ["public"],
+        "CALLBACK_URL": "/api/auth/oauth/42/callback",
     },
     "google": {
         "APP": {
@@ -82,7 +91,8 @@ SOCIALACCOUNT_PROVIDERS = {
         },
         "SCOPE": ["openid", "profile", "email"],
         "CALLBACK_URL": "/api/auth/oauth/google/callback",
-        "AUTH_PARAMS": {"access_type": "online"},
+        "AUTH_PARAMS": {"access_type": "offline"},
+        "FETCH_USERINFO": True,
     },
     "github": {
         "APP": {
@@ -106,7 +116,8 @@ MEDIA_ROOT = BASE_DIR / "media"
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
-    )
+    ),
+	'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 MIDDLEWARE = [

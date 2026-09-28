@@ -1,0 +1,26 @@
+<section class="notifications">
+  <header>
+    <h1>{{ 'NOTIFICATIONS.TITLE' | translate }}</h1>
+    @if (unreadCount() > 0) {
+      <button type="button" (click)="markAll()">
+        {{ 'NOTIFICATIONS.MARK_ALL' | translate }}
+      </button>
+    }
+  </header>
+
+  @if (notifications().length === 0) {
+    <p class="empty">{{ 'NOTIFICATIONS.EMPTY' | translate }}</p>
+  } @else {
+    <ul>
+      @for (n of notifications(); track n.id) {
+        <li [class.unread]="!n.is_read">
+          <button type="button" (click)="open(n)">
+            <span>{{ labelKey(n) | translate: labelParams(n) }}</span>
+            <time [attr.datetime]="n.created_at">{{ n.created_at | date: 'short' }}</time>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</section>
+

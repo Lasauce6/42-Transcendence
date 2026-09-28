@@ -88,7 +88,8 @@
     "TWOFA_SETUP": "2FA setup",
     "TWOFA_VERIFY": "2FA verification",
     "PROFILE": "Profile",
-    "FORBIDDEN": "Access denied"
+    "FORBIDDEN": "Access denied",
+    "NOTIFICATIONS": "Notifications"
   },
   "TOAST": {
     "REGION_LABEL": "Notifications",
@@ -99,6 +100,21 @@
       "NOT_FOUND": "Resource not found.",
       "SERVER": "The server ran into a problem. Please try again later.",
       "GENERIC": "Something went wrong, please try again."
+    }
+  },
+  "NOTIFICATIONS": {
+    "TITLE": "Notifications",
+    "MARK_ALL": "Mark all as read",
+    "EMPTY": "No notifications yet.",
+    "ITEM": {
+      "FRIEND": {
+        "REQUEST": "{{username}} sent you a friend request.",
+        "ACCEPTED": "{{username}} accepted your friend request.",
+        "DEFAULT": "New notification from {{username}}."
+      },
+      "MESSAGE": {
+        "DEFAULT": "New message from {{username}}."
+      }
     }
   }
 }
