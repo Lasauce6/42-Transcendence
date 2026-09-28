@@ -47,6 +47,6 @@ export class Login {
   onOAuthLogin(provider: 'google' | 'github' | 'fortytwo') {
     const backendProvider = provider === 'fortytwo' ? '42' : provider;
 
-    window.location.href = `${window.location.origin}${environment.apiUrl}/auth/oauth/${backendProvider}/login/`;
+    window.location.href = `${window.location.origin}/${environment.apiUrl}/auth/oauth/${backendProvider}/login/`;
   }
 }
