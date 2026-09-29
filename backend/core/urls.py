@@ -30,12 +30,13 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
     TokenVerifyView,
 )
-from users.views import (
-    ChangePasswordView,
-    FriendshipViewSet,
-    LogoutView,
-    RegisterView,
-    UserViewSet,
+from api.views import NotificationViewSet
+from users.views import FriendshipViewSet, RegisterView, UserViewSet, LogoutView, ChangePasswordView, AvatarUploadView
+
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularSwaggerView,
+    SpectacularRedocView,
 )
 
 router = routers.DefaultRouter()
@@ -46,11 +47,8 @@ router.register(r"notifications", NotificationViewSet, basename="notification")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path(
-        "api/users/change_password/",
-        ChangePasswordView.as_view(),
-        name="change_password",
-    ),
+    path("api/upload/avatar/", AvatarUploadView.as_view(), name='avatar_upload'),
+	path("api/users/change_password/", ChangePasswordView.as_view(), name='change_password'),
     path("api/", include(router.urls)),
     path("accounts/", include("allauth.urls")),
     path("api/logout/", LogoutView.as_view(), name="logout"),
