@@ -46,4 +46,5 @@ db.sqlite3-journal
 *.pid
 
 
-.angular
+.angular__pycache__/
+*.pyc
