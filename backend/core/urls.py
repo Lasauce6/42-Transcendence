@@ -25,7 +25,7 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 from api.views import NotificationViewSet
-from users.views import FriendshipViewSet, RegisterView, UserViewSet, LogoutView, ChangePasswordView
+from users.views import FriendshipViewSet, RegisterView, UserViewSet, LogoutView, ChangePasswordView, AvatarUploadView
 
 from drf_spectacular.views import (
     SpectacularAPIView,
@@ -42,6 +42,7 @@ router.register(r'notifications', NotificationViewSet, basename='notification')
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("api/upload/avatar/", AvatarUploadView.as_view(), name='avatar_upload'),
 	path("api/users/change_password/", ChangePasswordView.as_view(), name='change_password'),
     path("api/", include(router.urls)),
     path("accounts/", include("allauth.urls")),

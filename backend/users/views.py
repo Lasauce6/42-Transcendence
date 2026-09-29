@@ -1,3 +1,5 @@
+import os
+import uuid
 from django.db.models import Q
 from django.utils import timezone
 from rest_framework import mixins
@@ -10,10 +12,38 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from channels.layers import get_channel_layer
 from django.contrib.auth import get_user_model
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import generics, viewsets, permissions, status
-from .serializers import RegisterSerializer, UserSerializer, FriendshipSerializer, ChangePasswordSerializer
+from .serializers import RegisterSerializer, UserSerializer, FriendshipSerializer, ChangePasswordSerializer, AvatarUploadSerializer
 
 User = get_user_model()
+
+class AvatarUploadView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request):
+        serializer = AvatarUploadSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        file = serializer.validated_data['avatar']
+        user = request.user
+
+        ext = os.path.splitext(file.name)[1].lower()
+        filename = f"{uuid.uuid4()}{ext}"
+        relative_path = filename
+
+        if user.avatar and 'default' not in user.avatar.name:
+            try:
+                user.avatar.delete(save=False)
+            except Exception:
+                pass
+
+        user.avatar.save(relative_path, file, save=True)
+
+        return Response({
+            'avatar': user.avatar.url if user.avatar else None,
+        }, status=status.HTTP_200_OK)
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
