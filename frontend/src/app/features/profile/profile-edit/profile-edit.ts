@@ -1,9 +1,10 @@
 import { Component, effect, inject, input, OnDestroy, output, signal } from '@angular/core';
 import { UpdateProfilePayload, UserProfile, UserService } from '../user.service';
 import { form, maxLength, required, FormField, submit, minLength } from '@angular/forms/signals';
-import { firstValueFrom } from 'rxjs';
+import { filter, firstValueFrom, map, tap } from 'rxjs';
 import { AuthService } from '@features/auth/auth';
 import { Router } from '@angular/router';
+import { HttpEventType, HttpResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-profile-edit',
@@ -38,6 +39,7 @@ export class ProfileEdit implements OnDestroy {
     required(path.confirmPassword);
   });
   readonly saving = signal(false);
+  readonly uploadProgress = signal(0);
   readonly error = signal<string | null>(null);
 
   readonly avatarFile = signal<File | null>(null);
@@ -128,12 +130,34 @@ export class ProfileEdit implements OnDestroy {
       this.saving.set(true);
       this.error.set(null);
       try {
-        const updated = await firstValueFrom(this.userService.updateMe(payload, file));
-        this.profileUpdated.emit(updated);
-        this.saving.set(false);
+        if (file === null) {
+          const updated = await firstValueFrom(this.userService.updateMe(payload, file));
+          this.profileUpdated.emit(updated);
+        } else {
+          const updated = await firstValueFrom(
+            this.userService.uploadAvatar(payload, file).pipe(
+              tap((event) => {
+                if (event.type === HttpEventType.UploadProgress && event.total) {
+                  this.uploadProgress.set(Math.round((100 * event.loaded) / event.total));
+                }
+              }),
+              filter(
+                (event): event is HttpResponse<UserProfile> =>
+                  event.type === HttpEventType.Response,
+              ),
+              map((event) => {
+                if (!event.body) throw new Error('Réponse vide');
+                return event.body;
+              }),
+            ),
+          );
+          this.profileUpdated.emit(updated);
+        }
       } catch {
         this.error.set('La mise à jour a échoué. Réessaie.');
+      } finally {
         this.saving.set(false);
+        this.uploadProgress.set(0);
       }
     });
   }
