@@ -1,9 +1,9 @@
 from django.db import transaction
-from rest_framework import permissions, viewsets
+from rest_framework import permissions, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .models import Channel, Message
+from .models import Channel, Message, ChannelMember
 from .serializers import ChannelSerializer, MessageSerializer
 
 

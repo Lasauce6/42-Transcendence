@@ -15,7 +15,7 @@ from rest_framework.views import APIView
 
 from users.models import Friendship
 
-from .permissions import IsSelfOrAdmin
+from .permissions import IsSelfOrAdmin, IsAdmin
 from .serializers import (
     AvatarUploadSerializer,
     ChangePasswordSerializer,
@@ -56,10 +56,6 @@ class AvatarUploadView(APIView):
             },
             status=status.HTTP_200_OK,
         )
-
-
-User = get_user_model()
-
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
@@ -115,6 +111,45 @@ class UserViewSet(
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAdmin])
+    def promote(self, request, pk=None):
+        user = self.get_object()
+        new_role = request.data.get('role')
+
+        if new_role not in ('MODERATOR', 'ADMIN'):
+            return Response(
+                {"detail": "Le rôle doit être 'MODERATOR' ou 'ADMIN'."},
+                status=400
+            )
+
+        if user.role == new_role:
+            return Response(
+                {"detail": f"L'utilisateur a déjà le rôle {new_role}."},
+                status=400
+            )
+
+        user.role = new_role
+        user.save(update_fields=['role', 'is_staff'])
+
+        return Response(UserSerializer(user).data)
+
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAdmin])
+    def demote(self, request, pk=None):
+        user = self.get_object()
+
+        if user == request.user:
+            return Response(
+                {"detail": "Vous ne pouvez pas vous rétrograder vous-même."},
+                status=400
+            )
+
+        user.role = 'USER'
+        user.is_staff = False
+        user.save(update_fields=['role', 'is_staff'])
+
+        return Response(UserSerializer(user).data)
 
 
 class FriendshipViewSet(viewsets.ModelViewSet):
