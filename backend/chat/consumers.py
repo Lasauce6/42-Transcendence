@@ -5,22 +5,23 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
+    
     async def connect(self):
-        self.user = self.scope["user"]
+        self.user = self.scope['user']
         if not self.user.is_authenticated:
             await self.close()
             return
 
-        self.channel_id = self.scope["url_route"]["kwargs"].get("channel_id") or self.scope["url_route"]["kwargs"].get("room_name")
+        self.room_name = self.scope['url_route']['kwargs']['room_name']
+        self.room_group_name = f'chat_{self.room_name}'
+        self.user_group_name = f'user_{self.user.username}'
 
-        self.channel_obj = await self._get_channel_and_verify_member()
-        if not self.channel_obj:
+        if await self._is_banned():
             await self.close()
             return
 
-        self.room_group_name = f"chat_{self.channel_id}"
-
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+        await self.channel_layer.group_add(self.user_group_name, self.channel_name)
         await self.accept()
 
     async def disconnect(self, close_code):
@@ -137,6 +138,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 },
             },
         )
+
+    @database_sync_to_async
+    def _is_banned(self):
+        from chat.models import Channel, ChannelBan
+        try:
+            channel = Channel.objects.get(name=self.room_name)
+        except Channel.DoesNotExist:
+            return False
+        return ChannelBan.objects.filter(channel=channel, user=self.user).exists()
 
 
 class NotificationConsumer(AsyncWebsocketConsumer):
