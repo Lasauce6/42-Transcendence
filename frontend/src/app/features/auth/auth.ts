@@ -28,19 +28,11 @@ export class AuthService {
     );
   }
 
-  loginWithOAuth(provider: string, code: string) {
-    return this.http
-      .post<{
-        access: string;
-        refresh: string;
-      }>(`${environment.apiUrl}auth/oauth/${provider}/callback/`, { code })
-      .pipe(
-        tap((response) => {
-          this._token.set(response.access);
-          this._refreshToken.set(response.refresh);
-          this._isLoggedIn.set(true);
-        }),
-      );
+  setTokens(access: string, refresh: string) {
+    this._token.set(access);
+    this._refreshToken.set(refresh);
+    this._isLoggedIn.set(true);
+    this.currentUser.load().subscribe();
   }
 
   register(payload: RegisterPayload) {

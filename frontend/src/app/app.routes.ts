@@ -20,7 +20,7 @@ export const routes: Routes = [
   },
 
   {
-    path: 'auth/callback/:provider',
+    path: 'auth/callback',
     component: OauthCallback,
     title: 'TITLES.OAUTH_CALLBACK',
   },
