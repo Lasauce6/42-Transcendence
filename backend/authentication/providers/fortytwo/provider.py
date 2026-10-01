@@ -10,7 +10,6 @@ class FortyTwoProvider(OAuth2Provider):
     id = "fortytwo"
     name = "42"
     account_class = FortyTwoAccount
-    callback_url = "/api/auth/oauth/42/callback/"
 
     def extract_uid(self, data):
         return str(data.get("id"))

@@ -64,7 +64,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
     "allauth.socialaccount.providers.github",
-    "authentication.apps.AuthenticationConfig",  # <-- après allauth
+    "authentication.apps.AuthenticationConfig",
 ]
 
 SPECTACULAR_SETTINGS = {
@@ -93,6 +93,7 @@ SOCIALACCOUNT_PROVIDERS = {
             "secret": OAUTH_42_CLIENT_SECRET,
         },
         "SCOPE": ["public"],
+        "CALLBACK_URL": "/api/auth/oauth/42/callback",
     },
     "google": {
         "APP": {
@@ -101,7 +102,8 @@ SOCIALACCOUNT_PROVIDERS = {
         },
         "SCOPE": ["openid", "profile", "email"],
         "CALLBACK_URL": "/api/auth/oauth/google/callback",
-        "AUTH_PARAMS": {"access_type": "online"},
+        "AUTH_PARAMS": {"access_type": "offline"},
+        "FETCH_USERINFO": True,
     },
     "github": {
         "APP": {
@@ -113,8 +115,16 @@ SOCIALACCOUNT_PROVIDERS = {
     },
 }
 
-LOGIN_REDIRECT_URL = "/"
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "mailpit"
+EMAIL_PORT = 1025
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = False
+DEFAULT_FROM_EMAIL = "noreply@transcendence.local"
+
+LOGIN_REDIRECT_URL = "/api/auth/oauth/jwt/"
 LOGOUT_REDIRECT_URL = "/"
+FRONTEND_URL = "http://localhost"
 
 AUTH_USER_MODEL = "users.User"
 
