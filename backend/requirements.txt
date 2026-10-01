@@ -17,3 +17,5 @@ pyotp
 qrcode
 cryptography
 drf-spectacular
+pytest-django
+pytest-asyncio

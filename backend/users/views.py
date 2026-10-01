@@ -1,3 +1,6 @@
+import os
+import uuid
+
 from api.models import Notification
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -6,13 +9,16 @@ from django.db.models import Q
 from django.utils import timezone
 from rest_framework import generics, mixins, permissions, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from users.models import Friendship
 
 from .permissions import Is2FADone, IsSelfOrAdmin
+from .permissions import IsSelfOrAdmin, IsAdmin
 from .serializers import (
+    AvatarUploadSerializer,
     ChangePasswordSerializer,
     FriendshipSerializer,
     RegisterSerializer,
@@ -22,9 +28,40 @@ from .serializers import (
 User = get_user_model()
 
 
+class AvatarUploadView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request):
+        serializer = AvatarUploadSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        file = serializer.validated_data["avatar"]
+        user = request.user
+
+        ext = os.path.splitext(file.name)[1].lower()
+        filename = f"{uuid.uuid4()}{ext}"
+        relative_path = filename
+
+        if user.avatar and "default" not in user.avatar.name:
+            try:
+                user.avatar.delete(save=False)
+            except Exception:
+                pass
+
+        user.avatar.save(relative_path, file, save=True)
+
+        return Response(
+            {
+                "avatar": user.avatar.url if user.avatar else None,
+            },
+            status=status.HTTP_200_OK,
+        )
+
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes= [permissions.AllowAny]
+
 
 
 class ChangePasswordView(APIView):
@@ -77,6 +114,45 @@ class UserViewSet(
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAdmin])
+    def promote(self, request, pk=None):
+        user = self.get_object()
+        new_role = request.data.get('role')
+
+        if new_role not in ('MODERATOR', 'ADMIN'):
+            return Response(
+                {"detail": "Le rôle doit être 'MODERATOR' ou 'ADMIN'."},
+                status=400
+            )
+
+        if user.role == new_role:
+            return Response(
+                {"detail": f"L'utilisateur a déjà le rôle {new_role}."},
+                status=400
+            )
+
+        user.role = new_role
+        user.save(update_fields=['role', 'is_staff'])
+
+        return Response(UserSerializer(user).data)
+
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAdmin])
+    def demote(self, request, pk=None):
+        user = self.get_object()
+
+        if user == request.user:
+            return Response(
+                {"detail": "Vous ne pouvez pas vous rétrograder vous-même."},
+                status=400
+            )
+
+        user.role = 'USER'
+        user.is_staff = False
+        user.save(update_fields=['role', 'is_staff'])
+
+        return Response(UserSerializer(user).data)
 
 
 class FriendshipViewSet(viewsets.ModelViewSet):

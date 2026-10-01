@@ -1,3 +1,4 @@
+import os
 from django.db.models import Q
 from users.models import Friendship
 from rest_framework import serializers
@@ -6,6 +7,33 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 
 User = get_user_model()
+
+ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
+MAX_AVATAR_SIZE = 5 * 1024 * 1024
+
+class AvatarUploadSerializer(serializers.Serializer):
+    avatar = serializers.ImageField(required=True)
+
+    def validate_avatar(self, value):
+        if value.size > MAX_AVATAR_SIZE:
+            raise serializers.ValidationError(
+                f"Fichier trop volumineux. Maximum : {MAX_AVATAR_SIZE // (1024 * 1024)} Mo."
+            )
+
+        content_type = getattr(value, 'content_type', None)
+        if content_type not in ALLOWED_MIME_TYPES:
+            raise serializers.ValidationError(
+                f"Type non autorisé. Acceptés : {', '.join(ALLOWED_MIME_TYPES)}."
+            )
+
+        ext = os.path.splitext(value.name)[1].lower()
+        if ext not in ALLOWED_EXTENSIONS:
+            raise serializers.ValidationError(
+                f"Extension non autorisée. Acceptées : {', '.join(ALLOWED_EXTENSIONS)}."
+            )
+
+        return value
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)

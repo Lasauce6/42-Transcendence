@@ -6,7 +6,8 @@
     "HOME": "Inicio",
     "PROFILE": "Perfil",
     "LOGIN": "Iniciar sesión",
-    "LOGOUT": "Cerrar sesión"
+    "LOGOUT": "Cerrar sesión",
+    "CHAT": "Mensajes"
   },
   "COMMON": {
     "LOADING": "Cargando...",
@@ -89,7 +90,8 @@
     "TWOFA_VERIFY": "Verificación 2FA",
     "PROFILE": "Perfil",
     "FORBIDDEN": "Acceso denegado",
-    "NOTIFICATIONS": "Notificaciones"
+    "NOTIFICATIONS": "Notificaciones",
+    "CHAT": "Mensajes"
   },
   "TOAST": {
     "REGION_LABEL": "Notificaciones",
@@ -116,5 +118,20 @@
         "DEFAULT": "Nuevo mensaje de {{username}}."
       }
     }
+  },
+  "CHAT": {
+    "TITLE": "Mensajes",
+    "SEARCH": "Buscar una conversación",
+    "LOADING": "Cargando…",
+    "ERROR": "No se pudieron cargar las conversaciones.",
+    "RETRY": "Reintentar",
+    "EMPTY": "Todavía no hay conversaciones.",
+    "NO_RESULT": "Ninguna conversación coincide.",
+    "UNNAMED": "Conversación sin nombre",
+    "NO_MESSAGE": "Sin mensajes",
+    "CHAT": "Mensajes",
+    "NEW_PLACEHOLDER": "Nombre de usuario",
+    "NEW_BUTTON": "Iniciar",
+    "NEW_ERROR": "No se pudo crear la conversación."
   }
 }
