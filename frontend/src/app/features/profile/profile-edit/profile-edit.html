@@ -19,7 +19,10 @@
   }
 
   <button type="submit" [disabled]="saving()">Enregistrer le profil</button>
-
+  @if (saving() && avatarFile()) {
+    <progress max="100" [value]="uploadProgress()"></progress>
+    <span>{{ uploadProgress() }} %</span>
+  }
   @if (error()) {
     <p role="alert">{{ error() }}</p>
   }
