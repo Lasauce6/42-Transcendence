@@ -111,8 +111,9 @@ EMAIL_USE_TLS = False
 EMAIL_USE_SSL = False
 DEFAULT_FROM_EMAIL = "noreply@transcendence.local"
 
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/api/auth/oauth/jwt/"
 LOGOUT_REDIRECT_URL = "/"
+FRONTEND_URL = "http://localhost"
 
 AUTH_USER_MODEL = "users.User"
 
