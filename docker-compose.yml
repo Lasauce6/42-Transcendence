@@ -41,6 +41,7 @@ services:
     env_file: .env
     volumes:
       - ./backend:/app # Hot-reload : on lie le code local au container
+      - ./backend/media:/app/media
     depends_on:
       - postgres
       - redis
@@ -65,6 +66,7 @@ services:
       - "80:80" # basic http pour le dev
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./backend/media:/app/media:ro
     depends_on:
       - backend
       - frontend

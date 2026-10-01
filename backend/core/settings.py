@@ -31,12 +31,17 @@ DEBUG = True
 ALLOWED_HOSTS = ["localhost", "backend"]
 
 
+#MAX 5Mo storage
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
+
 # Application definition
 
 INSTALLED_APPS = [
-	"drf_spectacular", # Doc API
-    "channels",
     "daphne",
+    "channels",
+	"drf_spectacular", # Doc API
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
