@@ -80,3 +80,34 @@ class Message(models.Model):
 
     def __str__(self):
         return f"Message from {self.sender.username} at {self.created_at}"
+
+class ChannelBan(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    channel = models.ForeignKey(
+        Channel,
+        on_delete=models.CASCADE,
+        related_name='bans',
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='channel_bans',
+    )
+    banned_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='bans_issued',
+    )
+    reason = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('channel', 'user')
+        indexes = [
+            models.Index(fields=['channel', 'user']),
+        ]
+
+    def __str__(self):
+        return f"{self.user.username} banned from {self.channel.id}"
