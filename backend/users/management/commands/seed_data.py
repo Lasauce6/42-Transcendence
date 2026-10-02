@@ -1,43 +1,94 @@
+from datetime import timedelta
+
 from django.core.management.base import BaseCommand
+from django.db import transaction
+from django.utils import timezone
 
 from users.models import User, Friendship
 from chat.models import Channel, ChannelMember, Message
 from api.models import Notification
 
 
+PASSWORD = "Transcendence42!"
+
+USERS_DATA = [
+    ("alice", "Alice", "Martin", "alice@example.test", "USER", "FR"),
+    ("bob", "Bob", "Durand", "bob@example.test", "USER", "EN"),
+    ("charlie", "Charlie", "Bernard", "charlie@example.test", "MODERATOR", "EN"),
+    ("diana", "Diana", "Lopez", "diana@example.test", "USER", "ES"),
+    ("emma", "Emma", "Petit", "emma@example.test", "USER", "FR"),
+    ("admin42", "Admin", "FortyTwo", "admin42@example.test", "ADMIN", "EN"),
+]
+
+SEED_USERNAMES = [data[0] for data in USERS_DATA]
+
+
 class Command(BaseCommand):
+    help = (
+        "Peuple la DB avec des données de test réalistes "
+        "(users, amitiés, channels, messages, notifications). "
+        f"Mot de passe commun : {PASSWORD}"
+    )
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--reset",
+            action="store_true",
+            help="Supprime les données du seed existantes avant de les recréer.",
+        )
 
     def handle(self, *args, **options):
+        existing = User.objects.filter(username__in=SEED_USERNAMES)
 
-        users_data = [
-            ("alice", "Alice", "Martin", "alice@example.test", "USER", "FR"),
-            ("bob", "Bob", "Durand", "bob@example.test", "USER", "EN"),
-            ("charlie", "Charlie", "Bernard", "charlie@example.test", "MODERATOR", "EN"),
-            ("diana", "Diana", "Lopez", "diana@example.test", "USER", "ES"),
-            ("emma", "Emma", "Petit", "emma@example.test", "USER", "FR"),
-            ("admin42", "Admin", "FortyTwo", "admin42@example.test", "ADMIN", "EN"),
-        ]
+        if existing.exists() and not options["reset"]:
+            self.stdout.write(
+                self.style.WARNING(
+                    "Le seed est déjà présent en base. "
+                    "Utilise --reset pour le recréer."
+                )
+            )
+            return
+
+        with transaction.atomic():
+            if options["reset"]:
+                deleted, _ = existing.delete()
+                self.stdout.write(f"Reset : {deleted} objets supprimés.")
+
+            self._seed()
+
+        self.stdout.write(self.style.SUCCESS("Seed terminé."))
+        self.stdout.write(f"Users: {User.objects.count()}")
+        self.stdout.write(f"Friendships: {Friendship.objects.count()}")
+        self.stdout.write(f"Channels: {Channel.objects.count()}")
+        self.stdout.write(f"Channel members: {ChannelMember.objects.count()}")
+        self.stdout.write(f"Messages: {Message.objects.count()}")
+        self.stdout.write(f"Notifications: {Notification.objects.count()}")
+        self.stdout.write(
+            f"Comptes : {', '.join(SEED_USERNAMES)} / mot de passe : {PASSWORD}"
+        )
+
+    def _seed(self):
+        now = timezone.now()
 
         users = {}
 
-        for username, first_name, last_name, email, role, language in users_data:
+        for username, first_name, last_name, email, role, language in USERS_DATA:
 
-            user, created = User.objects.get_or_create(
+            user = User(
                 username=username,
-                defaults={
-                    "first_name": first_name,
-                    "last_name": last_name,
-                    "email": email,
-                    "role": role,
-                    "language": language,
-                    "is_active": True,
-                    "is_online": False,
-                },
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                role=role,
+                language=language,
+                is_active=True,
+                is_online=False,
+                last_seen=now - timedelta(hours=len(users) + 1),
+                is_staff=(role == "ADMIN"),
+                is_superuser=(role == "ADMIN"),
             )
-
-            if created:
-                user.set_password("Transcendence42!")
-                user.save()
+            user.set_password(PASSWORD)
+            user.save()
 
             users[username] = user
 
@@ -49,19 +100,15 @@ class Command(BaseCommand):
             ("admin42", "charlie", "ACCEPTED"),
         ]
 
-        friendships = []
+        friendships = {}
 
         for requester, addressee, status in friendships_data:
 
-            friendship, _ = Friendship.objects.get_or_create(
+            friendships[(requester, addressee)] = Friendship.objects.create(
                 requester=users[requester],
                 addressee=users[addressee],
-                defaults={
-                    "status": status
-                },
+                status=status,
             )
-
-            friendships.append(friendship)
 
         channels_data = [
             ("general", "PUBLIC", "alice"),
@@ -104,12 +151,10 @@ class Command(BaseCommand):
 
         for channel, username, role in members_data:
 
-            ChannelMember.objects.get_or_create(
+            ChannelMember.objects.create(
                 channel=channels[channel],
                 user=users[username],
-                defaults={
-                    "role": role
-                },
+                role=role,
             )
 
         messages_data = [
@@ -135,9 +180,9 @@ class Command(BaseCommand):
             ("espanol", "admin42", "Bienvenidos al canal."),
         ]
 
-        messages = []
+        start = now - timedelta(minutes=3 * len(messages_data))
 
-        for channel, sender, content in messages_data:
+        for i, (channel, sender, content) in enumerate(messages_data):
 
             message = Message.objects.create(
                 channel=channels[channel],
@@ -145,87 +190,62 @@ class Command(BaseCommand):
                 content=content,
                 is_deleted=False,
             )
+            Message.objects.filter(pk=message.pk).update(
+                created_at=start + timedelta(minutes=3 * i),
+                updated_at=start + timedelta(minutes=3 * i),
+            )
 
-            messages.append(message)
+        def friend_notification(recipient, friendship, from_username, action, is_read):
+            Notification.objects.create(
+                recipient=users[recipient],
+                type="FRIEND",
+                entity_type="Friendship",
+                entity_id=friendship.id,
+                payload={
+                    "from_username": from_username,
+                    "action": action,
+                },
+                is_read=is_read,
+            )
 
-        Notification.objects.create(
-            recipient=users["alice"],
-            type="FRIEND",
-            entity_type="Friendship",
-            entity_id=friendships[1].id,
-            payload={
-                "from_username": "charlie",
-                "action": "request",
-            },
-            is_read=False,
+        def message_notification(recipient, channel_key, from_username, preview, is_read):
+            channel = channels[channel_key]
+            sender = users[from_username]
+            Notification.objects.create(
+                recipient=users[recipient],
+                type="MESSAGE",
+                entity_type="Channel",
+                entity_id=channel.id,
+                payload={
+                    "from_id": str(sender.id),
+                    "from_username": sender.username,
+                    "channel_id": str(channel.id),
+                    "channel_name": channel.name or str(channel.id),
+                    "preview": preview[:80],
+                },
+                is_read=is_read,
+            )
+
+        friend_notification(
+            "alice", friendships[("charlie", "alice")], "charlie", "request", False
+        )
+        friend_notification(
+            "emma", friendships[("emma", "alice")], "alice", "accepted", True
         )
 
-        Notification.objects.create(
-            recipient=users["emma"],
-            type="FRIEND",
-            entity_type="Friendship",
-            entity_id=friendships[3].id,
-            payload={
-                "from_username": "alice",
-                "action": "accepted",
-            },
-            is_read=True,
+        message_notification(
+            "bob", "general", "alice",
+            "Je vais tester le chat et les notifications aujourd’hui.", False,
         )
-
-        Notification.objects.create(
-            recipient=users["bob"],
-            type="MESSAGE",
-            entity_type="Channel",
-            entity_id=channels["general"].id,
-            payload={
-                "from_username": "alice",
-                "channel_name": "general",
-                "preview": "Je vais tester le chat et les notifications aujourd’hui.",
-            },
-            is_read=False,
+        message_notification(
+            "alice", "private", "bob",
+            "Pour le moment tout fonctionne 👍", False,
         )
-
-        Notification.objects.create(
-            recipient=users["alice"],
-            type="MESSAGE",
-            entity_type="Channel",
-            entity_id=channels["private"].id,
-            payload={
-                "from_username": "bob",
-                "preview": "Pour le moment tout fonctionne 👍",
-            },
-            is_read=False,
+        message_notification(
+            "alice", "tournament-prep", "charlie",
+            "Parfait. On fait un point demain matin.", True,
         )
-
-        Notification.objects.create(
-            recipient=users["alice"],
-            type="MESSAGE",
-            entity_type="Channel",
-            entity_id=channels["tournament-prep"].id,
-            payload={
-                "from_username": "charlie",
-                "channel_name": "tournament-prep",
-                "preview": "Parfait. On fait un point demain matin.",
-            },
-            is_read=True,
+        message_notification(
+            "emma", "espanol", "diana",
+            "¡Hola! Este canal es para hablar en español.", False,
         )
-
-        Notification.objects.create(
-            recipient=users["emma"],
-            type="MESSAGE",
-            entity_type="Channel",
-            entity_id=channels["espanol"].id,
-            payload={
-                "from_username": "diana",
-                "channel_name": "espanol",
-                "preview": "¡Hola! Este canal es para hablar en español.",
-            },
-            is_read=False,
-        )
-
-        print("Users:", User.objects.count())
-        print("Friendships:", Friendship.objects.count())
-        print("Channels:", Channel.objects.count())
-        print("Channel members:", ChannelMember.objects.count())
-        print("Messages:", Message.objects.count())
-        print("Notifications:", Notification.objects.count())
