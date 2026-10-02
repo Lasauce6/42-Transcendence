@@ -31,6 +31,8 @@ export class ProfileEdit implements OnDestroy {
     confirmPassword: '',
   });
 
+  readonly deleting = signal(false);
+
   readonly passwordForm = form(this.passwordData, (path) => {
     required(path.currentPassword);
     required(path.newPassword);
@@ -160,6 +162,23 @@ export class ProfileEdit implements OnDestroy {
         this.uploadProgress.set(0);
       }
     });
+  }
+
+  async onDeleteAvatar(): Promise<void> {
+    if (!confirm('Supprimer ton avatar ?')) {
+      return;
+    }
+    this.error.set(null);
+    this.deleting.set(true);
+
+    try {
+      const updated = await firstValueFrom(this.userService.deleteAvatar());
+      this.profileUpdated.emit(updated);
+    } catch {
+      this.error.set('La suppression a échoué. Réessaie.');
+    } finally {
+      this.deleting.set(false);
+    }
   }
 
   onPasswordSubmit(event: Event): void {
