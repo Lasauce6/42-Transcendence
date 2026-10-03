@@ -15,6 +15,7 @@ from rest_framework.views import APIView
 
 from users.models import Friendship
 
+from .permissions import Is2FADone, IsSelfOrAdmin
 from .permissions import IsSelfOrAdmin, IsAdmin
 from .serializers import (
     AvatarUploadSerializer,
@@ -59,10 +60,12 @@ class AvatarUploadView(APIView):
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
+    permission_classes= [permissions.AllowAny]
+
 
 
 class ChangePasswordView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, Is2FADone]
 
     def post(self, request):
         serializer = ChangePasswordSerializer(
@@ -87,7 +90,7 @@ class UserViewSet(
 ):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, Is2FADone]
 
     def get_permissions(self):
         if self.action == "destroy":
@@ -154,7 +157,7 @@ class UserViewSet(
 
 class FriendshipViewSet(viewsets.ModelViewSet):
     serializer_class = FriendshipSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, Is2FADone]
 
     def get_queryset(self):
         user = self.request.user
@@ -282,7 +285,7 @@ class FriendshipViewSet(viewsets.ModelViewSet):
 
 
 class LogoutView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, Is2FADone]
 
     def post(self, request):
         user = request.user

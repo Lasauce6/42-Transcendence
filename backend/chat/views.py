@@ -9,7 +9,7 @@ from .serializers import ChannelSerializer, MessageSerializer
 
 class ChannelViewSet(viewsets.ModelViewSet):
     serializer_class = ChannelSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, Is2FADone]
 
     def get_queryset(self):
         return Channel.objects.filter(members__user=self.request.user).distinct()
@@ -105,7 +105,7 @@ class ChannelViewSet(viewsets.ModelViewSet):
         messages = Message.objects.filter(channel=channel).order_by("created_at")
         serializer = MessageSerializer(messages, many=True)
         return Response(serializer.data)
-    
+
     @action(
         detail=True,
         methods=["delete"],
