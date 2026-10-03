@@ -132,6 +132,12 @@
     "CHAT": "Messages",
     "NEW_PLACEHOLDER": "Nom d'utilisateur",
     "NEW_BUTTON": "Démarrer",
-    "NEW_ERROR": "Impossible de créer la conversation."
+    "NEW_ERROR": "Impossible de créer la conversation.",
+    "BACK": "← Retour",
+    "RECONNECTING": "Reconnexion…",
+    "HISTORY_ERROR": "Impossible de charger l'historique.",
+    "THREAD_EMPTY": "Aucun message, dis bonjour !",
+    "INPUT_PLACEHOLDER": "Écris un message…",
+    "SEND": "Envoyer"
   }
 }

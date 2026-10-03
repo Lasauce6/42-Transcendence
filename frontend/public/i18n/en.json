@@ -132,6 +132,12 @@
     "CHAT": "Messages",
     "NEW_PLACEHOLDER": "Username",
     "NEW_BUTTON": "Start",
-    "NEW_ERROR": "Could not create the conversation."
+    "NEW_ERROR": "Could not create the conversation.",
+    "BACK": "← Back",
+    "RECONNECTING": "Reconnecting…",
+    "HISTORY_ERROR": "Could not load the history.",
+    "THREAD_EMPTY": "No messages yet, say hi!",
+    "INPUT_PLACEHOLDER": "Write a message…",
+    "SEND": "Send"
   }
 }

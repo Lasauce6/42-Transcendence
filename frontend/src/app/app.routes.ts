@@ -72,6 +72,13 @@ export const routes: Routes = [
     title: 'TITLES.CHAT',
     canActivate: [authGuard],
   },
+  {
+    path: 'chat/:id',
+    loadComponent: () =>
+      import('@features/chat/chat-window/chat-window').then((m) => m.ChatWindow),
+    title: 'TITLES.CHAT',
+    canActivate: [authGuard],
+  },
   // {
   //   path: 'admin',
   //   loadChildren: () => import('@features/admin/admin.routes').then(m => m.ADMIN_ROUTES),
