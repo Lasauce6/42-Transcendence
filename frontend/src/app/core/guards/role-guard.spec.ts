@@ -14,7 +14,7 @@ const profile = (role: UserRole): UserProfile => ({
   first_name: '',
   last_name: '',
   bio: '',
-  avatarUrl: null,
+  avatar: null,
   role,
 });
 
