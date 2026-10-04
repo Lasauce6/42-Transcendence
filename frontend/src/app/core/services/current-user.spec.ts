@@ -3,6 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { UserProfile } from '@core/models/user.model';
 import { CurrentUser } from './current-user';
+import { environment } from '@env/environment';
 
 const profile: UserProfile = {
   id: '1',
@@ -31,7 +32,7 @@ describe('CurrentUser', () => {
 
   it('charge le profil et expose isAdmin', () => {
     service.load().subscribe();
-    http.expectOne('/api/users/me/').flush(profile);
+    http.expectOne(`${environment.apiUrl}/users/me/`).flush(profile);
 
     expect(service.role()).toBe('ADMIN');
     expect(service.isAdmin()).toBe(true);
@@ -41,17 +42,17 @@ describe('CurrentUser', () => {
     service.load().subscribe();
     service.load().subscribe();
 
-    http.expectOne('/api/users/me/').flush(profile);
+    http.expectOne(`${environment.apiUrl}/users/me/`).flush(profile);
   });
 
   it('clear() vide le cache et autorise un nouvel appel', () => {
     service.load().subscribe();
-    http.expectOne('/api/users/me/').flush(profile);
+    http.expectOne(`${environment.apiUrl}/users/me/`).flush(profile);
 
     service.clear();
     expect(service.profile()).toBeNull();
 
     service.load().subscribe();
-    http.expectOne('/api/users/me/').flush(profile);
+    http.expectOne(`${environment.apiUrl}/users/me/`).flush(profile);
   });
 });
