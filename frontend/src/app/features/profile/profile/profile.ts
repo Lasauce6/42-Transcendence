@@ -1,8 +1,9 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { UserService, UserProfile } from '../user.service';
+import { UserService } from '../user.service';
 import { ProfileEdit } from '../profile-edit/profile-edit';
 import { TranslatePipe } from '@ngx-translate/core';
 import { RouterLink } from '@angular/router';
+import { UserProfile } from '@core/models/user.model';
 
 @Component({
   selector: 'app-profile',
