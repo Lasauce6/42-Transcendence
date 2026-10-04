@@ -2,6 +2,7 @@ import { HttpClient, HttpEvent } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '@env/environment';
 import { Observable } from 'rxjs';
+import { UserProfile } from '@core/models/user.model';
 
 @Injectable({
   providedIn: 'root',
@@ -62,16 +63,16 @@ export class UserService {
   }
 }
 
-export interface UserProfile {
-  id: string;
-  username: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-  bio: string;
-  avatar: string | null;
-  role: string;
-}
+// export interface UserProfile {
+//   id: string;
+//   username: string;
+//   email: string;
+//   first_name: string;
+//   last_name: string;
+//   bio: string;
+//   avatar: string | null;
+//   role: string;
+// }
 
 export interface UpdateProfilePayload {
   username?: string;
