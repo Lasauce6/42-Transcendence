@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { catchError, Observable, of, shareReplay, tap, throwError } from 'rxjs';
 import { hasRole, UserProfile, UserRole } from '@core/models/user.model';
+import { environment } from '@env/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -23,7 +24,7 @@ export class CurrentUser {
       return of(cached); 
     }
 
-    this.request$ ??= this.http.get<UserProfile>('/api/users/me/').pipe(
+    this.request$ ??= this.http.get<UserProfile>(`${environment.apiUrl}/users/me/`).pipe(
       tap((user) => this._profile.set(user)),
       catchError((error) => {
         this.request$ = null; // on ne met jamais une erreur en cache
