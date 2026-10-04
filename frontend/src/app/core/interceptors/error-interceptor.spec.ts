@@ -4,6 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { ToastService } from '@core/services/toast';
 
 import { errorInterceptor } from './error-interceptor';
+import { environment } from '@env/environment';
 
 describe('errorInterceptor', () => {
   let http: HttpClient;
@@ -33,25 +34,25 @@ describe('errorInterceptor', () => {
   };
 
   it('affiche un toast sur une 500', () => {
-    failWith('/api/users/me/', 500);
+    failWith(`${environment.apiUrl}/users/me/`, 500);
 
     expect(toasts.toasts()[0].key).toBe('TOAST.ERROR.SERVER');
   });
 
   it('affiche un toast spécifique sur une 403', () => {
-    failWith('/api/admin/users/', 403);
+    failWith(`${environment.apiUrl}/admin/users/`, 403);
 
     expect(toasts.toasts()[0].key).toBe('TOAST.ERROR.FORBIDDEN');
   });
 
   it('reste silencieux sur une 401 (gérée par authInterceptor)', () => {
-    failWith('/api/users/me/', 401);
+    failWith(`${environment.apiUrl}/users/me/`, 401);
 
     expect(toasts.toasts()).toHaveLength(0);
   });
 
   it('reste silencieux sur une 400 (erreurs de formulaire)', () => {
-    failWith('/api/auth/register/', 400);
+    failWith('${environment.apiUrl}/auth/register/', 400);
 
     expect(toasts.toasts()).toHaveLength(0);
   });
