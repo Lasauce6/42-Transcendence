@@ -19,6 +19,7 @@ from api.views import NotificationViewSet
 from chat.views import AttachmentDownloadView, ChannelViewSet
 from django.contrib import admin
 from django.urls import include, path
+from django.views.decorators.clickjacking import xframe_options_sameorigin
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
@@ -71,7 +72,7 @@ urlpatterns = [
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
         "api/docs/",
-        SpectacularSwaggerView.as_view(url_name="schema"),
+        xframe_options_sameorigin(SpectacularSwaggerView.as_view(url_name="schema")),
         name="swagger-ui",
     ),
     path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
