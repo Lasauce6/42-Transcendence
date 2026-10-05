@@ -102,6 +102,16 @@ export const routes: Routes = [
     title: 'TITLES.CHAT',
     canActivate: [authGuard],
   },
+
+  {
+    path : 'friends',
+    loadComponent:() =>
+      import('@features/friends/friends').then((m) => m.Friends),
+      title : "TITLES.FRIENDS",
+      canActivate : [authGuard]
+  
+  },
+
   { path: '**', redirectTo: '' },
 ];
   
