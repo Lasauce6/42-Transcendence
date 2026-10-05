@@ -18,6 +18,8 @@ from requests.api import get
 
 from core.vault_client import get_vault_secret
 
+from csp.constants import SELF
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -42,6 +44,7 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 # Application definition
 
 INSTALLED_APPS = [
+    "csp",
     "daphne",
     "channels",
 	"drf_spectacular", # Doc API
@@ -146,6 +149,7 @@ REST_FRAMEWORK = {
 }
 
 MIDDLEWARE = [
+    "csp.middleware.CSPMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -242,3 +246,38 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+# ============================================================
+# Sécurité HTTP — Django CSP
+# ============================================================
+
+CONTENT_SECURITY_POLICY = {
+    "EXCLUDE_URL_PREFIXES": (
+        "/api/docs",
+        "/api/redoc",
+        "/api/schema",
+        "/admin",
+    ),
+    "DIRECTIVES": {
+        "default-src": [SELF],
+        "img-src": [SELF, "data:", "blob:"],
+        "media-src": [SELF, "data:", "blob:"],
+        "style-src": [SELF, "'unsafe-inline'"],
+        "script-src": [SELF],
+        "connect-src": [SELF, "ws:", "wss:"],
+        "font-src": [SELF, "data:"],
+        "frame-ancestors": ["'none'"],
+        "base-uri": [SELF],
+        "form-action": [SELF],
+    },
+}
+
+# Autres headers gérés par Django
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"
+SECURE_REFERRER_POLICY = "same-origin"
+
+# HSTS — à décommenter en prod
+# SECURE_HSTS_SECONDS = 31536000
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# SECURE_HSTS_PRELOAD = True
