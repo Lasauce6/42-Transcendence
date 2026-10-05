@@ -9,6 +9,7 @@ from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.throttling import ScopedRateThrottle
 
 from api.models import Notification
 from users.permissions import Is2FADone
@@ -323,6 +324,12 @@ class ChannelViewSet(viewsets.ModelViewSet):
             {"message": "Utilisateur débanni"},
             status=status.HTTP_200_OK,
         )
+
+    def get_throttles(self):
+        if self.action == "create":
+            self.throttle_scope = "channel_create"
+            return [ScopedRateThrottle()]
+        return super().get_throttles()
 
 
 class AttachmentDownloadView(APIView):

@@ -12,6 +12,8 @@ from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.throttling import ScopedRateThrottle
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from users.models import Friendship
 
@@ -31,6 +33,8 @@ User = get_user_model()
 class AvatarUploadView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "avatar_upload"
 
     def post(self, request):
         serializer = AvatarUploadSerializer(data=request.data)
@@ -84,11 +88,15 @@ class AvatarDeleteView(APIView):
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes= [permissions.AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "register"
 
 
 
 class ChangePasswordView(APIView):
     permission_classes = [permissions.IsAuthenticated, Is2FADone]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "password_change"
 
     def post(self, request):
         serializer = ChangePasswordSerializer(
@@ -176,6 +184,15 @@ class UserViewSet(
         user.save(update_fields=['role', 'is_staff'])
 
         return Response(UserSerializer(user).data)
+
+    def get_throttles(self):
+        if self.action == "change_password":
+            self.throttle_scope = "password_change"
+            return [ScopedRateThrottle()]
+        if self.action == "avatar_upload":
+            self.throttle_scope = "avatar_upload"
+            return [ScopedRateThrottle()]
+        return super().get_throttles()
 
 
 class FriendshipViewSet(viewsets.ModelViewSet):
@@ -306,6 +323,12 @@ class FriendshipViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(friendships, many=True)
         return Response(serializer.data)
 
+    def get_throttles(self):
+        if self.action == "create":
+            self.throttle_scope = "friendship_create"
+            return [ScopedRateThrottle()]
+        return super().get_throttles()
+
 
 class LogoutView(APIView):
     permission_classes = [permissions.IsAuthenticated, Is2FADone]
@@ -316,3 +339,7 @@ class LogoutView(APIView):
         user.last_seen = timezone.now()
         user.save(update_fields=["is_online", "last_seen"])
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class ThrottledTokenObtainPairView(TokenObtainPairView):
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "login"

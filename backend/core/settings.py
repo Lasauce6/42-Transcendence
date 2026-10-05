@@ -143,6 +143,20 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+        "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "60/min",       # 60 requêtes par minute pour les anonymes
+        "user": "1000/day",     # 1000 requêtes par jour pour les utilisateurs connectés
+        "login": "5/min",       # 5 tentatives de login par minute
+        "register": "3/hour",   # 3 inscriptions par heure
+        "password_change": "5/hour", # 5 changements de mot de passe par heure
+        "avatar_upload": "10/hour",  # 10 uploads d'avatar par heure
+        "channel_create": "10/hour", # 10 créations de channel par heure
+        "friendship_create": "20/hour", # 20 demandes d'ami par heure
+    },
 }
 
 MIDDLEWARE = [
@@ -241,4 +255,11 @@ CHANNEL_LAYERS = {
             "hosts": [("redis", 6379)],
         },
     },
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://redis:6379/1",
+    }
 }
