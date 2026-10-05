@@ -1,10 +1,27 @@
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+from django.core import signing
 from django.db import transaction
+from django.http import HttpResponse
+from django.utils.http import content_disposition_header
 from rest_framework import permissions, viewsets, status
 from rest_framework.decorators import action
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from .models import Channel, Message, ChannelMember, ChannelBan
-from .serializers import ChannelSerializer, MessageSerializer
+from api.models import Notification
+from users.permissions import Is2FADone
+
+from .files import (
+    PREVIEW_TYPES,
+    InvalidAttachment,
+    attachment_data,
+    read_attachment_token,
+    validate_attachment,
+)
+from .models import Attachment, Channel, Message, ChannelMember, ChannelBan
+from .serializers import AttachmentUploadSerializer, ChannelSerializer, MessageSerializer
 
 
 class ChannelViewSet(viewsets.ModelViewSet):
@@ -102,9 +119,107 @@ class ChannelViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["get"])
     def messages(self, request, pk=None):
         channel = self.get_object()
-        messages = Message.objects.filter(channel=channel).order_by("created_at")
-        serializer = MessageSerializer(messages, many=True)
+        messages = (
+            Message.objects.filter(channel=channel)
+            .prefetch_related("attachments")
+            .order_by("created_at")
+        )
+        serializer = MessageSerializer(
+            messages, many=True, context=self.get_serializer_context()
+        )
         return Response(serializer.data)
+
+    @action(
+        detail=True,
+        methods=["post"],
+        parser_classes=[MultiPartParser, FormParser],
+    )
+    def attachments(self, request, pk=None):
+        channel = self.get_object()
+
+        if ChannelBan.objects.filter(channel=channel, user=request.user).exists():
+            return Response(
+                {"error": "Vous êtes banni de ce channel."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        serializer = AttachmentUploadSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        file = serializer.validated_data["file"]
+        content = serializer.validated_data["content"].strip()
+
+        try:
+            content_type = validate_attachment(file)
+        except InvalidAttachment as e:
+            return Response({"file": [str(e)]}, status=status.HTTP_400_BAD_REQUEST)
+
+        with transaction.atomic():
+            message = Message.objects.create(
+                channel=channel, sender=request.user, content=content
+            )
+            Attachment.objects.create(
+                message=message,
+                file=file,
+                original_name=file.name[:255],
+                content_type=content_type,
+                size=file.size,
+            )
+
+        transaction.on_commit(lambda: self._broadcast_message(message))
+
+        data = MessageSerializer(message, context=self.get_serializer_context()).data
+        return Response(data, status=status.HTTP_201_CREATED)
+
+    def _broadcast_message(self, message):
+        channel_layer = get_channel_layer()
+        sender = message.sender
+        attachments = [attachment_data(a) for a in message.attachments.all()]
+
+        async_to_sync(channel_layer.group_send)(
+            f"chat_{message.channel_id}",
+            {
+                "type": "chat_message",
+                "id": str(message.id),
+                "message": message.content,
+                "sender": sender.username,
+                "sender_id": str(sender.id),
+                "created_at": message.created_at.isoformat(),
+                "attachments": attachments,
+            },
+        )
+
+        preview = message.content or f"📎 {attachments[0]['name']}"
+        channel = message.channel
+        members = ChannelMember.objects.filter(channel=channel).exclude(user=sender)
+        for member in members.select_related("user"):
+            notification = Notification.objects.create(
+                recipient=member.user,
+                type=Notification.Type.MESSAGE,
+                entity_type="Channel",
+                entity_id=channel.id,
+                payload={
+                    "from_id": str(sender.id),
+                    "from_username": sender.username,
+                    "channel_id": str(channel.id),
+                    "channel_name": channel.name or str(channel.id),
+                    "preview": preview[:80],
+                },
+            )
+            async_to_sync(channel_layer.group_send)(
+                f"user_{member.user.username}",
+                {
+                    "type": "notification_message",
+                    "notification": {
+                        "id": str(notification.id),
+                        "type": notification.type,
+                        "entity_type": notification.entity_type,
+                        "entity_id": str(notification.entity_id),
+                        "payload": notification.payload,
+                        "is_read": notification.is_read,
+                        "created_at": notification.created_at.isoformat(),
+                    },
+                },
+            )
 
     @action(
         detail=True,
@@ -208,3 +323,49 @@ class ChannelViewSet(viewsets.ModelViewSet):
             {"message": "Utilisateur débanni"},
             status=status.HTTP_200_OK,
         )
+
+
+class AttachmentDownloadView(APIView):
+    authentication_classes = []
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, pk):
+        try:
+            data = read_attachment_token(request.query_params.get("token", ""))
+        except signing.SignatureExpired:
+            return Response({"error": "Lien expiré."}, status=status.HTTP_403_FORBIDDEN)
+        except signing.BadSignature:
+            return Response({"error": "Lien invalide."}, status=status.HTTP_403_FORBIDDEN)
+
+        if data.get("a") != str(pk):
+            return Response({"error": "Lien invalide."}, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            attachment = Attachment.objects.select_related("message").get(
+                id=pk, message__is_deleted=False
+            )
+        except Attachment.DoesNotExist:
+            return Response(
+                {"error": "Fichier introuvable."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        channel_id = attachment.message.channel_id
+        user_id = data.get("u")
+        is_member = ChannelMember.objects.filter(
+            channel_id=channel_id, user_id=user_id
+        ).exists()
+        is_banned = ChannelBan.objects.filter(
+            channel_id=channel_id, user_id=user_id
+        ).exists()
+        if not is_member or is_banned:
+            return Response(
+                {"error": "Accès refusé."}, status=status.HTTP_403_FORBIDDEN
+            )
+
+        response = HttpResponse(content_type=attachment.content_type)
+        response["X-Accel-Redirect"] = f"/protected/{attachment.file.name}"
+        response["Content-Disposition"] = content_disposition_header(
+            attachment.content_type not in PREVIEW_TYPES, attachment.original_name
+        )
+        response["Cache-Control"] = "private, no-store"
+        return response

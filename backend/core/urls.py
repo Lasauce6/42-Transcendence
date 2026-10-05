@@ -16,7 +16,7 @@ Including another URLconf
 """
 
 from api.views import NotificationViewSet
-from chat.views import ChannelViewSet
+from chat.views import AttachmentDownloadView, ChannelViewSet
 from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import (
@@ -48,6 +48,11 @@ router.register(r"notifications", NotificationViewSet, basename="notification")
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/upload/avatar/", AvatarUploadView.as_view(), name="avatar_upload"),
+    path(
+        "api/attachments/<uuid:pk>/",
+        AttachmentDownloadView.as_view(),
+        name="attachment_download",
+    ),
     path(
         "api/users/change_password/",
         ChangePasswordView.as_view(),

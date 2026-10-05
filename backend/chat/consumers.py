@@ -3,6 +3,8 @@ import json
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
+from .files import make_attachment_url
+
 
 class ChatConsumer(AsyncWebsocketConsumer):
 
@@ -75,6 +77,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     "sender": event["sender"],
                     "sender_id": event["sender_id"],
                     "created_at": event["created_at"],
+                    "attachments": [
+                        {**a, "url": make_attachment_url(a["id"], self.user.id)}
+                        for a in event.get("attachments", [])
+                    ],
                 }
             )
         )

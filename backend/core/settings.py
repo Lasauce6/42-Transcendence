@@ -132,6 +132,9 @@ MEDIA_URL = "/media/"
 
 MEDIA_ROOT = BASE_DIR / "media"
 
+ATTACHMENT_MAX_SIZE = 10 * 1024 * 1024
+ATTACHMENT_URL_MAX_AGE = 60 * 60
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
