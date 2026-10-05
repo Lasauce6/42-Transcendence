@@ -50,3 +50,9 @@ db.sqlite3-journal
 .omo/
 .angular__pycache__/
 *.pyc
+
+# Media
+backend/media/*
+!backend/media/avatars/
+backend/media/avatars/*
+!backend/media/avatars/default.png

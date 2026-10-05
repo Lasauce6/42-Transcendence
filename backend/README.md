@@ -107,12 +107,28 @@ Contrainte: `unique_together = ('channel', 'user')`
 
 Index composes: `(channel, created_at)`, `sender`. Tri par defaut: `created_at` ascendant.
 
+### Attachment (chat.Attachment)
+
+| Champ | Type | Description |
+| --- | --- | --- |
+| `id` | UUIDField (PK) | Identifiant unique |
+| `message` | FK -> Message | Message associe |
+| `file` | FileField | Fichier, stocke dans `media/attachments/<channel_id>/` |
+| `original_name` | CharField | Nom du fichier envoye |
+| `content_type` | CharField | Type MIME |
+| `size` | PositiveIntegerField | Taille en octets |
+| `created_at` | DateTimeField | Date de creation |
+
+Types acceptes: jpg, png, gif, webp, pdf, txt, docx, xlsx. Taille max: 10 Mo.
+Le fichier est supprime du disque quand l'attachment est supprime.
+
 ### Diagramme des relations
 
 ```
 User (1) --< created_channels >-- (N) Channel
 User (1) --< channels >-- (N) ChannelMember >-- (N) Channel
 User (1) --< sent_messages >-- (N) Message >-- (N) Channel
+Message (1) --< attachments >-- (N) Attachment
 ```
 
 ## Endpoints HTTP (REST)
@@ -126,6 +142,8 @@ User (1) --< sent_messages >-- (N) Message >-- (N) Channel
 | GET/POST | `/api/channels/` | ChannelViewSet | Oui |
 | GET/PUT/PATCH/DELETE | `/api/channels/{uuid}/` | ChannelViewSet | Oui |
 | GET | `/api/channels/{uuid}/messages/` | ChannelViewSet.messages | Oui |
+| POST | `/api/channels/{uuid}/attachments/` | ChannelViewSet.attachments (multipart: `file`, `content`) | Oui |
+| GET | `/api/attachments/{uuid}/?token=...` | AttachmentDownloadView (URL signee, valable 1h) | Token dans l'URL |
 | GET/POST | `/api/messages/` | MessageViewSet | Oui |
 | GET/PUT/PATCH/DELETE | `/api/messages/{uuid}/` | MessageViewSet | Oui |
 
