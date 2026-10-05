@@ -42,6 +42,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'api-docs',
+    loadComponent: () => import('@features/api-docs/api-docs').then((m) => m.ApiDocs),
+    title: 'TITLES.API_DOCS',
+  },
+  {
     path: 'forbidden',
     loadComponent: () => import('@features/forbidden/forbidden').then((m) => m.Forbidden),
     title: 'TITLES.FORBIDDEN',

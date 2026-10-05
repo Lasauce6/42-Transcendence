@@ -7,7 +7,8 @@
     "PROFILE": "Profil",
     "LOGIN": "Connexion",
     "LOGOUT": "Déconnexion",
-    "CHAT": "Messages"
+    "CHAT": "Messages",
+    "API_DOCS": "Doc API"
   },
   "COMMON": {
     "LOADING": "Chargement...",
@@ -91,7 +92,8 @@
     "PROFILE": "Profil",
     "FORBIDDEN": "Accès refusé",
     "NOTIFICATIONS": "Notifications",
-    "CHAT": "Messages"
+    "CHAT": "Messages",
+    "API_DOCS": "Documentation API"
   },
   "TOAST": {
     "REGION_LABEL": "Notifications",
@@ -133,5 +135,9 @@
     "NEW_PLACEHOLDER": "Nom d'utilisateur",
     "NEW_BUTTON": "Démarrer",
     "NEW_ERROR": "Impossible de créer la conversation."
+  },
+  "API_DOCS": {
+    "TITLE": "Documentation de l'API",
+    "FRAME_TITLE": "Documentation interactive de l'API (Swagger)"
   }
 }
