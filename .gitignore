@@ -56,3 +56,7 @@ backend/media/*
 !backend/media/avatars/
 backend/media/avatars/*
 !backend/media/avatars/default.png
+
+# Logs
+backend/logs/*.log
+backend/logs/*.log.*

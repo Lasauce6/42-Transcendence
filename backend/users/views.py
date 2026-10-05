@@ -1,6 +1,7 @@
 import os
 import uuid
 
+from .audit import log_action
 from api.models import Notification
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -55,6 +56,8 @@ class AvatarUploadView(APIView):
 
         user.avatar.save(relative_path, file, save=True)
 
+        log_action(request, "AVATAR_UPLOAD", details={"filename": filename})
+
         return Response(
             {
                 "avatar": user.avatar.url if user.avatar else None,
@@ -108,6 +111,8 @@ class ChangePasswordView(APIView):
         user = request.user
         user.set_password(serializer.validated_data["new_password"])
         user.save(update_fields=["password"])
+
+        log_action(request, "PASSWORD_CHANGE")
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -166,6 +171,8 @@ class UserViewSet(
         user.role = new_role
         user.save(update_fields=['role', 'is_staff'])
 
+        log_action(request, "USER_PROMOTE", target=user, details={"new_role": new_role})
+
         return Response(UserSerializer(user).data)
 
 
@@ -182,6 +189,8 @@ class UserViewSet(
         user.role = 'USER'
         user.is_staff = False
         user.save(update_fields=['role', 'is_staff'])
+
+        log_action(request, "USER_DEMOTE", target=user)
 
         return Response(UserSerializer(user).data)
 
@@ -335,6 +344,7 @@ class LogoutView(APIView):
 
     def post(self, request):
         user = request.user
+        log_action(request, "LOGOUT")
         user.is_online = False
         user.last_seen = timezone.now()
         user.save(update_fields=["is_online", "last_seen"])
