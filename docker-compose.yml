@@ -42,6 +42,7 @@ services:
     volumes:
       - ./backend:/app # Hot-reload : on lie le code local au container
       - ./backend/media:/app/media
+      - ./backend/logs:/app/logs
     depends_on:
       - postgres
       - redis

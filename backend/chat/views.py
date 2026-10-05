@@ -1,3 +1,4 @@
+from users.audit import log_action
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.core import signing
@@ -111,6 +112,8 @@ class ChannelViewSet(viewsets.ModelViewSet):
                 {"error": "Cet utilisateur n'est pas membre."},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+        log_action(request, "CHANNEL_KICK", target=channel, details={"user_id": user_id, "channel_name": channel.name})
 
         return Response(
             {"message": "Membre retiré avec succès"},
@@ -249,6 +252,9 @@ class ChannelViewSet(viewsets.ModelViewSet):
 
         message.is_deleted = True
         message.save(update_fields=["is_deleted"])
+
+        log_action(request, "MESSAGE_DELETE", target=message, details={"channel_id": str(channel.id), "sender": message.sender.username})
+        
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True, methods=["post"], url_path="ban-member")
@@ -283,6 +289,8 @@ class ChannelViewSet(viewsets.ModelViewSet):
             user_id=user_id,
             defaults={"banned_by": request.user, "reason": reason},
         )
+
+        log_action(request, "CHANNEL_BAN", target=channel, details={"user_id": user_id, "channel_name": channel.name, "reason": reason or "none"})
 
         return Response(
             {
@@ -319,6 +327,8 @@ class ChannelViewSet(viewsets.ModelViewSet):
                 {"error": "Cet utilisateur n'est pas banni."},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+        log_action(request, "CHANNEL_UNBAN", target=channel, details={"user_id": user_id, "channel_name": channel.name})
 
         return Response(
             {"message": "Utilisateur débanni"},
