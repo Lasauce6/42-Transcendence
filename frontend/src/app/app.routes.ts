@@ -78,5 +78,14 @@ export const routes: Routes = [
   //   // canActivate: [roleGuard(['admin'])],   <-- ticket #48
   // },
 
+  {
+    path : 'friends',
+    loadComponent:() =>
+      import('@features/friends/friends').then((m) => m.Friends),
+      title : "TITLES.FRIENDS",
+      canActivate : [authGuard]
+  
+  },
+
   { path: '**', redirectTo: '' },
 ];
