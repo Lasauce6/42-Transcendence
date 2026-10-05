@@ -58,6 +58,29 @@ class AvatarUploadView(APIView):
             status=status.HTTP_200_OK,
         )
 
+class AvatarDeleteView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request):
+        user = request.user
+
+        if not user.avatar or "default" in user.avatar.name:
+            return Response(
+                {"error": "Aucun avatar personnalisé à supprimer."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        try:
+            user.avatar.delete(save=False)
+        except Exception:
+            pass
+
+        user.avatar = "avatars/default.png"
+        user.save(update_fields=["avatar"])
+
+        serializer = UserSerializer(user, context={"request": request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes= [permissions.AllowAny]
