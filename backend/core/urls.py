@@ -33,6 +33,7 @@ from rest_framework_simplejwt.views import (
 )
 from users.views import (
     AvatarUploadView,
+    AvatarDeleteView,
     ChangePasswordView,
     FriendshipViewSet,
     LogoutView,
@@ -49,6 +50,7 @@ router.register(r"notifications", NotificationViewSet, basename="notification")
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/upload/avatar/", AvatarUploadView.as_view(), name="avatar_upload"),
+    path("api/users/me/avatar/", AvatarDeleteView.as_view(), name="avatar_delete"),
     path(
         "api/attachments/<uuid:pk>/",
         AttachmentDownloadView.as_view(),
