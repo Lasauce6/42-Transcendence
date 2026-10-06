@@ -20,17 +20,17 @@ export class OauthCallback implements OnInit {
 
     if (error) {
       console.error('Autorisation refusée par le provider :', error);
-      this.router.navigate(['/login']);
+      this.router.navigate(['/login'], { replaceUrl: true });
       return;
     }
 
     if (!access || !refresh) {
       console.error('Tokens manquants dans le callback OAuth');
-      this.router.navigate(['/login']);
+      this.router.navigate(['/login'], { replaceUrl: true });
       return;
     }
 
     this.authService.setTokens(access, refresh);
-    this.router.navigate(['/']);
+    this.router.navigate(['/'], { replaceUrl: true });
   }
 }
