@@ -1,14 +1,17 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { DOCUMENT, inject, Injectable, signal } from '@angular/core';
 import { tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { CurrentUser } from '@core/services/current-user';
+
+export type OAuthProvider = 'google' | 'github' | 'fortytwo';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   http = inject(HttpClient);
+  private readonly document = inject(DOCUMENT);
   private readonly _isLoggedIn = signal<boolean>(false);
   readonly isLoggedIn = this._isLoggedIn.asReadonly();
   private readonly _token = signal<string | null>(null);
@@ -34,6 +37,43 @@ export class AuthService {
           this.currentUser.load().subscribe(); // <-- ajout
         }),
       );
+  }
+
+  loginWithProvider(provider: OAuthProvider): void {
+    const backendProvider = provider === 'fortytwo' ? '42' : provider;
+    const url = `${environment.apiUrl}/auth/oauth/${backendProvider}/login/`;
+
+    if (this.readCsrfToken()) {
+      this.submitOAuthForm(url);
+      return;
+    }
+    this.http.get(url, { responseType: 'text' }).subscribe({
+      next: () => this.submitOAuthForm(url),
+      error: (err) => console.error('OAuth: cookie CSRF introuvable', err),
+    });
+  }
+
+  private readCsrfToken(): string | null {
+    const match = this.document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
+    return match ? decodeURIComponent(match[1]) : null;
+  }
+
+  private submitOAuthForm(url: string): void {
+    const token = this.readCsrfToken();
+    if (!token) return;
+
+    const form = this.document.createElement('form');
+    form.method = 'POST';
+    form.action = url;
+
+    const input = this.document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'csrfmiddlewaretoken';
+    input.value = token;
+
+    form.appendChild(input);
+    this.document.body.appendChild(form);
+    form.submit();
   }
 
   setTokens(access: string, refresh: string) {
