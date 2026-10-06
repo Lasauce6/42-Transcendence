@@ -154,7 +154,8 @@
     "HISTORY_ERROR": "Could not load the history.",
     "THREAD_EMPTY": "No messages yet, say hi!",
     "INPUT_PLACEHOLDER": "Write a message…",
-    "SEND": "Send"
+    "SEND": "Send",
+    "UPLOAD_ERROR": "Unable to send the file."
   },
   "API_DOCS": {
     "TITLE": "API documentation",

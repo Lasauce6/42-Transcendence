@@ -42,6 +42,13 @@ export class ChatService {
     return this.http.get<ChatMessage[]>(`${this.url}${channelId}/messages/`);
   }
 
+  // Envoie un fichier (avec un texte optionnel) dans une conversation.
+  sendAttachment(channelId: string, file: File, content = ''): Observable<ChatMessage> {
+    const form = new FormData();
+    form.append('file', file);
+    form.append('content', content);
+    return this.http.post<ChatMessage>(`${this.url}${channelId}/attachments/`, form);
+  }
   // Cherche un utilisateur par son nom (le back n'a pas de recherche, on filtre la liste).
   findUser(username: string): Observable<{ id: string; username: string } | undefined> {
     return this.http
@@ -68,7 +75,6 @@ export class ChatService {
       }),
     );
   }
-
 }
 
 function lastActivity(c: Channel): string {
