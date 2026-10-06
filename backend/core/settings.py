@@ -18,6 +18,8 @@ from requests.api import get
 
 from core.vault_client import get_vault_secret
 
+from csp.constants import SELF
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -42,6 +44,7 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 # Application definition
 
 INSTALLED_APPS = [
+    "csp",
     "daphne",
     "channels",
 	"drf_spectacular", # Doc API
@@ -137,15 +140,31 @@ ATTACHMENT_URL_MAX_AGE = 60 * 60
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
+        "api.authentication.APIKeyAuthentication",
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+        "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "60/min",       # 60 requêtes par minute pour les anonymes
+        "user": "1000/day",     # 1000 requêtes par jour pour les utilisateurs connectés
+        "login": "5/min",       # 5 tentatives de login par minute
+        "register": "3/hour",   # 3 inscriptions par heure
+        "password_change": "5/hour", # 5 changements de mot de passe par heure
+        "avatar_upload": "10/hour",  # 10 uploads d'avatar par heure
+        "channel_create": "10/hour", # 10 créations de channel par heure
+        "friendship_create": "20/hour", # 20 demandes d'ami par heure
+    },
 }
 
 MIDDLEWARE = [
+    "csp.middleware.CSPMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -239,6 +258,80 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             "hosts": [("redis", 6379)],
+        },
+    },
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://redis:6379/1",
+    }
+}
+# ============================================================
+# Sécurité HTTP — Django CSP
+# ============================================================
+
+CONTENT_SECURITY_POLICY = {
+    "EXCLUDE_URL_PREFIXES": (
+        "/api/docs",
+        "/api/redoc",
+        "/api/schema",
+        "/admin",
+    ),
+    "DIRECTIVES": {
+        "default-src": [SELF],
+        "img-src": [SELF, "data:", "blob:"],
+        "media-src": [SELF, "data:", "blob:"],
+        "style-src": [SELF, "'unsafe-inline'"],
+        "script-src": [SELF],
+        "connect-src": [SELF, "ws:", "wss:"],
+        "font-src": [SELF, "data:"],
+        "frame-ancestors": ["'none'"],
+        "base-uri": [SELF],
+        "form-action": [SELF],
+    },
+}
+
+# Autres headers gérés par Django
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"
+SECURE_REFERRER_POLICY = "same-origin"
+
+# HSTS — à décommenter en prod
+# SECURE_HSTS_SECONDS = 31536000
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# SECURE_HSTS_PRELOAD = True
+
+# --- Audit logs ---
+LOG_DIR = BASE_DIR / "logs"
+LOG_DIR.mkdir(exist_ok=True)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "audit": {
+            "format": "%(asctime)s | %(levelname)s | %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+    },
+    "handlers": {
+        "audit_file": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": LOG_DIR / "audit.log",
+            "maxBytes": 10 * 1024 * 1024,   # 10 Mo
+            "backupCount": 5,                # garde 5 fichiers max
+            "formatter": "audit",
+            "encoding": "utf-8",
+        },
+    },
+    "loggers": {
+        "audit": {
+            "handlers": ["audit_file"],
+            "level": "INFO",
+            "propagate": False,
         },
     },
 }

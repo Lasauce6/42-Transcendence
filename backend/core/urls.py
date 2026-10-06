@@ -15,10 +15,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from api.views import NotificationViewSet
+from api.views import NotificationViewSet, APIKeyViewSet
 from chat.views import AttachmentDownloadView, ChannelViewSet
 from django.contrib import admin
 from django.urls import include, path
+from django.views.decorators.clickjacking import xframe_options_sameorigin
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
@@ -26,17 +27,18 @@ from drf_spectacular.views import (
 )
 from rest_framework import routers
 from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
     TokenRefreshView,
     TokenVerifyView,
 )
 from users.views import (
     AvatarUploadView,
+    AvatarDeleteView,
     ChangePasswordView,
     FriendshipViewSet,
     LogoutView,
     RegisterView,
     UserViewSet,
+    ThrottledTokenObtainPairView,
 )
 
 router = routers.DefaultRouter()
@@ -44,10 +46,12 @@ router.register(r"channels", ChannelViewSet, basename="channel")
 router.register(r"users", UserViewSet, basename="user")
 router.register(r"friendships", FriendshipViewSet, basename="friendship")
 router.register(r"notifications", NotificationViewSet, basename="notification")
+router.register(r"api-keys", APIKeyViewSet, basename="api-key")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/upload/avatar/", AvatarUploadView.as_view(), name="avatar_upload"),
+    path("api/users/me/avatar/", AvatarDeleteView.as_view(), name="avatar_delete"),
     path(
         "api/attachments/<uuid:pk>/",
         AttachmentDownloadView.as_view(),
@@ -64,14 +68,14 @@ urlpatterns = [
     path("api/auth/oauth/", include("authentication.oauth_urls")),
     path("api/register/", RegisterView.as_view(), name="register"),
     path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
-    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/token/", ThrottledTokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/users/", include("users.urls")),
     # Documentation API
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
         "api/docs/",
-        SpectacularSwaggerView.as_view(url_name="schema"),
+        xframe_options_sameorigin(SpectacularSwaggerView.as_view(url_name="schema")),
         name="swagger-ui",
     ),
     path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),

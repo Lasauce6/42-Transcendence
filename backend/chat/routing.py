@@ -3,8 +3,8 @@ from django.urls import path
 from . import consumers
 
 websocket_urlpatterns = [
-    # Global socket for notifications
-    path("ws/notifications/", consumers.ChatConsumer.as_asgi()),
-    # Socket for channel
+    # Socket global pour les notifications personnelles
+    path("ws/notifications/", consumers.NotificationConsumer.as_asgi()),
+    # Socket pour un channel précis
     path("ws/chat/<uuid:channel_id>/", consumers.ChatConsumer.as_asgi()),
 ]

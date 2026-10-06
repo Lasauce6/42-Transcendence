@@ -42,6 +42,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'api-docs',
+    loadComponent: () => import('@features/api-docs/api-docs').then((m) => m.ApiDocs),
+    title: 'TITLES.API_DOCS',
+  },
+  {
     path: 'forbidden',
     loadComponent: () => import('@features/forbidden/forbidden').then((m) => m.Forbidden),
     title: 'TITLES.FORBIDDEN',
@@ -69,6 +74,13 @@ export const routes: Routes = [
     path: 'chat',
     loadComponent: () =>
       import('@features/chat/chat-list/chat-list').then((m) => m.ChatList),
+    title: 'TITLES.CHAT',
+    canActivate: [authGuard],
+  },
+  {
+    path: 'chat/:id',
+    loadComponent: () =>
+      import('@features/chat/chat-window/chat-window').then((m) => m.ChatWindow),
     title: 'TITLES.CHAT',
     canActivate: [authGuard],
   },

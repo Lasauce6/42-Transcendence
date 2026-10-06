@@ -1,3 +1,4 @@
+from users.audit import log_action
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.core import signing
@@ -9,6 +10,7 @@ from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.throttling import ScopedRateThrottle
 
 from api.models import Notification
 from users.permissions import Is2FADone
@@ -110,6 +112,8 @@ class ChannelViewSet(viewsets.ModelViewSet):
                 {"error": "Cet utilisateur n'est pas membre."},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+        log_action(request, "CHANNEL_KICK", target=channel, details={"user_id": user_id, "channel_name": channel.name})
 
         return Response(
             {"message": "Membre retiré avec succès"},
@@ -246,8 +250,13 @@ class ChannelViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        message.is_deleted = True
-        message.save(update_fields=["is_deleted"])
+        with transaction.atomic():
+            message.is_deleted = True
+            message.save(update_fields=["is_deleted"])
+            message.attachments.all().delete()
+
+        log_action(request, "MESSAGE_DELETE", target=message, details={"channel_id": str(channel.id), "sender": message.sender.username})
+        
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True, methods=["post"], url_path="ban-member")
@@ -282,6 +291,8 @@ class ChannelViewSet(viewsets.ModelViewSet):
             user_id=user_id,
             defaults={"banned_by": request.user, "reason": reason},
         )
+
+        log_action(request, "CHANNEL_BAN", target=channel, details={"user_id": user_id, "channel_name": channel.name, "reason": reason or "none"})
 
         return Response(
             {
@@ -319,10 +330,18 @@ class ChannelViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
+        log_action(request, "CHANNEL_UNBAN", target=channel, details={"user_id": user_id, "channel_name": channel.name})
+
         return Response(
             {"message": "Utilisateur débanni"},
             status=status.HTTP_200_OK,
         )
+
+    def get_throttles(self):
+        if self.action == "create":
+            self.throttle_scope = "channel_create"
+            return [ScopedRateThrottle()]
+        return super().get_throttles()
 
 
 class AttachmentDownloadView(APIView):
