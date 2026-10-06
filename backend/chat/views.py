@@ -250,8 +250,10 @@ class ChannelViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        message.is_deleted = True
-        message.save(update_fields=["is_deleted"])
+        with transaction.atomic():
+            message.is_deleted = True
+            message.save(update_fields=["is_deleted"])
+            message.attachments.all().delete()
 
         log_action(request, "MESSAGE_DELETE", target=message, details={"channel_id": str(channel.id), "sender": message.sender.username})
         
