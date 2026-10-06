@@ -155,7 +155,11 @@
     "THREAD_EMPTY": "Aucun message, dis bonjour !",
     "INPUT_PLACEHOLDER": "Écris un message…",
     "SEND": "Envoyer",
-    "UPLOAD_ERROR": "Impossible d'envoyer le fichier."
+    "UPLOAD_ERROR": "Impossible d'envoyer le fichier.",
+    "ADD_MEMBER_PLACEHOLDER": "Nom d'utilisateur à ajouter",
+    "ADD_MEMBER_BUTTON": "Ajouter",
+    "ADD_MEMBER_OK": "Membre ajouté.",
+    "ADD_MEMBER_ERROR": "Impossible d'ajouter cette personne."
   },
   "API_DOCS": {
     "TITLE": "Documentation de l'API",

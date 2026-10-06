@@ -29,6 +29,10 @@ export class ChatWindow implements OnInit, OnDestroy {
   readonly uploading = signal(false);
   readonly uploadError = signal(false);
 
+  readonly memberName = signal('');
+  readonly memberAdded = signal(false);
+  readonly memberError = signal(false);
+
   // Relance le scroll vers le bas à chaque changement de la liste des messages.
   constructor() {
     effect(() => {
@@ -113,5 +117,29 @@ export class ChatWindow implements OnInit, OnDestroy {
 
     // Remet le champ à zéro pour pouvoir renvoyer le même fichier.
     input.value = '';
+  }
+
+  // Garde en mémoire le nom tapé dans le champ "ajouter un membre".
+  onMemberInput(event: Event): void {
+    this.memberName.set((event.target as HTMLInputElement).value);
+    this.memberAdded.set(false);
+    this.memberError.set(false);
+  }
+
+  // Ajoute la personne tapée dans la conversation ouverte.
+  addMember(): void {
+    const username = this.memberName().trim();
+    if (!username) {
+      return;
+    }
+
+    const id = this.route.snapshot.paramMap.get('id')!;
+    this.service.addMemberByUsername(id, username).subscribe({
+      next: () => {
+        this.memberName.set('');
+        this.memberAdded.set(true);
+      },
+      error: () => this.memberError.set(true),
+    });
   }
 }

@@ -155,7 +155,11 @@
     "THREAD_EMPTY": "No messages yet, say hi!",
     "INPUT_PLACEHOLDER": "Write a message…",
     "SEND": "Send",
-    "UPLOAD_ERROR": "Unable to send the file."
+    "UPLOAD_ERROR": "Unable to send the file.",
+    "ADD_MEMBER_PLACEHOLDER": "Username to add",
+    "ADD_MEMBER_BUTTON": "Add",
+    "ADD_MEMBER_OK": "Member added.",
+    "ADD_MEMBER_ERROR": "Unable to add this person."
   },
   "API_DOCS": {
     "TITLE": "API documentation",
