@@ -1,6 +1,23 @@
 <section class="chat-window">
   <header>
     <a routerLink="/chat">{{ 'CHAT.BACK' | translate }}</a>
+    <form (submit)="$event.preventDefault(); addMember()">
+      <input
+        type="text"
+        [placeholder]="'CHAT.ADD_MEMBER_PLACEHOLDER' | translate"
+        [value]="memberName()"
+        (input)="onMemberInput($event)"
+      />
+      <button type="submit" [disabled]="!memberName().trim()">
+        {{ 'CHAT.ADD_MEMBER_BUTTON' | translate }}
+      </button>
+      @if (memberAdded()) {
+        <span>{{ 'CHAT.ADD_MEMBER_OK' | translate }}</span>
+      }
+      @if (memberError()) {
+        <span class="error">{{ 'CHAT.ADD_MEMBER_ERROR' | translate }}</span>
+      }
+    </form>
     @if (!socket.connected()) {
       <span class="status">{{ 'CHAT.RECONNECTING' | translate }}</span>
     }

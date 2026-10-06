@@ -75,6 +75,19 @@ export class ChatService {
       }),
     );
   }
+
+    // Ajoute une personne à une conversation à partir de son nom d'utilisateur.
+  addMemberByUsername(channelId: string, username: string): Observable<unknown> {
+    return this.findUser(username).pipe(
+      switchMap((user) => {
+        // Personne introuvable : on renvoie une erreur.
+        if (!user) {
+          return throwError(() => new Error('USER_NOT_FOUND'));
+        }
+        return this.addMember(channelId, user.id);
+      }),
+    );
+  }
 }
 
 function lastActivity(c: Channel): string {
