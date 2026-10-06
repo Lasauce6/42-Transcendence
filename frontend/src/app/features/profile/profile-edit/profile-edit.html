@@ -17,6 +17,11 @@
   @if (avatarPreviewUrl(); as url) {
     <img [src]="url" alt="Aperçu avatar" />
   }
+  @if (profile().avatar) {
+    <button type="button" (click)="onDeleteAvatar()" [disabled]="deleting()">
+      Supprimer l'avatar
+    </button>
+  }
 
   <button type="submit" [disabled]="saving()">Enregistrer le profil</button>
   @if (saving() && avatarFile()) {
