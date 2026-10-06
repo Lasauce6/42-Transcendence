@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from api.views import NotificationViewSet
+from api.views import NotificationViewSet, APIKeyViewSet
 from chat.views import AttachmentDownloadView, ChannelViewSet
 from django.contrib import admin
 from django.urls import include, path
@@ -46,6 +46,7 @@ router.register(r"channels", ChannelViewSet, basename="channel")
 router.register(r"users", UserViewSet, basename="user")
 router.register(r"friendships", FriendshipViewSet, basename="friendship")
 router.register(r"notifications", NotificationViewSet, basename="notification")
+router.register(r"api-keys", APIKeyViewSet, basename="api-key")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
