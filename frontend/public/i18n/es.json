@@ -134,7 +134,6 @@
     "CHAT": "Mensajes",
     "NEW_PLACEHOLDER": "Nombre de usuario",
     "NEW_BUTTON": "Iniciar",
-<<<<<<< HEAD
     "NEW_ERROR": "No se pudo crear la conversación.",
     "BACK": "← Volver",
     "RECONNECTING": "Reconectando…",
@@ -142,12 +141,9 @@
     "THREAD_EMPTY": "Aún no hay mensajes, ¡saluda!",
     "INPUT_PLACEHOLDER": "Escribe un mensaje…",
     "SEND": "Enviar"
-=======
-    "NEW_ERROR": "No se pudo crear la conversación."
   },
   "API_DOCS": {
     "TITLE": "Documentación de la API",
     "FRAME_TITLE": "Documentación interactiva de la API (Swagger)"
->>>>>>> master
   }
 }
