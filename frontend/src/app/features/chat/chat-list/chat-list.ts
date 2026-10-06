@@ -76,7 +76,7 @@ export class ChatList implements OnInit {
 
     this.creating.set(true);
     this.createError.set(false);
-    this.service.createChannel(username).subscribe({
+    this.service.startConversation(username).subscribe({
       next: (channel) => {
         this.creating.set(false);
         this.newUsername.set('');
