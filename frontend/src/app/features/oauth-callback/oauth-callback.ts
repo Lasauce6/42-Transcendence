@@ -14,30 +14,23 @@ export class OauthCallback implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   ngOnInit() {
-    const provider = this.route.snapshot.paramMap.get('provider');
-    const code = this.route.snapshot.queryParamMap.get('code');
-    const state = this.route.snapshot.queryParamMap.get('state');
+    const access = this.route.snapshot.queryParamMap.get('access');
+    const refresh = this.route.snapshot.queryParamMap.get('refresh');
     const error = this.route.snapshot.queryParamMap.get('error');
-    const savedState = sessionStorage.getItem('oauth_state');
-    sessionStorage.removeItem('oauth_state');
 
     if (error) {
       console.error('Autorisation refusée par le provider :', error);
+      this.router.navigate(['/login']);
       return;
     }
 
-    if (state !== savedState) {
-      console.error('State invalide, rejet du callback');
-      return;
-    }
-    if (!code || !provider) {
-      console.error('Code ou provider manquant');
+    if (!access || !refresh) {
+      console.error('Tokens manquants dans le callback OAuth');
+      this.router.navigate(['/login']);
       return;
     }
 
-    this.authService.loginWithOAuth(provider, code).subscribe({
-      next: () => this.router.navigate(['/']),
-      error: () => console.error("Échec de l'authentification OAuth"),
-    });
+    this.authService.setTokens(access, refresh);
+    this.router.navigate(['/']);
   }
 }

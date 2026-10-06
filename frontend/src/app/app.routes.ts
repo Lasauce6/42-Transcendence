@@ -20,7 +20,7 @@ export const routes: Routes = [
   },
 
   {
-    path: 'auth/callback/:provider',
+    path: 'auth/callback',
     component: OauthCallback,
     title: 'TITLES.OAUTH_CALLBACK',
   },
@@ -40,6 +40,11 @@ export const routes: Routes = [
     loadComponent: () => import('@features/profile/profile/profile').then((m) => m.Profile),
     title: 'TITLES.PROFILE',
     canActivate: [authGuard],
+  },
+  {
+    path: 'api-docs',
+    loadComponent: () => import('@features/api-docs/api-docs').then((m) => m.ApiDocs),
+    title: 'TITLES.API_DOCS',
   },
   {
     path: 'forbidden',

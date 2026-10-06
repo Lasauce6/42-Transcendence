@@ -1,6 +1,7 @@
 import os
 import uuid
 
+from .audit import log_action
 from api.models import Notification
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -12,10 +13,13 @@ from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.throttling import ScopedRateThrottle
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from users.models import Friendship
 
-from .permissions import IsSelfOrAdmin
+from .permissions import Is2FADone, IsSelfOrAdmin
+from .permissions import IsSelfOrAdmin, IsAdmin
 from .serializers import (
     AvatarUploadSerializer,
     ChangePasswordSerializer,
@@ -30,6 +34,8 @@ User = get_user_model()
 class AvatarUploadView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "avatar_upload"
 
     def post(self, request):
         serializer = AvatarUploadSerializer(data=request.data)
@@ -50,6 +56,8 @@ class AvatarUploadView(APIView):
 
         user.avatar.save(relative_path, file, save=True)
 
+        log_action(request, "AVATAR_UPLOAD", details={"filename": filename})
+
         return Response(
             {
                 "avatar": user.avatar.url if user.avatar else None,
@@ -57,16 +65,41 @@ class AvatarUploadView(APIView):
             status=status.HTTP_200_OK,
         )
 
+class AvatarDeleteView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
 
-User = get_user_model()
+    def delete(self, request):
+        user = request.user
 
+        if not user.avatar or "default" in user.avatar.name:
+            return Response(
+                {"error": "Aucun avatar personnalisé à supprimer."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        try:
+            user.avatar.delete(save=False)
+        except Exception:
+            pass
+
+        user.avatar = "avatars/default.png"
+        user.save(update_fields=["avatar"])
+
+        serializer = UserSerializer(user, context={"request": request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
+    permission_classes= [permissions.AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "register"
+
 
 
 class ChangePasswordView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, Is2FADone]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "password_change"
 
     def post(self, request):
         serializer = ChangePasswordSerializer(
@@ -78,6 +111,8 @@ class ChangePasswordView(APIView):
         user = request.user
         user.set_password(serializer.validated_data["new_password"])
         user.save(update_fields=["password"])
+
+        log_action(request, "PASSWORD_CHANGE")
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -91,7 +126,7 @@ class UserViewSet(
 ):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, Is2FADone]
 
     def get_permissions(self):
         if self.action == "destroy":
@@ -116,10 +151,62 @@ class UserViewSet(
         serializer.save()
         return Response(serializer.data)
 
+    @action(detail=True, methods=['post'], permission_classes=[IsAdmin])
+    def promote(self, request, pk=None):
+        user = self.get_object()
+        new_role = request.data.get('role')
+
+        if new_role not in ('MODERATOR', 'ADMIN'):
+            return Response(
+                {"detail": "Le rôle doit être 'MODERATOR' ou 'ADMIN'."},
+                status=400
+            )
+
+        if user.role == new_role:
+            return Response(
+                {"detail": f"L'utilisateur a déjà le rôle {new_role}."},
+                status=400
+            )
+
+        user.role = new_role
+        user.save(update_fields=['role', 'is_staff'])
+
+        log_action(request, "USER_PROMOTE", target=user, details={"new_role": new_role})
+
+        return Response(UserSerializer(user).data)
+
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAdmin])
+    def demote(self, request, pk=None):
+        user = self.get_object()
+
+        if user == request.user:
+            return Response(
+                {"detail": "Vous ne pouvez pas vous rétrograder vous-même."},
+                status=400
+            )
+
+        user.role = 'USER'
+        user.is_staff = False
+        user.save(update_fields=['role', 'is_staff'])
+
+        log_action(request, "USER_DEMOTE", target=user)
+
+        return Response(UserSerializer(user).data)
+
+    def get_throttles(self):
+        if self.action == "change_password":
+            self.throttle_scope = "password_change"
+            return [ScopedRateThrottle()]
+        if self.action == "avatar_upload":
+            self.throttle_scope = "avatar_upload"
+            return [ScopedRateThrottle()]
+        return super().get_throttles()
+
 
 class FriendshipViewSet(viewsets.ModelViewSet):
     serializer_class = FriendshipSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, Is2FADone]
 
     def get_queryset(self):
         user = self.request.user
@@ -245,13 +332,24 @@ class FriendshipViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(friendships, many=True)
         return Response(serializer.data)
 
+    def get_throttles(self):
+        if self.action == "create":
+            self.throttle_scope = "friendship_create"
+            return [ScopedRateThrottle()]
+        return super().get_throttles()
+
 
 class LogoutView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, Is2FADone]
 
     def post(self, request):
         user = request.user
+        log_action(request, "LOGOUT")
         user.is_online = False
         user.last_seen = timezone.now()
         user.save(update_fields=["is_online", "last_seen"])
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class ThrottledTokenObtainPairView(TokenObtainPairView):
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "login"

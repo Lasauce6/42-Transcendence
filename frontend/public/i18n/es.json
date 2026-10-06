@@ -7,7 +7,8 @@
     "PROFILE": "Perfil",
     "LOGIN": "Iniciar sesión",
     "LOGOUT": "Cerrar sesión",
-    "CHAT": "Mensajes"
+    "CHAT": "Mensajes",
+    "API_DOCS": "Doc API"
   },
   "COMMON": {
     "LOADING": "Cargando...",
@@ -91,7 +92,8 @@
     "PROFILE": "Perfil",
     "FORBIDDEN": "Acceso denegado",
     "NOTIFICATIONS": "Notificaciones",
-    "CHAT": "Mensajes"
+    "CHAT": "Mensajes",
+    "API_DOCS": "Documentación de la API"
   },
   "TOAST": {
     "REGION_LABEL": "Notificaciones",
@@ -132,6 +134,7 @@
     "CHAT": "Mensajes",
     "NEW_PLACEHOLDER": "Nombre de usuario",
     "NEW_BUTTON": "Iniciar",
+<<<<<<< HEAD
     "NEW_ERROR": "No se pudo crear la conversación.",
     "BACK": "← Volver",
     "RECONNECTING": "Reconectando…",
@@ -139,5 +142,12 @@
     "THREAD_EMPTY": "Aún no hay mensajes, ¡saluda!",
     "INPUT_PLACEHOLDER": "Escribe un mensaje…",
     "SEND": "Enviar"
+=======
+    "NEW_ERROR": "No se pudo crear la conversación."
+  },
+  "API_DOCS": {
+    "TITLE": "Documentación de la API",
+    "FRAME_TITLE": "Documentación interactiva de la API (Swagger)"
+>>>>>>> master
   }
 }

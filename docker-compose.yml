@@ -4,7 +4,7 @@ services:
     container_name: vault
     cap_add:
       - IPC_LOCK
-    ports: 
+    ports:
       - "8200:8200"
     env_file: .env
     networks:
@@ -25,6 +25,16 @@ services:
     networks:
       - transcendence-network
 
+  mailpit:
+      image: axllent/mailpit:latest
+      container_name: mailpit
+      restart: always
+      ports:
+        - "1025:1025" # SMTP
+        - "8025:8025" # Web interface
+      networks:
+        - transcendence-network
+
   backend:
     build: ./backend
     restart: always
@@ -32,10 +42,12 @@ services:
     volumes:
       - ./backend:/app # Hot-reload : on lie le code local au container
       - ./backend/media:/app/media
+      - ./backend/logs:/app/logs
     depends_on:
       - postgres
       - redis
       - vault
+      - mailpit
     networks:
       - transcendence-network
 

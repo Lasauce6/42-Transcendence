@@ -7,7 +7,8 @@
     "PROFILE": "Profile",
     "LOGIN": "Sign in",
     "LOGOUT": "Sign out",
-    "CHAT": "Messages"
+    "CHAT": "Messages",
+    "API_DOCS": "API docs"
   },
   "COMMON": {
     "LOADING": "Loading...",
@@ -91,7 +92,8 @@
     "PROFILE": "Profile",
     "FORBIDDEN": "Access denied",
     "NOTIFICATIONS": "Notifications",
-    "CHAT": "Messages"
+    "CHAT": "Messages",
+    "API_DOCS": "API documentation"
   },
   "TOAST": {
     "REGION_LABEL": "Notifications",
@@ -132,6 +134,7 @@
     "CHAT": "Messages",
     "NEW_PLACEHOLDER": "Username",
     "NEW_BUTTON": "Start",
+<<<<<<< HEAD
     "NEW_ERROR": "Could not create the conversation.",
     "BACK": "← Back",
     "RECONNECTING": "Reconnecting…",
@@ -139,5 +142,12 @@
     "THREAD_EMPTY": "No messages yet, say hi!",
     "INPUT_PLACEHOLDER": "Write a message…",
     "SEND": "Send"
+=======
+    "NEW_ERROR": "Could not create the conversation."
+  },
+  "API_DOCS": {
+    "TITLE": "API documentation",
+    "FRAME_TITLE": "Interactive API documentation (Swagger)"
+>>>>>>> master
   }
 }

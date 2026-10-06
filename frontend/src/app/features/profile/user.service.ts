@@ -1,6 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpEvent } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '@env/environment';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -37,6 +38,27 @@ export class UserService {
   }
   changePassword(payload: ChangePasswordPayload) {
     return this.http.post<void>(`${environment.apiUrl}/users/change_password/`, payload);
+  }
+  uploadAvatar(payload: UpdateProfilePayload, avatar: File): Observable<HttpEvent<UserProfile>> {
+    const formData = new FormData();
+    if (payload.username !== undefined) {
+      formData.append('username', payload.username);
+    }
+    if (payload.first_name !== undefined) {
+      formData.append('first_name', payload.first_name);
+    }
+    if (payload.last_name !== undefined) {
+      formData.append('last_name', payload.last_name);
+    }
+    if (payload.bio !== undefined) {
+      formData.append('bio', payload.bio);
+    }
+
+    formData.append('avatar', avatar);
+    return this.http.patch<UserProfile>(`${environment.apiUrl}/users/me/`, formData, {
+      reportProgress: true,
+      observe: 'events',
+    });
   }
 }
 

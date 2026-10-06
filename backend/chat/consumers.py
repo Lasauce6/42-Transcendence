@@ -3,18 +3,28 @@ import json
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
+from .files import make_attachment_url
+
 
 class ChatConsumer(AsyncWebsocketConsumer):
+
     async def connect(self):
         self.user = self.scope["user"]
         if not self.user.is_authenticated:
             await self.close()
             return
 
-        self.channel_id = self.scope["url_route"]["kwargs"].get("channel_id") or self.scope["url_route"]["kwargs"].get("room_name")
+        self.channel_id = (
+            self.scope["url_route"]["kwargs"].get("channel_id")
+            or self.scope["url_route"]["kwargs"].get("room_name")
+        )
 
         self.channel_obj = await self._get_channel_and_verify_member()
         if not self.channel_obj:
+            await self.close()
+            return
+
+        if await self._is_banned():
             await self.close()
             return
 
@@ -67,6 +77,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     "sender": event["sender"],
                     "sender_id": event["sender_id"],
                     "created_at": event["created_at"],
+                    "attachments": [
+                        {**a, "url": make_attachment_url(a["id"], self.user.id)}
+                        for a in event.get("attachments", [])
+                    ],
                 }
             )
         )
@@ -77,12 +91,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         try:
             channel = Channel.objects.get(id=self.channel_id)
-            is_member = ChannelMember.objects.filter(
-                channel=channel, user=self.user
-            ).exists()
-            return channel if is_member else None
         except (Channel.DoesNotExist, ValueError):
             return None
+
+        is_member = ChannelMember.objects.filter(
+            channel=channel, user=self.user
+        ).exists()
+        return channel if is_member else None
+
+    @database_sync_to_async
+    def _is_banned(self):
+        from chat.models import ChannelBan
+
+        return ChannelBan.objects.filter(
+            channel=self.channel_obj, user=self.user
+        ).exists()
 
     @database_sync_to_async
     def _save_message(self, content):
@@ -130,7 +153,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     "id": str(notification.id),
                     "type": notification.type,
                     "entity_type": notification.entity_type,
-                    "entity_id": str(notification.entity_id) if notification.entity_id else None,
+                    "entity_id": str(notification.entity_id)
+                    if notification.entity_id
+                    else None,
                     "payload": notification.payload,
                     "is_read": notification.is_read,
                     "created_at": notification.created_at.isoformat(),
