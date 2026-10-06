@@ -2,30 +2,34 @@ import json
 
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
+from django.conf import settings
+from django.contrib.auth.models import AnonymousUser
 
 from .files import make_attachment_url
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
-
     async def connect(self):
+        self.user = AnonymousUser()
+        self.is_authenticated = False
+        self.auth_timeout_task = None
         self.user = self.scope["user"]
+
         if not self.user.is_authenticated:
-            await self.close()
+            await self.close(code=4001)
             return
 
-        self.channel_id = (
-            self.scope["url_route"]["kwargs"].get("channel_id")
-            or self.scope["url_route"]["kwargs"].get("room_name")
-        )
+        self.channel_id = self.scope["url_route"]["kwargs"].get(
+            "channel_id"
+        ) or self.scope["url_route"]["kwargs"].get("room_name")
 
         self.channel_obj = await self._get_channel_and_verify_member()
         if not self.channel_obj:
-            await self.close()
+            await self.close(code=4003)
             return
 
         if await self._is_banned():
-            await self.close()
+            await self.close(code=4004)
             return
 
         self.room_group_name = f"chat_{self.channel_id}"
@@ -40,9 +44,27 @@ class ChatConsumer(AsyncWebsocketConsumer):
             )
 
     async def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        content = text_data_json.get("message") or text_data_json.get("content", "")
-        content = content.strip()
+        if text_data is None:
+            return
+
+        max_length = getattr(settings, "CHAT_MAX_MESSAGE_LENGTH", 2000)
+        if len(text_data) > max_length:
+            await self.send(
+                json.dumps({"type": "error", "code": "message_too_long"})
+            )
+            return
+
+        try:
+            payload = json.loads(text_data)
+        except json.JSONDecodeError:
+            await self.send(json.dumps({"type": "error", "code": "invalid_json"}))
+            return
+
+        if not isinstance(payload, dict):
+            await self.send(json.dumps({"type": "error", "code": "invalid_json"}))
+            return
+
+        content = str(payload.get("message") or payload.get("content", "")).strip()
 
         if not content:
             return
@@ -72,15 +94,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(
             text_data=json.dumps(
                 {
-                    "id": event["id"],
-                    "message": event["message"],
-                    "sender": event["sender"],
-                    "sender_id": event["sender_id"],
-                    "created_at": event["created_at"],
-                    "attachments": [
-                        {**a, "url": make_attachment_url(a["id"], self.user.id)}
-                        for a in event.get("attachments", [])
-                    ],
+                    "type": "chat_message",
+                    "payload": {
+                        "id": event["id"],
+                        "message": event["message"],
+                        "sender": event["sender"],
+                        "sender_id": event["sender_id"],
+                        "created_at": event["created_at"],
+                        "attachments": [
+                            {**a, "url": make_attachment_url(a["id"], self.user.id)}
+                            for a in event.get("attachments", [])
+                        ],
+                    },
                 }
             )
         )
@@ -120,11 +145,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def _create_notifications(self, message_preview):
         from api.models import Notification
+
         from chat.models import ChannelMember
 
-        members = ChannelMember.objects.filter(
-            channel=self.channel_obj
-        ).exclude(user=self.user)
+        members = ChannelMember.objects.filter(channel=self.channel_obj).exclude(
+            user=self.user
+        )
 
         notifications = []
         for member in members:
@@ -165,7 +191,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
 class NotificationConsumer(AsyncWebsocketConsumer):
-
     async def connect(self):
         self.user = self.scope["user"]
         if not self.user.is_authenticated:

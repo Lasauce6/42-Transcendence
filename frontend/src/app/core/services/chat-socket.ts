@@ -4,7 +4,7 @@ import { ChatMessage } from '@core/models/chat.model';
 import { ChatService } from '@core/services/chat';
 import { AuthService } from '@features/auth/auth';
 
-// Format d'un message envoyé par le back sur le websocket (consumers.py → chat_message).
+// Format interne d'un message de salon envoyé par le back.
 interface WsMessage {
   id: string;
   message: string;
@@ -13,8 +13,18 @@ interface WsMessage {
   created_at: string;
 }
 
-// Temps d'attente avant de retenter une connexion (en millisecondes).
-const RETRY_DELAY = 3000;
+// Enveloppe sortante du WebSocket (consumers.py).
+interface WsEnvelope {
+  type: 'chat_message' | 'error';
+  payload?: WsMessage;
+  code?: string;
+}
+
+// Codes de fermeture applicatifs côté back (consumers.py).
+const TERMINAL_CLOSE_CODES = [4001, 4003, 4004];
+
+const INITIAL_RETRY_DELAY = 3000;
+const MAX_RETRIES = 5;
 
 // Gère la connexion websocket d'une conversation et la liste de ses messages.
 @Injectable()
@@ -24,16 +34,19 @@ export class ChatSocket {
 
   readonly messages = signal<ChatMessage[]>([]);
   readonly connected = signal(false);
+  readonly terminalError = signal<string | null>(null);
 
   private ws: WebSocket | null = null;
   private channelId = '';
   private retryTimer = 0;
+  private retryCount = 0;
   private closedByUs = false;
 
   // Ouvre la connexion pour la conversation donnée.
   open(channelId: string): void {
     this.channelId = channelId;
     this.closedByUs = false;
+    this.terminalError.set(null);
     this.connect();
   }
 
@@ -59,6 +72,7 @@ export class ChatSocket {
   // Ferme la connexion et annule toute tentative de reconnexion.
   close(): void {
     this.closedByUs = true;
+    this.retryCount = 0;
     window.clearTimeout(this.retryTimer);
     if (this.ws !== null) {
       this.ws.close();
@@ -78,20 +92,57 @@ export class ChatSocket {
 
     this.ws.onopen = () => {
       this.connected.set(true);
+      this.retryCount = 0;
+      this.terminalError.set(null);
     };
 
     this.ws.onmessage = (event) => {
-      this.receive(JSON.parse(event.data));
-    };
+      let envelope: WsEnvelope;
+      try {
+        envelope = JSON.parse(event.data);
+      } catch {
+        return;
+      }
 
-    this.ws.onclose = () => {
-      this.connected.set(false);
-      if (!this.closedByUs) {
-        this.retryTimer = window.setTimeout(() => this.connect(), RETRY_DELAY);
+      if (envelope.type === 'chat_message' && envelope.payload) {
+        this.receive(envelope.payload);
+      } else if (envelope.type === 'error') {
+        this.terminalError.set(envelope.code ?? 'unknown_error');
       }
     };
-  }
 
+    this.ws.onclose = (event) => {
+      this.connected.set(false);
+      this.ws = null;
+
+      if (this.closedByUs) {
+        return;
+      }
+
+      if (TERMINAL_CLOSE_CODES.includes(event.code)) {
+        // Le back a refusé la connexion (token, membre, banni) : on ne retente pas.
+        const error =
+          event.code === 4001
+            ? 'unauthenticated'
+            : event.code === 4003
+              ? 'not_a_member'
+              : event.code === 4004
+                ? 'banned'
+                : 'connection_refused';
+        this.terminalError.set(error);
+        return;
+      }
+
+      if (this.retryCount >= MAX_RETRIES) {
+        this.terminalError.set('max_retries_exceeded');
+        return;
+      }
+
+      const delay = INITIAL_RETRY_DELAY * 2 ** this.retryCount;
+      this.retryCount += 1;
+      this.retryTimer = window.setTimeout(() => this.connect(), delay);
+    };
+  }
   // Transforme un message du websocket au format de l'appli et l'ajoute à la liste.
   private receive(data: WsMessage): void {
     if (this.hasMessage(data.id)) {
@@ -125,4 +176,3 @@ export class ChatSocket {
     return this.messages().some((m) => m.id === id);
   }
 }
-

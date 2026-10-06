@@ -6,6 +6,17 @@ map $http_upgrade $connection_upgrade {
     '' close;
 }
 
+# Masque le token JWT des logs d'accès.
+map $request_uri $log_request_uri {
+    ~^(?<prefix>.*)[?&]token=[^&]+(?<suffix>.*)$  $prefix$suffix;
+    default                                       $request_uri;
+}
+
+log_format sanitized '$remote_addr - $remote_user [$time_local] '
+                     '"$request" $status $body_bytes_sent '
+                     '"$http_referer" "$http_user_agent" '
+                     'uri="$log_request_uri"';
+
 server_tokens ${SERVER_TOKENS};
 more_set_headers 'Server: ${SERVER_HEADER}';
 
@@ -13,6 +24,8 @@ more_set_headers 'Server: ${SERVER_HEADER}';
 server {
     listen ${PORT} default_server;
     server_name _;
+
+    access_log /var/log/nginx/access.log sanitized;
 
     location = /healthz {
         access_log off;
@@ -28,6 +41,8 @@ server {
 server {
     listen ${SSL_PORT} ssl;
     server_name ${SERVER_NAME};
+
+    access_log /var/log/nginx/access.log sanitized;
 
     ssl_certificate ${SSL_CERT_FILE};
     ssl_certificate_key ${SSL_CERT_KEY_FILE};
