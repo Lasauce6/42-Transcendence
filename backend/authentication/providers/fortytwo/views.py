@@ -15,14 +15,13 @@ class FortyTwoOAuth2Adapter(OAuth2Adapter):
     profile_url = "https://api.intra.42.fr/v2/me"
 
     def complete_login(self, request, app, token, **kwargs):
-        resp = requests.get(
-            self.profile_url,
-            headers={"Authorization": f"Bearer {token.token}"},
-        )
+        headers = {"Authorization": f"Bearer {token.token}"}
+        resp = requests.get(self.profile_url, headers=headers)
         resp.raise_for_status()
         extra_data = resp.json()
         return self.get_provider().sociallogin_from_response(request, extra_data)
 
+FortyTwoProvider.oauth2_adapter_class = FortyTwoOAuth2Adapter
 
 oauth2_login = OAuth2LoginView.adapter_view(FortyTwoOAuth2Adapter)
 oauth2_callback = OAuth2CallbackView.adapter_view(FortyTwoOAuth2Adapter)

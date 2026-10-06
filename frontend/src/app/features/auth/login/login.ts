@@ -32,10 +32,8 @@ export class Login {
       try {
         this.errorMessage.set('');
         const response = await firstValueFrom(this.authService.login(this.loginData()));
-        if ('requires2FA' in response) {
-          this.router.navigate(['/auth/2fa/verify'], {
-            state: { tempToken: response.tempToken },
-          });
+        if (response.two_fa_pending) {
+          this.router.navigate(['/auth/2fa/verify']);
         } else {
           this.router.navigate(['/']);
         }
@@ -47,6 +45,6 @@ export class Login {
   onOAuthLogin(provider: 'google' | 'github' | 'fortytwo') {
     const backendProvider = provider === 'fortytwo' ? '42' : provider;
 
-    window.location.href = `${window.location.origin}/${environment.apiUrl}/auth/oauth/${backendProvider}/login/`;
+    window.location.href = `${window.location.origin}${environment.apiUrl}/auth/oauth/${backendProvider}/login/`;
   }
 }

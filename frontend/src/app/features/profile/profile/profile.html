@@ -2,13 +2,22 @@
   <div class="profile">
     <h2>{{ p.username }}</h2>
     <p>{{ p.email }}</p>
-    @if (p.avatarUrl) {
-      <img [src]="p.avatarUrl" [alt]="'PROFILE.AVATAR_ALT' | translate" />
+    <p>{{ p.first_name }} {{ p.last_name }}</p>
+    @if (p.bio) {
+      <p>{{ p.bio }}</p>
     }
-    <app-profile-edit [profile]="p" (profileUpdated)="profile.set($event)" />
+    @if (p.avatar) {
+      <img [src]="p.avatar" [alt]="'PROFILE.AVATAR_ALT' | translate" />
+    }
+
+    @if (!isEditing()) {
+      <button (click)="startEdit()">{{ 'PROFILE.EDIT_BUTTON' | translate }}</button>
+    } @else {
+      <app-profile-edit [profile]="p" (profileUpdated)="onProfileUpdated($event)" />
+    }
   </div>
 } @else if (error()) {
   <p class="error">{{ error()! | translate }}</p>
 } @else {
-  <p>{{ 'PROFILE.LOADING' | translate }}</p>
+  <p>{{ 'PROFILE.LOADING' | translate }}</p>        
 }

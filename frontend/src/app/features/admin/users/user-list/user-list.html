@@ -1,25 +1,48 @@
-<h2>Utilisateurs</h2>
+<section class="admin-users">
+  <h1>{{ 'ADMIN.TITLE' | translate }}</h1>
+  <h2>{{ 'ADMIN.USERS.TITLE' | translate }}</h2>
 
-@if (loading()) {
-  <p>Chargement…</p>
-} @else if (error()) {
-  <p class="error">{{ error() }}</p>
-} @else {
-  <table>
-    <thead>
-      <tr><th>ID</th><th>Utilisateur</th><th>Email</th><th>Actif</th></tr>
-    </thead>
-    <tbody>
-      @for (user of users(); track user.id) {
+  <!-- 4 états : chargement, erreur, liste vide, liste -->
+  @if (loading()) {
+    <p class="loading">{{ 'COMMON.LOADING' | translate }}</p>
+  } @else if (error()) {
+    <p class="error">{{ 'ADMIN.USERS.ERROR' | translate }}</p>
+  } @else if (users().length === 0) {
+    <p class="empty">{{ 'ADMIN.USERS.EMPTY' | translate }}</p>
+  } @else {
+    <table>
+      <thead>
         <tr>
-          <td>{{ user.id }}</td>
-          <td>{{ user.username }}</td>
-          <td>{{ user.email }}</td>
-          <td>{{ user.is_active ? 'Oui' : 'Non' }}</td>
+          <th>{{ 'ADMIN.USERS.USERNAME' | translate }}</th>
+          <th>{{ 'ADMIN.USERS.EMAIL' | translate }}</th>
+          <th>{{ 'ADMIN.USERS.ROLE' | translate }}</th>
+          <th>{{ 'ADMIN.USERS.ACTIONS' | translate }}</th>
         </tr>
-      } @empty {
-        <tr><td colspan="4">Aucun utilisateur</td></tr>
-      }
-    </tbody>
-  </table>
-}
+      </thead>
+      <tbody>
+        @for (user of users(); track user.id) {
+          <tr>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>
+              <!-- Changement de rôle (désactivé sur sa propre ligne) -->
+              <select [disabled]="user.id === myId()" (change)="changeRole(user, $event)">
+                @for (role of roles; track role) {
+                  <option [value]="role" [selected]="role === user.role">{{ role }}</option>
+                }
+              </select>
+            </td>
+            <td>
+              <!-- Pas de bouton supprimer sur sa propre ligne -->
+              @if (user.id !== myId()) {
+                <button type="button" (click)="remove(user)">
+                  {{ 'ADMIN.USERS.DELETE' | translate }}
+                </button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</section>

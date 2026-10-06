@@ -14,16 +14,19 @@ db_name = os.environ.get("POSTGRES_DB")
 django_key = os.environ.get("DJANGO_SECRET_KEY")
 
 # OAuth secrets depuis le .env
-oauth42_client_id = os.environ.get("OAUTH42_CLIENT_ID")
-oauth42_client_secret = os.environ.get("OAUTH42_CLIENT_SECRET")
+oauth_42_client_id = os.environ.get("OAUTH_42_CLIENT_ID")
+oauth_42_client_secret = os.environ.get("OAUTH_42_CLIENT_SECRET")
 oauth_google_client_id = os.environ.get("OAUTH_GOOGLE_CLIENT_ID")
 oauth_google_client_secret = os.environ.get("OAUTH_GOOGLE_CLIENT_SECRET")
 oauth_github_client_id = os.environ.get("OAUTH_GITHUB_CLIENT_ID")
 oauth_github_client_secret = os.environ.get("OAUTH_GITHUB_CLIENT_SECRET")
 
+# 2FA secrets depuis le .env
+totp_encryption_key = os.environ.get("TOTP_ENCRYPTION_KEY")
+totp_issuer_name = os.environ.get("TOTP_ISSUER_NAME")
 
 required = [vault_addr, vault_token, db_user, db_pass, db_name, django_key,
-            oauth42_client_id, oauth42_client_secret]
+            oauth_42_client_id, oauth_42_client_secret]
 if not all(required):
     print("Erreur: Variables d'environnement manquantes.", file=sys.stderr)
     sys.exit(1)
@@ -35,12 +38,14 @@ payload = json.dumps({
     "data": {
         "DJANGO_SECRET_KEY": django_key,
         "DATABASE_URL": db_url,
-        "OAUTH42_CLIENT_ID": oauth42_client_id,
-        "OAUTH42_CLIENT_SECRET": oauth42_client_secret,
+        "OAUTH_42_CLIENT_ID": oauth_42_client_id,
+        "OAUTH_42_CLIENT_SECRET": oauth_42_client_secret,
         "OAUTH_GOOGLE_CLIENT_ID": oauth_google_client_id,
         "OAUTH_GOOGLE_CLIENT_SECRET": oauth_google_client_secret,
         "OAUTH_GITHUB_CLIENT_ID": oauth_github_client_id,
         "OAUTH_GITHUB_CLIENT_SECRET": oauth_github_client_secret,
+        "TOTP_ENCRYPTION_KEY": totp_encryption_key,
+        "TOTP_ISSUER_NAME": totp_issuer_name,
     }
 }).encode("utf-8")
 

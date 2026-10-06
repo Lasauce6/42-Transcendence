@@ -8,6 +8,9 @@ const profile: UserProfile = {
   id: '1',
   username: '42',
   email: '42@example.com',
+  first_name: '',
+  last_name: '',
+  bio: '',
   avatarUrl: null,
   role: 'ADMIN',
 };

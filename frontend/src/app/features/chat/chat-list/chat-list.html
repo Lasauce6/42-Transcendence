@@ -1,0 +1,62 @@
+<section class="chat-list">
+  <header>
+    <h1>{{ 'CHAT.TITLE' | translate }}</h1>
+  </header>
+
+  <input
+    type="search"
+    [placeholder]="'CHAT.SEARCH' | translate"
+    [value]="query()"
+    (input)="onSearch($event)"
+  />
+
+  <form class="new-conversation" (submit)="$event.preventDefault(); startConversation()">
+    <input
+      type="text"
+      [placeholder]="'CHAT.NEW_PLACEHOLDER' | translate"
+      [value]="newUsername()"
+      (input)="onNewUsernameInput($event)"
+    />
+    <button type="submit" [disabled]="creating() || !newUsername().trim()">
+      {{ 'CHAT.NEW_BUTTON' | translate }}
+    </button>
+    @if (createError()) {
+      <span class="error">{{ 'CHAT.NEW_ERROR' | translate }}</span>
+    }
+  </form>
+
+  @if (loading()) {
+    <p class="state">{{ 'CHAT.LOADING' | translate }}</p>
+  } @else if (error()) {
+    <p class="state">
+      {{ 'CHAT.ERROR' | translate }}
+      <button type="button" (click)="reload()">{{ 'CHAT.RETRY' | translate }}</button>
+    </p>
+  } @else if (channels().length === 0) {
+    <p class="state">{{ (query() ? 'CHAT.NO_RESULT' : 'CHAT.EMPTY') | translate }}</p>
+  } @else {
+    <ul>
+      @for (c of channels(); track c.id) {
+        <li [class.unread]="(c.unread_count ?? 0) > 0">
+          <button type="button" (click)="open(c)">
+            <span class="avatar" aria-hidden="true">{{ displayName(c).charAt(0).toUpperCase() }}</span>
+            <span class="body">
+              <strong>{{ displayName(c) || ('CHAT.UNNAMED' | translate) }}</strong>
+              <span class="preview">
+                {{ c.last_message?.content ?? ('CHAT.NO_MESSAGE' | translate) }}
+              </span>
+            </span>
+            <span class="meta">
+              <time [attr.datetime]="c.last_message?.created_at ?? c.created_at">
+                {{ c.last_message?.created_at ?? c.created_at | date: 'short' }}
+              </time>
+              @if (c.unread_count) {
+                <span class="badge">{{ c.unread_count }}</span>
+              }
+            </span>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</section>

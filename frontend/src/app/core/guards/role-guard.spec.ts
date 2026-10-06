@@ -11,6 +11,9 @@ const profile = (role: UserRole): UserProfile => ({
   id: '1',
   username: 'dems',
   email: 'dems@example.com',
+  first_name: '',
+  last_name: '',
+  bio: '',
   avatarUrl: null,
   role,
 });

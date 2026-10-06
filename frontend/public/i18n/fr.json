@@ -6,7 +6,9 @@
     "HOME": "Accueil",
     "PROFILE": "Profil",
     "LOGIN": "Connexion",
-    "LOGOUT": "Déconnexion"
+    "LOGOUT": "Déconnexion",
+    "CHAT": "Messages",
+    "API_DOCS": "Doc API"
   },
   "COMMON": {
     "LOADING": "Chargement...",
@@ -20,7 +22,20 @@
   },
   "ADMIN": {
     "NAV": "Admin",
-    "TITLE": "Administration"
+    "TITLE": "Administration",
+    "USERS": {
+      "TITLE": "Utilisateurs",
+      "USERNAME": "Nom d'utilisateur",
+      "EMAIL": "Email",
+      "ROLE": "Rôle",
+      "ACTIONS": "Actions",
+      "DELETE": "Supprimer",
+      "CONFIRM_DELETE": "Supprimer définitivement {{username}} ?",
+      "DELETED": "Utilisateur supprimé.",
+      "ROLE_CHANGED": "Rôle mis à jour.",
+      "EMPTY": "Aucun utilisateur.",
+      "ERROR": "Impossible de charger les utilisateurs."
+    }
   },
   "FORBIDDEN": {
     "TITLE": "Accès refusé",
@@ -88,7 +103,11 @@
     "TWOFA_SETUP": "Configuration 2FA",
     "TWOFA_VERIFY": "Vérification 2FA",
     "PROFILE": "Profil",
-    "FORBIDDEN": "Accès refusé"
+    "FORBIDDEN": "Accès refusé",
+    "NOTIFICATIONS": "Notifications",
+    "CHAT": "Messages",
+    "API_DOCS": "Documentation API",
+    "ADMIN": "Administration"
   },
   "TOAST": {
     "REGION_LABEL": "Notifications",
@@ -100,5 +119,45 @@
       "SERVER": "Le serveur a rencontré un problème. Réessaie plus tard.",
       "GENERIC": "Une erreur est survenue, réessaye."
     }
+  },
+  "NOTIFICATIONS": {
+    "TITLE": "Notifications",
+    "MARK_ALL": "Tout marquer comme lu",
+    "EMPTY": "Aucune notification pour le moment.",
+    "ITEM": {
+      "FRIEND": {
+        "REQUEST": "{{username}} t'a envoyé une demande d'ami.",
+        "ACCEPTED": "{{username}} a accepté ta demande d'ami.",
+        "DEFAULT": "Nouvelle notification de {{username}}."
+      },
+      "MESSAGE": {
+        "DEFAULT": "Nouveau message de {{username}}."
+      }
+    }
+  },
+  "CHAT": {
+    "TITLE": "Messages",
+    "SEARCH": "Rechercher une conversation",
+    "LOADING": "Chargement…",
+    "ERROR": "Impossible de charger les conversations.",
+    "RETRY": "Réessayer",
+    "EMPTY": "Aucune conversation pour l'instant.",
+    "NO_RESULT": "Aucune conversation ne correspond.",
+    "UNNAMED": "Conversation sans nom",
+    "NO_MESSAGE": "Aucun message",
+    "CHAT": "Messages",
+    "NEW_PLACEHOLDER": "Nom d'utilisateur",
+    "NEW_BUTTON": "Démarrer",
+    "NEW_ERROR": "Impossible de créer la conversation.",
+    "BACK": "← Retour",
+    "RECONNECTING": "Reconnexion…",
+    "HISTORY_ERROR": "Impossible de charger l'historique.",
+    "THREAD_EMPTY": "Aucun message, dis bonjour !",
+    "INPUT_PLACEHOLDER": "Écris un message…",
+    "SEND": "Envoyer"
+  },
+  "API_DOCS": {
+    "TITLE": "Documentation de l'API",
+    "FRAME_TITLE": "Documentation interactive de l'API (Swagger)"
   }
 }

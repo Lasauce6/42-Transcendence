@@ -1,19 +1,20 @@
 import uuid
 
-from django.db import models
 from django.conf import settings
+from django.db import models
+
 
 class Notification(models.Model):
     class Type(models.TextChoices):
-        MESSAGE = 'MESSAGE', 'Message'
-        FRIEND = 'FRIEND', 'Friend'
+        MESSAGE = "MESSAGE", "Message"
+        FRIEND = "FRIEND", "Friend"
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     recipient = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='notifications',
+        related_name="notifications",
     )
 
     type = models.CharField(max_length=10, choices=Type.choices)
@@ -28,10 +29,10 @@ class Notification(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ['-created_at']
+        ordering = ["-created_at"]
         indexes = [
-            models.Index(fields=['recipient', 'is_read']),
-            models.Index(fields=['recipient', 'created_at']),
+            models.Index(fields=["recipient", "is_read"]),
+            models.Index(fields=["recipient", "created_at"]),
         ]
 
     def __str__(self):

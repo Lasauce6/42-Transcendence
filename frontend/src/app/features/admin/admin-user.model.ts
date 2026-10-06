@@ -1,7 +1,9 @@
+import { UserRole } from '@core/models/user.model';
+
+// Un utilisateur tel que le back le renvoie dans GET /api/users/
 export interface AdminUser {
-  id: number;
+  id: string; // UUID
   username: string;
   email: string;
-  is_active: boolean;
-  date_joined: string;
+  role: UserRole;
 }

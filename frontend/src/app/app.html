@@ -3,13 +3,20 @@
 
   <nav>
     <a routerLink="/">{{ 'NAV.HOME' | translate }}</a>
+    <a routerLink="/api-docs">{{ 'NAV.API_DOCS' | translate }}</a>
 
     @if (isLoggedIn()) {
       <a routerLink="/profile">{{ 'NAV.PROFILE' | translate }}</a>
+      <a routerLink="/chat">{{ 'NAV.CHAT' | translate }}</a>
+      <app-notification-bell />
     }
 
     @if (isAdmin()) {
-      <a routerLink="/admin">{{ 'ADMIN.NAV' | translate }}</a>
+      <a routerLink="/administration">{{ 'ADMIN.NAV' | translate }}</a>
+    }
+    @if (!isLoggedIn()) {
+      <a routerLink="/login">Connexion</a>
+      <a routerLink="/register">Inscription</a>
     }
   </nav>
   <app-language-switcher />

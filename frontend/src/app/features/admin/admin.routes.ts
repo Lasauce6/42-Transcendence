@@ -1,14 +1,8 @@
 import { Routes } from '@angular/router';
-import { AdminLayout } from './admin-layout/admin-layout';
 import { UserList } from './users/user-list/user-list';
 
+// Routes internes du panel admin (chargées en lazy depuis app.routes.ts)
 export const ADMIN_ROUTES: Routes = [
-  {
-    path: '',
-    component: AdminLayout,
-    children: [
-      { path: '', redirectTo: 'users', pathMatch: 'full' },
-      { path: 'users', component: UserList },
-    ],
-  },
+  { path: '', redirectTo: 'users', pathMatch: 'full' },
+  { path: 'users', component: UserList, title: 'TITLES.ADMIN' },
 ];

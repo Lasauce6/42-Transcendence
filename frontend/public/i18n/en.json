@@ -6,7 +6,9 @@
     "HOME": "Home",
     "PROFILE": "Profile",
     "LOGIN": "Sign in",
-    "LOGOUT": "Sign out"
+    "LOGOUT": "Sign out",
+    "CHAT": "Messages",
+    "API_DOCS": "API docs"
   },
   "COMMON": {
     "LOADING": "Loading...",
@@ -20,7 +22,20 @@
   },
   "ADMIN": {
     "NAV": "Admin",
-    "TITLE": "Administration"
+    "TITLE": "Administration",
+    "USERS": {
+      "TITLE": "Users",
+      "USERNAME": "Username",
+      "EMAIL": "Email",
+      "ROLE": "Role",
+      "ACTIONS": "Actions",
+      "DELETE": "Delete",
+      "CONFIRM_DELETE": "Permanently delete {{username}}?",
+      "DELETED": "User deleted.",
+      "ROLE_CHANGED": "Role updated.",
+      "EMPTY": "No users.",
+      "ERROR": "Unable to load users."
+    }
   },
   "FORBIDDEN": {
     "TITLE": "Access denied",
@@ -88,7 +103,11 @@
     "TWOFA_SETUP": "2FA setup",
     "TWOFA_VERIFY": "2FA verification",
     "PROFILE": "Profile",
-    "FORBIDDEN": "Access denied"
+    "FORBIDDEN": "Access denied",
+    "NOTIFICATIONS": "Notifications",
+    "CHAT": "Messages",
+    "API_DOCS": "API documentation",
+    "ADMIN": "Administration"
   },
   "TOAST": {
     "REGION_LABEL": "Notifications",
@@ -100,5 +119,45 @@
       "SERVER": "The server ran into a problem. Please try again later.",
       "GENERIC": "Something went wrong, please try again."
     }
+  },
+  "NOTIFICATIONS": {
+    "TITLE": "Notifications",
+    "MARK_ALL": "Mark all as read",
+    "EMPTY": "No notifications yet.",
+    "ITEM": {
+      "FRIEND": {
+        "REQUEST": "{{username}} sent you a friend request.",
+        "ACCEPTED": "{{username}} accepted your friend request.",
+        "DEFAULT": "New notification from {{username}}."
+      },
+      "MESSAGE": {
+        "DEFAULT": "New message from {{username}}."
+      }
+    }
+  }, 
+  "CHAT": {
+    "TITLE": "Messages",
+    "SEARCH": "Search conversations",
+    "LOADING": "Loading…",
+    "ERROR": "Could not load conversations.",
+    "RETRY": "Retry",
+    "EMPTY": "No conversations yet.",
+    "NO_RESULT": "No matching conversation.",
+    "UNNAMED": "Unnamed conversation",
+    "NO_MESSAGE": "No messages",
+    "CHAT": "Messages",
+    "NEW_PLACEHOLDER": "Username",
+    "NEW_BUTTON": "Start",
+    "NEW_ERROR": "Could not create the conversation.",
+    "BACK": "← Back",
+    "RECONNECTING": "Reconnecting…",
+    "HISTORY_ERROR": "Could not load the history.",
+    "THREAD_EMPTY": "No messages yet, say hi!",
+    "INPUT_PLACEHOLDER": "Write a message…",
+    "SEND": "Send"
+  },
+  "API_DOCS": {
+    "TITLE": "API documentation",
+    "FRAME_TITLE": "Interactive API documentation (Swagger)"
   }
 }

@@ -19,6 +19,8 @@ from authentication.providers.fortytwo.views import (
     oauth2_login as fortytwo_login,
 )
 
+from .views import oauth_jwt_redirect
+
 urlpatterns = [
     path("42/login/", fortytwo_login, name="fortytwo_login"),
     path("42/callback/", fortytwo_callback, name="fortytwo_callback"),
@@ -26,4 +28,5 @@ urlpatterns = [
     path("google/callback/", google_callback, name="google_callback"),
     path("github/login/", github_login, name="github_login"),
     path("github/callback/", github_callback, name="github_callback"),
+    path("jwt/", oauth_jwt_redirect, name="oauth_jwt_redirect"),
 ]

@@ -20,7 +20,7 @@ export const routes: Routes = [
   },
 
   {
-    path: 'auth/callback/:provider',
+    path: 'auth/callback',
     component: OauthCallback,
     title: 'TITLES.OAUTH_CALLBACK',
   },
@@ -42,34 +42,49 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'api-docs',
+    loadComponent: () => import('@features/api-docs/api-docs').then((m) => m.ApiDocs),
+    title: 'TITLES.API_DOCS',
+  },
+  {
     path: 'forbidden',
     loadComponent: () => import('@features/forbidden/forbidden').then((m) => m.Forbidden),
     title: 'TITLES.FORBIDDEN',
   },
   {
-    path: '',
-    redirectTo: '/login',
-    pathMatch: 'full',
+    path: 'notifications',
+    loadComponent: () =>
+      import('@features/notifications/notification-list/notification-list').then(
+        (m) => m.NotificationList,
+      ),
+    title: 'TITLES.NOTIFICATIONS',
+    canActivate: [authGuard],
   },
   {
     path: '',
     loadComponent: () => import('@features/home/home').then((m) => m.Home),
   },
+  // Panel admin : "administration" et pas "admin", car nginx envoie /admin/ au Django admin
   {
-    path: 'admin',
+    path: 'administration',
     loadChildren: () => import('@features/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
     canActivate: [authGuard, roleGuard],
     data: { roles: ['ADMIN'] },
   },
-  // {
-  //   path: 'chat',
-  //   loadComponent: () => import('@features/chat/chat').then(m => m.Chat),
-  // },
-  // {
-  //   path: 'admin',
-  //   loadChildren: () => import('@features/admin/admin.routes').then(m => m.ADMIN_ROUTES),
-  //   // canActivate: [roleGuard(['admin'])],   <-- ticket #48
-  // },
-
+  {
+    path: 'chat',
+    loadComponent: () =>
+      import('@features/chat/chat-list/chat-list').then((m) => m.ChatList),
+    title: 'TITLES.CHAT',
+    canActivate: [authGuard],
+  },
+  {
+    path: 'chat/:id',
+    loadComponent: () =>
+      import('@features/chat/chat-window/chat-window').then((m) => m.ChatWindow),
+    title: 'TITLES.CHAT',
+    canActivate: [authGuard],
+  },
   { path: '**', redirectTo: '' },
 ];
+  
