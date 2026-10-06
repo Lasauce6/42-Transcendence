@@ -120,7 +120,7 @@ Index composes: `(channel, created_at)`, `sender`. Tri par defaut: `created_at` 
 | `created_at` | DateTimeField | Date de creation |
 
 Types acceptes: jpg, png, gif, webp, pdf, txt, docx, xlsx. Taille max: 10 Mo.
-Le fichier est supprime du disque quand l'attachment est supprime.
+Le fichier est supprime du disque quand l'attachment est supprime, et quand son message est supprime (`DELETE /api/channels/{uuid}/messages/{uuid}/`).
 
 ### Diagramme des relations
 
