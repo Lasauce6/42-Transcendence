@@ -12,7 +12,7 @@ def oauth_jwt_redirect(request):
     access_token = str(refresh.access_token)
     refresh_token = str(refresh)
 
-    frontend_url = getattr(settings, "FRONTEND_URL", "http://localhost")
+    frontend_url = getattr(settings, "FRONTEND_URL", "https://localhost")
 
     redirect_url = (
         f"{frontend_url}/auth/callback?access={access_token}&refresh={refresh_token}"
