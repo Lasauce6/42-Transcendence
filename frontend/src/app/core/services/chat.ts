@@ -75,7 +75,7 @@ export class ChatService {
       }),
     );
   }
-
+}
 
 function lastActivity(c: Channel): string {
   return c.last_message?.created_at ?? c.created_at;
