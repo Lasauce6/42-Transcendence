@@ -134,10 +134,20 @@
     "CHAT": "Messages",
     "NEW_PLACEHOLDER": "Username",
     "NEW_BUTTON": "Start",
+<<<<<<< HEAD
+    "NEW_ERROR": "Could not create the conversation.",
+    "BACK": "← Back",
+    "RECONNECTING": "Reconnecting…",
+    "HISTORY_ERROR": "Could not load the history.",
+    "THREAD_EMPTY": "No messages yet, say hi!",
+    "INPUT_PLACEHOLDER": "Write a message…",
+    "SEND": "Send"
+=======
     "NEW_ERROR": "Could not create the conversation."
   },
   "API_DOCS": {
     "TITLE": "API documentation",
     "FRAME_TITLE": "Interactive API documentation (Swagger)"
+>>>>>>> master
   }
 }

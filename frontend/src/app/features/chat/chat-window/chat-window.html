@@ -1,0 +1,38 @@
+<section class="chat-window">
+  <header>
+    <a routerLink="/chat">{{ 'CHAT.BACK' | translate }}</a>
+    @if (!socket.connected()) {
+      <span class="status">{{ 'CHAT.RECONNECTING' | translate }}</span>
+    }
+  </header>
+
+  <div class="messages">
+    @if (loading()) {
+      <p class="state">{{ 'CHAT.LOADING' | translate }}</p>
+    } @else if (error()) {
+      <p class="state">{{ 'CHAT.HISTORY_ERROR' | translate }}</p>
+    } @else if (socket.messages().length === 0) {
+      <p class="state">{{ 'CHAT.THREAD_EMPTY' | translate }}</p>
+    }
+
+    @for (m of socket.messages(); track m.id) {
+      <div class="bubble" [class.mine]="isMine(m.sender)" [class.theirs]="!isMine(m.sender)">
+        <p>{{ m.content }}</p>
+        <time [attr.datetime]="m.created_at">{{ m.created_at | date: 'shortTime' }}</time>
+      </div>
+    }
+  </div>
+
+  <form (submit)="$event.preventDefault(); send()">
+    <input
+      type="text"
+      [placeholder]="'CHAT.INPUT_PLACEHOLDER' | translate"
+      [value]="draft()"
+      (input)="onInput($event)"
+    />
+    <button type="submit" [disabled]="!draft().trim() || !socket.connected()">
+      {{ 'CHAT.SEND' | translate }}
+    </button>
+  </form>
+  <div #bottom></div>  
+</section>

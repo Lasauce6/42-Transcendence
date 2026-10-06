@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { environment } from '@env/environment';
-import { Channel, ChannelType } from '@core/models/chat.model';
+import { Channel, ChannelType, ChatMessage } from '@core/models/chat.model';
 
 @Injectable({
   providedIn: 'root',
@@ -36,6 +36,10 @@ export class ChatService {
           : c,
       ),
     );
+  }
+  // Récupère l'historique des messages d'une conversation.
+  loadMessages(channelId: string): Observable<ChatMessage[]> {
+    return this.http.get<ChatMessage[]>(`${this.url}${channelId}/messages/`);
   }
 }
 
