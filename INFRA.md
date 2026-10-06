@@ -7,11 +7,11 @@ Architecture Docker, configuration reseau et services
 ```
                     HOTE
                       |
-                  port 80 (HTTP)
+                  ports 80 (HTTP -> 301) et 443 (HTTPS)
                       |
                  +----------+
-                 |  nginx   |  nginx:alpine
-                 |  :80     |
+                 |  nginx   |  owasp/modsecurity-crs (WAF)
+                 |  :8443   |  ModSecurity v3 + OWASP CRS
                  +----------+
                     |    |
      +--------------+    +------------------+
@@ -39,15 +39,33 @@ Architecture Docker, configuration reseau et services
 
 ## Services
 
-### 1. Nginx (Reverse Proxy)
+### 1. Nginx (Reverse Proxy + WAF)
 
 | Propriete | Valeur |
 | --- | --- |
-| Image | `nginx:alpine` |
-| Port expose | `80:80` |
-| Config | `nginx/default.conf` |
+| Image | `owasp/modsecurity-crs:nginx` (build `nginx/Dockerfile`) |
+| Ports exposes | `80:8080` (redirect 301), `443:8443` (HTTPS) |
+| Config | `nginx/templates/conf.d/default.conf.template` (envsubst au demarrage) |
+| Regles WAF | OWASP CRS + `nginx/rules/REQUEST-900-*.conf` et `RESPONSE-999-*.conf` |
 | Dependances | backend, frontend |
 | Restart | `always` |
+
+**WAF (ModSecurity + OWASP CRS):**
+
+| Parametre | Defaut | Ajustement |
+| --- | --- | --- |
+| `MODSEC_RULE_ENGINE` | `On` | `DetectionOnly` en phase d'observation |
+| `BLOCKING_PARANOIA` | `1` | `2` sur `/api/` et `/admin/` (directives par location), monter a 2 globalement apres stabilisation |
+| `ANOMALY_INBOUND` | `5` | Seuil `/ws/` a 25 et `/admin/` a 3 via `modsecurity_rules` |
+| Audit log | JSON sur stdout | `docker compose logs nginx` |
+
+- TLS : certificat auto-signe genere au premier demarrage par l'image ; `HSTS` actif ; HTTP redirige en 301 vers HTTPS.
+- Rate limiting nginx : zone `general` (20 r/s, burst 40) sur tout le serveur, zone `auth` (6 r/m, burst 5) sur `/api/auth/` (anti brute-force).
+- Fail2ban-like : chaque blocage 403 du WAF incremente un compteur par IP ; a 10 violations, l'IP est bannie 1h (regle 900001).
+- Aucune exclusion massive : seule `/ws/` desactive le tag `OWASP_CRS` (frames non inspectables par ModSecurity).
+- Healthcheck : `GET /healthz` repond 200 sur HTTP et HTTPS.
+
+**Validation :** `make waf-test` execute `nginx/scripts/test-waf.sh` (trafic legitime OK, SQLi/XSS/traversal/scanner bloques en 403).
 
 **Routing:**
 
@@ -122,12 +140,12 @@ Architecture Docker, configuration reseau et services
 
 **Usage:** Backend du channel layer pour Django Channels (messagerie WebSocket temps reel).
 
-### 6. HashiCorp Vault (Secrets)
+| 6. HashiCorp Vault (Secrets)
 
 | Propriete | Valeur |
 | --- | --- |
 | Image | `hashicorp/vault:2.0` |
-| Port | `8200:8200` (expose sur l'hote) |
+| Port | 8200 (interne uniquement, non expose) |
 | Mode | Dev (`VAULT_DEV_ROOT_TOKEN_ID=root`) |
 | Env file | `.env` |
 
@@ -162,7 +180,7 @@ Fichier `.env` a la racine du projet (copie de `.env.example`):
 - **Reseau unique:** `transcendence-network` (driver `bridge`)
 - **6 services** connectes au meme reseau
 - **Service discovery:** DNS Docker (les noms de services resolvent les IPs des containers)
-- **Ports exposes sur l'hote:** Uniquement `nginx:80` et `vault:8200`
+- **Ports exposes sur l'hote:** Uniquement `nginx:80` (redirect) et `nginx:443` (HTTPS)
 
 ## Volumes
 
@@ -172,7 +190,9 @@ Fichier `.env` a la racine du projet (copie de `.env.example`):
 | backend | `./backend` | `/app` | Bind mount |
 | frontend | `./frontend` | `/app` | Bind mount |
 | frontend | (anonymous) | `/app/node_modules` | Anonymous volume |
-| nginx | `./nginx/default.conf` | `/etc/nginx/conf.d/default.conf` | Bind mount |
+| nginx | `./nginx/templates` | `/etc/nginx/templates` (ro) | Bind mount |
+| nginx | `./nginx/rules/*.conf` | `/etc/modsecurity.d/owasp-crs/rules/` (ro) | Bind mount |
+| nginx | `./backend/media` | `/app/media` (ro) | Bind mount |
 
 ## Makefile
 
@@ -184,6 +204,7 @@ Commandes depuis la racine du projet:
 | `make down` | `docker compose down` | Arreter les containers |
 | `make debug` | `docker compose up --build` | Build et demarrer avec les logs |
 | `make logs` | `docker compose logs -f` | Suivre les logs de tous les services |
+| `make waf-test` | `./nginx/scripts/test-waf.sh` | Valider le WAF (403 sur attaques, 200 sur trafic legitime) |
 | `make clean` | `docker compose down -v` | Arreter + supprimer les volumes |
 | `make fclean` | `docker compose down -v --rmi all --remove-orphans` | Tout supprimer (containers, volumes, images, orphelins) |
 | `make re` | `fclean` puis `up` | Reconstruction complete depuis zero |
@@ -200,11 +221,11 @@ make up
 # 3. Ou pour voir les logs
 make debug
 
-# 4. Acceder a l'application
-# Frontend: http://localhost
-# API:      http://localhost/api/
-# Admin:    http://localhost/admin/
-# Vault:    http://localhost:8200
+# 4. Acceder a l'application (HTTPS auto-signe : accepter le certificat)
+# Frontend: https://localhost
+# API:      https://localhost/api/
+# Admin:    https://localhost/admin/
+# (http://localhost redirige en 301 vers HTTPS)
 ```
 
 ## Consignes pour les implementations futures
@@ -220,9 +241,10 @@ make debug
 
 ### Modification de la config Nginx
 
-- Editer `nginx/default.conf`.
-- Appliquer: `docker compose restart nginx` (pas de rebuild necessaire, le fichier est monte en bind mount).
-- Pour ajouter un nouveau location, suivre le pattern existant avec `set $xxx_upstream` et `proxy_pass`.
+- Editer `nginx/templates/conf.d/default.conf.template` (envsubst applique au demarrage du container).
+- Appliquer: `docker compose restart nginx` (bind mount, pas de rebuild).
+- Exclusions WAF: ajouter les regles dans `nginx/rules/REQUEST-900-*.conf` (avant CRS) ou `RESPONSE-999-*.conf` (apres CRS), jamais en editant le ruleset CRS.
+- Pour observer sans bloquer : `MODSEC_RULE_ENGINE=DetectionOnly` dans `.env`, puis `make up`.
 
 ### Ajout de variables d'environnement
 
@@ -238,13 +260,13 @@ make debug
 - `ng serve` pour le frontend (pas de build production)
 - `DEBUG = True` et `CORS_ALLOW_ALL_ORIGINS = True`
 - Vault en dev mode (token `root`)
-- Pas de HTTPS
+- HTTPS uniquement (certificat auto-signe genere au demarrage de l'image CRS)
 
 **Pour la production, il faudra:**
 - Build production du frontend (`ng build` + serveur de fichiers statiques)
 - `DEBUG = False` et CORS restrictif
 - Vault en mode normal (unseal + policies)
-- HTTPS via Let's Encrypt ou certificats auto-signes
+- HTTPS via Let's Encrypt (au lieu du certificat auto-signe de dev)
 - `SECRET_KEY` reel (pas le fallback de dev)
 - Restrictions CORS sur les origines autorisees
 - Health checks dans `docker-compose.yml`

@@ -24,6 +24,9 @@ debug:
 logs:
 	docker compose logs -f
 
+waf-test:
+	./nginx/scripts/test-waf.sh
+
 clean:
 	docker compose down -v
 
@@ -32,3 +35,5 @@ fclean:
 
 re: fclean
 	@make up --no-print-directory
+
+test: up waf-test
