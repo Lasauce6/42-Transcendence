@@ -9,12 +9,15 @@ export class TwoFactor {
   http = inject(HttpClient);
 
   setupTwoFactor() {
-    return this.http.post<TwoFactorSetupResponse>(`${environment.apiUrl}/auth/2fa/setup/`, {});
+    return this.http.post<TwoFactorSetupResponse>(`${environment.apiUrl}/users/me/2fa/setup/`, {});
   }
   confirmTwoFactorSetup(code: string) {
-    return this.http.post<TwoFactorConfirmResponse>(`${environment.apiUrl}/auth/2fa/confirm/`, {
-      code,
-    });
+    return this.http.post<TwoFactorConfirmResponse>(
+      `${environment.apiUrl}/users/me/2fa/verify-setup/`,
+      {
+        code,
+      },
+    );
   }
   verifyLogin(tempToken: string, code: string) {
     return this.http.post<TwoFactorVerifyLogin>(`${environment.apiUrl}/users/auth/2fa/verify/`, {
@@ -26,11 +29,12 @@ export class TwoFactor {
 
 interface TwoFactorSetupResponse {
   secret: string;
-  qrCodeUrl: string;
+  qr_code: string;
+  uri: string;
 }
 
 interface TwoFactorConfirmResponse {
-  success: boolean;
+  backup_codes: string[];
 }
 
 interface TwoFactorVerifyLogin {

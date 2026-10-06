@@ -49,12 +49,12 @@ class User(AbstractUser):
         return Fernet(base64.urlsafe_b64encode(hashlib.sha256(key).digest()[:32]))
 
     def set_otp_secret(self, raw_secret: str):
-        self.otp_secret_encrypted = self._fernet.encrypt(raw_secret.encode()).decode()
+        self.otp_secret = self._fernet.encrypt(raw_secret.encode()).decode()
 
     def get_otp_secret(self) -> str | None:
-        if not self.otp_secret_encrypted:
+        if not self.otp_secret:
             return None
-        return self._fernet.decrypt(self.otp_secret_encrypted.encode()).decode()
+        return self._fernet.decrypt(self.otp_secret.encode()).decode()
 
     def has_2fa(self) -> bool:
         return self.two_fa_enabled and self.two_fa_verified
