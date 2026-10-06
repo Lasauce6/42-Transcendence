@@ -64,12 +64,13 @@ export const routes: Routes = [
     path: '',
     loadComponent: () => import('@features/home/home').then((m) => m.Home),
   },
-  // {
-  //   path: 'admin',
-  //   loadChildren: () => import('@features/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
-  //   canActivate: [authGuard, roleGuard],
-  //   data: { roles: ['ADMIN'] },
-  // },
+  // Panel admin : "administration" et pas "admin", car nginx envoie /admin/ au Django admin
+  {
+    path: 'administration',
+    loadChildren: () => import('@features/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ADMIN'] },
+  },
   {
     path: 'chat',
     loadComponent: () =>
@@ -84,11 +85,6 @@ export const routes: Routes = [
     title: 'TITLES.CHAT',
     canActivate: [authGuard],
   },
-  // {
-  //   path: 'admin',
-  //   loadChildren: () => import('@features/admin/admin.routes').then(m => m.ADMIN_ROUTES),
-  //   // canActivate: [roleGuard(['admin'])],   <-- ticket #48
-  // },
-
   { path: '**', redirectTo: '' },
 ];
+  

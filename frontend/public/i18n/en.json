@@ -22,7 +22,20 @@
   },
   "ADMIN": {
     "NAV": "Admin",
-    "TITLE": "Administration"
+    "TITLE": "Administration",
+    "USERS": {
+      "TITLE": "Users",
+      "USERNAME": "Username",
+      "EMAIL": "Email",
+      "ROLE": "Role",
+      "ACTIONS": "Actions",
+      "DELETE": "Delete",
+      "CONFIRM_DELETE": "Permanently delete {{username}}?",
+      "DELETED": "User deleted.",
+      "ROLE_CHANGED": "Role updated.",
+      "EMPTY": "No users.",
+      "ERROR": "Unable to load users."
+    }
   },
   "FORBIDDEN": {
     "TITLE": "Access denied",
@@ -93,7 +106,8 @@
     "FORBIDDEN": "Access denied",
     "NOTIFICATIONS": "Notifications",
     "CHAT": "Messages",
-    "API_DOCS": "API documentation"
+    "API_DOCS": "API documentation",
+    "ADMIN": "Administration"
   },
   "TOAST": {
     "REGION_LABEL": "Notifications",

@@ -22,7 +22,20 @@
   },
   "ADMIN": {
     "NAV": "Admin",
-    "TITLE": "Administración"
+    "TITLE": "Administración",
+    "USERS": {
+      "TITLE": "Usuarios",
+      "USERNAME": "Nombre de usuario",
+      "EMAIL": "Correo electrónico",
+      "ROLE": "Rol",
+      "ACTIONS": "Acciones",
+      "DELETE": "Eliminar",
+      "CONFIRM_DELETE": "¿Eliminar definitivamente a {{username}}?",
+      "DELETED": "Usuario eliminado.",
+      "ROLE_CHANGED": "Rol actualizado.",
+      "EMPTY": "Ningún usuario.",
+      "ERROR": "No se pueden cargar los usuarios."
+    }
   },
   "FORBIDDEN": {
     "TITLE": "Acceso denegado",
@@ -93,7 +106,8 @@
     "FORBIDDEN": "Acceso denegado",
     "NOTIFICATIONS": "Notificaciones",
     "CHAT": "Mensajes",
-    "API_DOCS": "Documentación de la API"
+    "API_DOCS": "Documentación de la API",
+    "ADMIN": "Administración"
   },
   "TOAST": {
     "REGION_LABEL": "Notificaciones",
