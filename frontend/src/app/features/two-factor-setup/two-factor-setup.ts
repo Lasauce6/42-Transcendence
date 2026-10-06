@@ -56,7 +56,7 @@ export class TwoFactorSetup implements OnInit {
   ngOnInit() {
     this.twofactor.setupTwoFactor().subscribe({
       next: (response) => {
-        this.qrcodeurl.set(response.qrCodeUrl);
+        this.qrcodeurl.set(response.qr_code);
       },
       error: (httpError) => {
         this.httpError.set('ERRORS.QRCODE_FAILED');

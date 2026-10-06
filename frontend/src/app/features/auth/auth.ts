@@ -21,20 +21,45 @@ export class AuthService {
   private readonly _tempToken = signal<string | null>(null);
   readonly tempToken = this._tempToken.asReadonly();
 
+  private readonly storage = this.document.defaultView?.sessionStorage;
+
+  constructor() {
+    const access = this.storage?.getItem('auth_access');
+    const refresh = this.storage?.getItem('auth_refresh');
+
+    if (access && refresh) {
+      // Restaure les signals avant le passage des guards.
+      this._token.set(access);
+      this._refreshToken.set(refresh);
+      this._isLoggedIn.set(true);
+
+      queueMicrotask(() => {
+        this.currentUser.load().subscribe({
+          error: (error) => {
+            if (error.status === 401) {
+              this.logout();
+            }
+          },
+        });
+      });
+    }
+  }
+
   login(credentials: LoginModel) {
     return this.http
       .post<LoginResponse>(`${environment.apiUrl}/users/auth/login/`, credentials)
       .pipe(
         tap((response) => {
           this._tempToken.set(null);
+
           if (response.two_fa_pending) {
+            // Ne conserve pas une ancienne session pendant le challenge.
+            this.logout();
             this._tempToken.set(response.access);
             return;
           }
-          this._token.set(response.access);
-          this._refreshToken.set(response.refresh);
-          this._isLoggedIn.set(true);
-          this.currentUser.load().subscribe(); // <-- ajout
+
+          this.setTokens(response.access, response.refresh);
         }),
       );
   }
@@ -77,9 +102,14 @@ export class AuthService {
   }
 
   setTokens(access: string, refresh: string) {
+    this.storage?.setItem('auth_access', access);
+    this.storage?.setItem('auth_refresh', refresh);
+
     this._token.set(access);
     this._refreshToken.set(refresh);
+    this._tempToken.set(null);
     this._isLoggedIn.set(true);
+
     this.currentUser.load().subscribe();
   }
 
@@ -91,21 +121,29 @@ export class AuthService {
     return this.http
       .post<{
         access: string;
+        refresh?: string;
       }>(`${environment.apiUrl}/token/refresh/`, { refresh: this._refreshToken() })
       .pipe(
         tap((response) => {
           this._token.set(response.access);
+          this.storage?.setItem('auth_access', response.access);
+
+          // Conserve le nouveau refresh si le backend le renouvelle.
+          if (response.refresh) {
+            this._refreshToken.set(response.refresh);
+            this.storage?.setItem('auth_refresh', response.refresh);
+          }
         }),
       );
   }
   completeTwoFactorLogin(access: string, refresh: string) {
-    this._token.set(access);
-    this._refreshToken.set(refresh);
-    this._tempToken.set(null);
-    this._isLoggedIn.set(true);
-    this.currentUser.load().subscribe();
+    this.setTokens(access, refresh);
   }
+
   logout() {
+    this.storage?.removeItem('auth_access');
+    this.storage?.removeItem('auth_refresh');
+
     this._token.set(null);
     this._refreshToken.set(null);
     this._tempToken.set(null);

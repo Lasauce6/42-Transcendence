@@ -15,9 +15,10 @@
     } @else {
       <app-profile-edit [profile]="p" (profileUpdated)="onProfileUpdated($event)" />
     }
+    <a routerLink="/auth/2fa/setup"> Configurer la double authentification </a>
   </div>
 } @else if (error()) {
   <p class="error">{{ error()! | translate }}</p>
 } @else {
-  <p>{{ 'PROFILE.LOADING' | translate }}</p>        
+  <p>{{ 'PROFILE.LOADING' | translate }}</p>
 }
