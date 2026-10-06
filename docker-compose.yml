@@ -1,11 +1,11 @@
 services:
+  # Port non expose sur l'hote (surface d'attaque reduite).
+  # Decommenter le mapping 8200:8200 pour deboguer l'UI Vault localement.
   vault:
     image: hashicorp/vault:2.0
     container_name: vault
     cap_add:
       - IPC_LOCK
-    ports:
-      - "8200:8200"
     env_file: .env
     networks:
       - transcendence-network
@@ -29,9 +29,6 @@ services:
       image: axllent/mailpit:latest
       container_name: mailpit
       restart: always
-      ports:
-        - "1025:1025" # SMTP
-        - "8025:8025" # Web interface
       networks:
         - transcendence-network
 
@@ -60,12 +57,31 @@ services:
       - transcendence-network
 
   nginx:
-    image: nginx:alpine
+    build: ./nginx
     restart: always
     ports:
-      - "80:80" # basic http pour le dev
+      - "80:8080"   # HTTP -> redirect 301 vers HTTPS
+      - "443:8443"  # HTTPS (WAF actif)
+    environment:
+      MODSEC_RULE_ENGINE: ${MODSEC_RULE_ENGINE:-On}
+      MODSEC_AUDIT_ENGINE: RelevantOnly
+      MODSEC_AUDIT_LOG: /dev/stdout
+      MODSEC_AUDIT_LOG_FORMAT: JSON
+      BLOCKING_PARANOIA: ${BLOCKING_PARANOIA:-1}
+      DETECTION_PARANOIA: ${DETECTION_PARANOIA:-1}
+      ANOMALY_INBOUND: ${ANOMALY_INBOUND:-5}
+      ALLOWED_METHODS: "GET HEAD POST OPTIONS PUT PATCH DELETE"
+      MODSEC_REQ_BODY_LIMIT: 13107200
+      MODSEC_REQ_BODY_NOFILES_LIMIT: 131072
+      PORT: 8080
+      SSL_PORT: 8443
+      SERVER_NAME: localhost
+      SSL_CERT_FILE: /etc/nginx/conf/server.crt
+      SSL_CERT_KEY_FILE: /etc/nginx/conf/server.key
     volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/templates/conf.d/default.conf.template:/etc/nginx/templates/conf.d/default.conf.template:ro
+      - ./nginx/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:/etc/modsecurity.d/owasp-crs/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:ro
+      - ./nginx/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf:/etc/modsecurity.d/owasp-crs/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf:ro
       - ./backend/media:/app/media:ro
     depends_on:
       - backend
