@@ -140,6 +140,7 @@ ATTACHMENT_URL_MAX_AGE = 60 * 60
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
+        "api.authentication.APIKeyAuthentication",
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
