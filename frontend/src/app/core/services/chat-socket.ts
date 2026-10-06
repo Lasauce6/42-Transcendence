@@ -1,6 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '@env/environment';
-import { ChatMessage } from '@core/models/chat.model';
+import { ChatMessage, Attachment } from '@core/models/chat.model';
 import { ChatService } from '@core/services/chat';
 import { AuthService } from '@features/auth/auth';
 
@@ -11,6 +11,7 @@ interface WsMessage {
   sender: string;
   sender_id: string;
   created_at: string;
+  attachments?: Attachment[];
 }
 
 // Temps d'attente avant de retenter une connexion (en millisecondes).
@@ -104,6 +105,7 @@ export class ChatSocket {
       sender: data.sender_id,
       sender_username: data.sender,
       content: data.message,
+      attachments: data.attachments ?? [],
       is_deleted: false,
       created_at: data.created_at,
       updated_at: data.created_at,

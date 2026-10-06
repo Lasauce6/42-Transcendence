@@ -41,6 +41,15 @@ export class ChatService {
   loadMessages(channelId: string): Observable<ChatMessage[]> {
     return this.http.get<ChatMessage[]>(`${this.url}${channelId}/messages/`);
   }
+
+  // Envoie un fichier (avec un texte optionnel) dans une conversation.
+  sendAttachment(channelId: string, file: File, content = ''): Observable<ChatMessage> {
+    const form = new FormData();
+    form.append('file', file);
+    form.append('content', content);
+    return this.http.post<ChatMessage>(`${this.url}${channelId}/attachments/`, form);
+  }
+
 }
 
 function lastActivity(c: Channel): string {

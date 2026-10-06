@@ -18,6 +18,9 @@
     @for (m of socket.messages(); track m.id) {
       <div class="bubble" [class.mine]="isMine(m.sender)" [class.theirs]="!isMine(m.sender)">
         <p>{{ m.content }}</p>
+        @for (a of m.attachments ?? []; track a.id) {
+          <a [href]="a.url" target="_blank" rel="noopener">📎 {{ a.name }}</a>
+        }        
         <time [attr.datetime]="m.created_at">{{ m.created_at | date: 'shortTime' }}</time>
       </div>
     }
@@ -30,6 +33,10 @@
       [value]="draft()"
       (input)="onInput($event)"
     />
+    <input type="file" [disabled]="uploading()" (change)="onFileSelected($event)" />
+    @if (uploadError()) {
+      <span class="error">{{ 'CHAT.UPLOAD_ERROR' | translate }}</span>
+    } 
     <button type="submit" [disabled]="!draft().trim() || !socket.connected()">
       {{ 'CHAT.SEND' | translate }}
     </button>
