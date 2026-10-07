@@ -12,7 +12,7 @@
     }
 
     @if (isAdmin()) {
-      <a routerLink="/admin">{{ 'ADMIN.NAV' | translate }}</a>
+      <a routerLink="/administration">{{ 'ADMIN.NAV' | translate }}</a>
     }
     @if (!isLoggedIn()) {
       <a routerLink="/login">Connexion</a>

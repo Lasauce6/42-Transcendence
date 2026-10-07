@@ -10,6 +10,7 @@ import { AuthService } from '@features/auth/auth';
 import { Toast } from './shared/components/toast/toast';
 import { NotificationBell } from '@features/notifications/notification-bell/notification-bell';
 import { NotificationService } from '@core/services/notification';
+import { NotificationSocket } from '@core/services/notification-socket';
 
 @Component({
   selector: 'app-root',
@@ -25,6 +26,7 @@ export class App {
   readonly isAdmin = this.currentUser.isAdmin;
 
   private readonly notifications = inject(NotificationService);
+  private readonly notificationSocket = inject(NotificationSocket);
 
   constructor() {
     effect(() => {
@@ -36,5 +38,15 @@ export class App {
         this.notifications.clear();
       }
     });
+
+   // Ouvre le socket des notifications quand on est connecté, le ferme sinon.
+    // Se relance aussi quand le token est renouvelé.
+    effect(() => {
+      if (this.isLoggedIn() && this.auth.token()) {
+        this.notificationSocket.open();
+      } else {
+        this.notificationSocket.close();
+      }
+    });  
   }
 }

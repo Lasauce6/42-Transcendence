@@ -60,6 +60,10 @@ export class UserService {
       observe: 'events',
     });
   }
+
+  deleteAvatar(): Observable<UserProfile> {
+    return this.http.delete<UserProfile>(`${environment.apiUrl}/users/me/avatar/`);
+  }
 }
 
 export interface UserProfile {

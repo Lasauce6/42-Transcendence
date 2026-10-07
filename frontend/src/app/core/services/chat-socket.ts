@@ -1,6 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '@env/environment';
-import { ChatMessage } from '@core/models/chat.model';
+import { ChatMessage, Attachment } from '@core/models/chat.model';
 import { ChatService } from '@core/services/chat';
 import { AuthService } from '@features/auth/auth';
 
@@ -11,6 +11,7 @@ interface WsMessage {
   sender: string;
   sender_id: string;
   created_at: string;
+  attachments?: Attachment[];
 }
 
 // Temps d'attente avant de retenter une connexion (en millisecondes).
@@ -32,7 +33,9 @@ export class ChatSocket {
 
   // Ouvre la connexion pour la conversation donnée.
   open(channelId: string): void {
+    this.close();
     this.channelId = channelId;
+    this.messages.set([]);
     this.closedByUs = false;
     this.connect();
   }
@@ -74,17 +77,21 @@ export class ChatSocket {
       return;
     }
 
-    this.ws = new WebSocket(`${environment.wsUrl}/chat/${this.channelId}/?token=${token}`);
-
-    this.ws.onopen = () => {
+    const ws = new WebSocket(`${environment.wsUrl}/chat/${this.channelId}/?token=${token}`);
+    this.ws = ws;
+    ws.onopen = () => {
+      if (this.ws !== ws) return;
       this.connected.set(true);
     };
 
-    this.ws.onmessage = (event) => {
+    ws.onmessage = (event) => {
+      if (this.ws !== ws) return;
       this.receive(JSON.parse(event.data));
     };
 
-    this.ws.onclose = () => {
+    ws.onclose = () => {
+      if (this.ws !== ws) return;
+      this.ws = null;
       this.connected.set(false);
       if (!this.closedByUs) {
         this.retryTimer = window.setTimeout(() => this.connect(), RETRY_DELAY);
@@ -104,6 +111,7 @@ export class ChatSocket {
       sender: data.sender_id,
       sender_username: data.sender,
       content: data.message,
+      attachments: data.attachments ?? [],
       is_deleted: false,
       created_at: data.created_at,
       updated_at: data.created_at,
@@ -125,4 +133,3 @@ export class ChatSocket {
     return this.messages().some((m) => m.id === id);
   }
 }
-

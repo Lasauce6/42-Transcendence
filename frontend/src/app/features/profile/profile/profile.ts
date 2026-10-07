@@ -2,10 +2,11 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { UserService, UserProfile } from '../user.service';
 import { ProfileEdit } from '../profile-edit/profile-edit';
 import { TranslatePipe } from '@ngx-translate/core';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
-  imports: [ProfileEdit, TranslatePipe],
+  imports: [ProfileEdit, TranslatePipe, RouterLink],
   templateUrl: './profile.html',
   styleUrl: './profile.scss',
 })

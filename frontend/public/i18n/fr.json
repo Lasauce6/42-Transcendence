@@ -22,7 +22,20 @@
   },
   "ADMIN": {
     "NAV": "Admin",
-    "TITLE": "Administration"
+    "TITLE": "Administration",
+    "USERS": {
+      "TITLE": "Utilisateurs",
+      "USERNAME": "Nom d'utilisateur",
+      "EMAIL": "Email",
+      "ROLE": "Rôle",
+      "ACTIONS": "Actions",
+      "DELETE": "Supprimer",
+      "CONFIRM_DELETE": "Supprimer définitivement {{username}} ?",
+      "DELETED": "Utilisateur supprimé.",
+      "ROLE_CHANGED": "Rôle mis à jour.",
+      "EMPTY": "Aucun utilisateur.",
+      "ERROR": "Impossible de charger les utilisateurs."
+    }
   },
   "FORBIDDEN": {
     "TITLE": "Accès refusé",
@@ -93,7 +106,8 @@
     "FORBIDDEN": "Accès refusé",
     "NOTIFICATIONS": "Notifications",
     "CHAT": "Messages",
-    "API_DOCS": "Documentation API"
+    "API_DOCS": "Documentation API",
+    "ADMIN": "Administration"
   },
   "TOAST": {
     "REGION_LABEL": "Notifications",
@@ -134,20 +148,21 @@
     "CHAT": "Messages",
     "NEW_PLACEHOLDER": "Nom d'utilisateur",
     "NEW_BUTTON": "Démarrer",
-<<<<<<< HEAD
     "NEW_ERROR": "Impossible de créer la conversation.",
     "BACK": "← Retour",
     "RECONNECTING": "Reconnexion…",
     "HISTORY_ERROR": "Impossible de charger l'historique.",
     "THREAD_EMPTY": "Aucun message, dis bonjour !",
     "INPUT_PLACEHOLDER": "Écris un message…",
-    "SEND": "Envoyer"
-=======
-    "NEW_ERROR": "Impossible de créer la conversation."
+    "SEND": "Envoyer",
+    "UPLOAD_ERROR": "Impossible d'envoyer le fichier.",
+    "ADD_MEMBER_PLACEHOLDER": "Nom d'utilisateur à ajouter",
+    "ADD_MEMBER_BUTTON": "Ajouter",
+    "ADD_MEMBER_OK": "Membre ajouté.",
+    "ADD_MEMBER_ERROR": "Impossible d'ajouter cette personne."
   },
   "API_DOCS": {
     "TITLE": "Documentation de l'API",
     "FRAME_TITLE": "Documentation interactive de l'API (Swagger)"
->>>>>>> master
   }
 }

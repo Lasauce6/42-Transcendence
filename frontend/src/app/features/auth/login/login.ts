@@ -1,10 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
 import { required, form, FormField, submit, maxLength } from '@angular/forms/signals';
-import { AuthService, LoginModel } from '../auth';
+import { AuthService, LoginModel, OAuthProvider } from '../auth';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { TranslatePipe } from '@ngx-translate/core';
-import { environment } from '@env/environment';
 
 @Component({
   selector: 'app-login',
@@ -42,9 +41,7 @@ export class Login {
       }
     });
   }
-  onOAuthLogin(provider: 'google' | 'github' | 'fortytwo') {
-    const backendProvider = provider === 'fortytwo' ? '42' : provider;
-
-    window.location.href = `${window.location.origin}${environment.apiUrl}/auth/oauth/${backendProvider}/login/`;
+  onOAuthLogin(provider: OAuthProvider) {
+    this.authService.loginWithProvider(provider);
   }
 }

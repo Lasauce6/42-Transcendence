@@ -22,7 +22,20 @@
   },
   "ADMIN": {
     "NAV": "Admin",
-    "TITLE": "Administración"
+    "TITLE": "Administración",
+    "USERS": {
+      "TITLE": "Usuarios",
+      "USERNAME": "Nombre de usuario",
+      "EMAIL": "Correo electrónico",
+      "ROLE": "Rol",
+      "ACTIONS": "Acciones",
+      "DELETE": "Eliminar",
+      "CONFIRM_DELETE": "¿Eliminar definitivamente a {{username}}?",
+      "DELETED": "Usuario eliminado.",
+      "ROLE_CHANGED": "Rol actualizado.",
+      "EMPTY": "Ningún usuario.",
+      "ERROR": "No se pueden cargar los usuarios."
+    }
   },
   "FORBIDDEN": {
     "TITLE": "Acceso denegado",
@@ -93,7 +106,8 @@
     "FORBIDDEN": "Acceso denegado",
     "NOTIFICATIONS": "Notificaciones",
     "CHAT": "Mensajes",
-    "API_DOCS": "Documentación de la API"
+    "API_DOCS": "Documentación de la API",
+    "ADMIN": "Administración"
   },
   "TOAST": {
     "REGION_LABEL": "Notificaciones",
@@ -134,20 +148,21 @@
     "CHAT": "Mensajes",
     "NEW_PLACEHOLDER": "Nombre de usuario",
     "NEW_BUTTON": "Iniciar",
-<<<<<<< HEAD
     "NEW_ERROR": "No se pudo crear la conversación.",
     "BACK": "← Volver",
     "RECONNECTING": "Reconectando…",
     "HISTORY_ERROR": "No se pudo cargar el historial.",
     "THREAD_EMPTY": "Aún no hay mensajes, ¡saluda!",
     "INPUT_PLACEHOLDER": "Escribe un mensaje…",
-    "SEND": "Enviar"
-=======
-    "NEW_ERROR": "No se pudo crear la conversación."
+    "SEND": "Enviar",
+    "UPLOAD_ERROR": "No se pudo enviar el archivo.",
+    "ADD_MEMBER_PLACEHOLDER": "Nombre de usuario a añadir",
+    "ADD_MEMBER_BUTTON": "Añadir",
+    "ADD_MEMBER_OK": "Miembro añadido.",
+    "ADD_MEMBER_ERROR": "No se pudo añadir a esta persona."
   },
   "API_DOCS": {
     "TITLE": "Documentación de la API",
     "FRAME_TITLE": "Documentación interactiva de la API (Swagger)"
->>>>>>> master
   }
 }

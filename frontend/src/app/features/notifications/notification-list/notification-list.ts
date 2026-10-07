@@ -38,6 +38,9 @@ export class NotificationList implements OnInit {
     if (n.entity_type === 'Friendship') {
       this.router.navigate(['/profile']);
     }
+    if (n.entity_type === 'Channel' && n.entity_id) {
+      this.router.navigate(['/chat', n.entity_id]);
+    }
   }
 
   markAll(): void {

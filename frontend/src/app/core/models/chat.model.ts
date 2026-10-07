@@ -18,7 +18,6 @@ export interface Channel {
   type: ChannelType;
   created_by: string;
   created_at: string;
-  // Pas encore renvoyés par le back (contrat à valider avec lui) :
   members?: ChannelMember[];
   last_message?: LastMessage | null;
   unread_count?: number;
@@ -33,4 +32,14 @@ export interface ChatMessage {
   is_deleted: boolean;
   created_at: string;
   updated_at: string;
+  attachments?: Attachment[];
+}
+
+// Un fichier joint à un message.
+export interface Attachment {
+  id: string;
+  name: string;
+  content_type: string;
+  size: number;
+  url: string;
 }

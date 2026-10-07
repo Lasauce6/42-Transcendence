@@ -22,7 +22,20 @@
   },
   "ADMIN": {
     "NAV": "Admin",
-    "TITLE": "Administration"
+    "TITLE": "Administration",
+    "USERS": {
+      "TITLE": "Users",
+      "USERNAME": "Username",
+      "EMAIL": "Email",
+      "ROLE": "Role",
+      "ACTIONS": "Actions",
+      "DELETE": "Delete",
+      "CONFIRM_DELETE": "Permanently delete {{username}}?",
+      "DELETED": "User deleted.",
+      "ROLE_CHANGED": "Role updated.",
+      "EMPTY": "No users.",
+      "ERROR": "Unable to load users."
+    }
   },
   "FORBIDDEN": {
     "TITLE": "Access denied",
@@ -93,7 +106,8 @@
     "FORBIDDEN": "Access denied",
     "NOTIFICATIONS": "Notifications",
     "CHAT": "Messages",
-    "API_DOCS": "API documentation"
+    "API_DOCS": "API documentation",
+    "ADMIN": "Administration"
   },
   "TOAST": {
     "REGION_LABEL": "Notifications",
@@ -134,20 +148,21 @@
     "CHAT": "Messages",
     "NEW_PLACEHOLDER": "Username",
     "NEW_BUTTON": "Start",
-<<<<<<< HEAD
     "NEW_ERROR": "Could not create the conversation.",
     "BACK": "← Back",
     "RECONNECTING": "Reconnecting…",
     "HISTORY_ERROR": "Could not load the history.",
     "THREAD_EMPTY": "No messages yet, say hi!",
     "INPUT_PLACEHOLDER": "Write a message…",
-    "SEND": "Send"
-=======
-    "NEW_ERROR": "Could not create the conversation."
+    "SEND": "Send",
+    "UPLOAD_ERROR": "Unable to send the file.",
+    "ADD_MEMBER_PLACEHOLDER": "Username to add",
+    "ADD_MEMBER_BUTTON": "Add",
+    "ADD_MEMBER_OK": "Member added.",
+    "ADD_MEMBER_ERROR": "Unable to add this person."
   },
   "API_DOCS": {
     "TITLE": "API documentation",
     "FRAME_TITLE": "Interactive API documentation (Swagger)"
->>>>>>> master
   }
 }

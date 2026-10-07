@@ -26,6 +26,13 @@ export class ChatWindow implements OnInit, OnDestroy {
 
   private readonly bottom = viewChild<ElementRef<HTMLElement>>('bottom');
 
+  readonly uploading = signal(false);
+  readonly uploadError = signal(false);
+
+  readonly memberName = signal('');
+  readonly memberAdded = signal(false);
+  readonly memberError = signal(false);
+
   // Relance le scroll vers le bas à chaque changement de la liste des messages.
   constructor() {
     effect(() => {
@@ -82,5 +89,57 @@ export class ChatWindow implements OnInit, OnDestroy {
     if (el) {
       el.scrollTop = el.scrollHeight;
     }
+  }
+
+  // Appelée quand l'utilisateur choisit un fichier : l'envoie dans la conversation.
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    const id = this.route.snapshot.paramMap.get('id')!;
+    this.uploading.set(true);
+    this.uploadError.set(false);
+
+    this.service.sendAttachment(id, file, this.draft()).subscribe({
+      // Le message arrive tout seul par le websocket, on vide juste le champ.
+      next: () => {
+        this.uploading.set(false);
+        this.draft.set('');
+      },
+      error: () => {
+        this.uploading.set(false);
+        this.uploadError.set(true);
+      },
+    });
+
+    // Remet le champ à zéro pour pouvoir renvoyer le même fichier.
+    input.value = '';
+  }
+
+  // Garde en mémoire le nom tapé dans le champ "ajouter un membre".
+  onMemberInput(event: Event): void {
+    this.memberName.set((event.target as HTMLInputElement).value);
+    this.memberAdded.set(false);
+    this.memberError.set(false);
+  }
+
+  // Ajoute la personne tapée dans la conversation ouverte.
+  addMember(): void {
+    const username = this.memberName().trim();
+    if (!username) {
+      return;
+    }
+
+    const id = this.route.snapshot.paramMap.get('id')!;
+    this.service.addMemberByUsername(id, username).subscribe({
+      next: () => {
+        this.memberName.set('');
+        this.memberAdded.set(true);
+      },
+      error: () => this.memberError.set(true),
+    });
   }
 }
