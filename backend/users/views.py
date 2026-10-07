@@ -210,7 +210,9 @@ class FriendshipViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return Friendship.objects.filter(Q(requester=user) | Q(addressee=user))
+        return Friendship.objects.filter(
+            Q(requester=user) | Q(addressee=user)
+        ).select_related('requester', 'addressee')
 
     def _push_notification(self, notification):
         channel_layer = get_channel_layer()
