@@ -8,7 +8,8 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import AccessToken
+
 
 from .jwt_utils import issue_tokens
 from .models import BackupCode, User
@@ -102,7 +103,7 @@ class TOTPLoginVerifyView(APIView):
         code = request.data.get("code")
 
         try:
-            token = RefreshToken(temp_token)
+            token = AccessToken(temp_token)
         except Exception:
             return Response({"detail": "Invalid token"}, status=400)
 
