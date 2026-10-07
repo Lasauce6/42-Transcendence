@@ -110,4 +110,17 @@ describe('ChatSocket (messages reçus en direct)', () => {
 
     expect(socket.messages()[0].attachments).toEqual([]);
   });
+  it('ignore la fermeture d’une ancienne socket', () => {
+  const oldSocket = FakeWebSocket.last;
+
+  socket.open('c2');
+  FakeWebSocket.last?.onopen?.();
+
+  expect(socket.connected()).toBe(true);
+
+  // La fermeture de A ne doit pas déconnecter B.
+  oldSocket?.onclose?.();
+
+  expect(socket.connected()).toBe(true);
+});
 });
