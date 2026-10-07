@@ -33,7 +33,9 @@ export class ChatSocket {
 
   // Ouvre la connexion pour la conversation donnée.
   open(channelId: string): void {
+    this.close();
     this.channelId = channelId;
+    this.messages.set([]);
     this.closedByUs = false;
     this.connect();
   }
@@ -75,17 +77,21 @@ export class ChatSocket {
       return;
     }
 
-    this.ws = new WebSocket(`${environment.wsUrl}/chat/${this.channelId}/?token=${token}`);
-
-    this.ws.onopen = () => {
+    const ws = new WebSocket(`${environment.wsUrl}/chat/${this.channelId}/?token=${token}`);
+    this.ws = ws;
+    ws.onopen = () => {
+      if (this.ws !== ws) return;
       this.connected.set(true);
     };
 
-    this.ws.onmessage = (event) => {
+    ws.onmessage = (event) => {
+      if (this.ws !== ws) return;
       this.receive(JSON.parse(event.data));
     };
 
-    this.ws.onclose = () => {
+    ws.onclose = () => {
+      if (this.ws !== ws) return;
+      this.ws = null;
       this.connected.set(false);
       if (!this.closedByUs) {
         this.retryTimer = window.setTimeout(() => this.connect(), RETRY_DELAY);
@@ -127,4 +133,3 @@ export class ChatSocket {
     return this.messages().some((m) => m.id === id);
   }
 }
-
