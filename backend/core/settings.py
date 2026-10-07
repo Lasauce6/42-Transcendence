@@ -11,13 +11,11 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 import os
-from operator import ge
 from pathlib import Path
 
-from csp.constants import SELF
-from requests.api import get
+import dj_database_url
 
-from core.vault_client import get_vault_secret
+from csp.constants import SELF
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -79,15 +77,15 @@ SPECTACULAR_SETTINGS = {
 
 SITE_ID = 1
 
-OAUTH_42_CLIENT_ID = get_vault_secret("OAUTH_42_CLIENT_ID")
-OAUTH_42_CLIENT_SECRET = get_vault_secret("OAUTH_42_CLIENT_SECRET")
-OAUTH_GOOGLE_CLIENT_ID = get_vault_secret("OAUTH_GOOGLE_CLIENT_ID")
-OAUTH_GOOGLE_CLIENT_SECRET = get_vault_secret("OAUTH_GOOGLE_CLIENT_SECRET")
-OAUTH_GITHUB_CLIENT_ID = get_vault_secret("OAUTH_GITHUB_CLIENT_ID")
-OAUTH_GITHUB_CLIENT_SECRET = get_vault_secret("OAUTH_GITHUB_CLIENT_SECRET")
+OAUTH_42_CLIENT_ID = os.environ["OAUTH_42_CLIENT_ID"]
+OAUTH_42_CLIENT_SECRET = os.environ["OAUTH_42_CLIENT_SECRET"]
+OAUTH_GOOGLE_CLIENT_ID = os.environ["OAUTH_GOOGLE_CLIENT_ID"]
+OAUTH_GOOGLE_CLIENT_SECRET = os.environ["OAUTH_GOOGLE_CLIENT_SECRET"]
+OAUTH_GITHUB_CLIENT_ID = os.environ["OAUTH_GITHUB_CLIENT_ID"]
+OAUTH_GITHUB_CLIENT_SECRET = os.environ["OAUTH_GITHUB_CLIENT_SECRET"]
 
-TOTP_ENCRYPTION_KEY = get_vault_secret("TOTP_ENCRYPTION_KEY")
-TOTP_ISSUER_NAME = get_vault_secret("TOTP_ISSUER_NAME")
+TOTP_ENCRYPTION_KEY = os.environ["TOTP_ENCRYPTION_KEY"]
+TOTP_ISSUER_NAME = os.environ["TOTP_ISSUER_NAME"]
 
 SOCIALACCOUNT_PROVIDERS = {
     "fortytwo": {
@@ -207,14 +205,7 @@ ASGI_APPLICATION = "core.asgi.application"
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ["POSTGRES_DB"],
-        "USER": os.environ["POSTGRES_USER"],
-        "PASSWORD": os.environ["POSTGRES_PASSWORD"],
-        "HOST": "postgres",
-        "PORT": "5432",
-    }
+    "default": dj_database_url.parse(os.environ["DATABASE_URL"]),
 }
 
 # Password validation
