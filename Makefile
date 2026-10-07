@@ -14,12 +14,16 @@ all: up
 
 up:
 	docker compose up --build -d
+	@sh vault/init.sh
 
 down:
 	docker compose down
 
 debug:
-	docker compose up --build
+	docker compose up --build -d
+	@sh vault/init.sh
+	docker compose logs -f
+	@docker compose attach backend frontend nginx vault
 
 logs:
 	docker compose logs -f

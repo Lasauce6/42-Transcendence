@@ -4,15 +4,26 @@ set -e
 echo "Connexion a HashiCorp Vault ..."
 
 echo "Attente du demarrage de Vault ..."
-until curl -s ${VAULT_ADDR}/v1/sys/health > /dev/null 2>&1; do\
+tries=0
+until curl -sf --cacert "${VAULT_CACERT:-/etc/vault/ca.crt}" ${VAULT_ADDR}/v1/sys/health > /dev/null 2>&1; do
+	tries=$((tries + 1))
+	if [ "$tries" -ge 60 ]; then
+		echo "ECHEC: Vault injoignable apres 120s" >&2
+		exit 1
+	fi
 	sleep 2
 done
 echo "Vault lance !"
 
-echo "Synchronisation des secrets avec le .env..."
-SECRETS=$(python3 /app/vault_setup.py)
+echo "Chargement des secrets depuis Vault..."
+SECRETS=$(python3 /app/vault_fetch.py) || {
+	echo "ECHEC: recuperation des secrets impossible" >&2
+	exit 1
+}
 
-eval $SECRETS
+set -a
+eval "$SECRETS"
+set +a
 echo "Secrets charges depuis Vault dans l'environnement !"
 
 echo "Attente du demarrage de PostgreSQL..."
