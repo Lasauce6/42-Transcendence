@@ -60,3 +60,12 @@ backend/media/avatars/*
 # Logs
 backend/logs/*.log
 backend/logs/*.log.*
+
+# Vault
+vault/data/
+vault/keys/
+vault/logs/
+vault/tls/ca.crt
+vault/tls/ca.key
+vault/tls/server.crt
+vault/tls/server.key

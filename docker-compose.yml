@@ -4,9 +4,25 @@ services:
   vault:
     image: hashicorp/vault:2.0
     container_name: vault
+    command: server
+    restart: always
     cap_add:
       - IPC_LOCK
     env_file: .env
+    environment:
+      VAULT_ADDR: https://127.0.0.1:8200
+      VAULT_CACERT: /vault/tls/ca.crt
+    volumes:
+      - ./vault/config:/vault/config:ro
+      - ./vault/tls:/vault/tls:ro
+      - ./vault/data:/vault/data
+      - ./vault/logs:/vault/logs
+    healthcheck:
+      test: ["CMD-SHELL", "vault operator init -status > /dev/null 2>&1 || [ $$? -eq 2 ]"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 10s
     networks:
       - transcendence-network
 
@@ -36,15 +52,22 @@ services:
     build: ./backend
     restart: always
     env_file: .env
+    environment:
+      VAULT_CACERT: /etc/vault/ca.crt
     volumes:
       - ./backend:/app # Hot-reload : on lie le code local au container
       - ./backend/media:/app/media
       - ./backend/logs:/app/logs
+      - ./vault/tls/ca.crt:/etc/vault/ca.crt:ro
     depends_on:
-      - postgres
-      - redis
-      - vault
-      - mailpit
+      postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+      vault:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
     networks:
       - transcendence-network
 
