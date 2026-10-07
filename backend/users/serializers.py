@@ -194,11 +194,23 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+class FriendUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'avatar', 'is_online', 'last_seen')
+        read_only_fields = fields
+
+
 class FriendshipSerializer(serializers.ModelSerializer):
+    requester_user = FriendUserSerializer(source='requester', read_only=True)
+    addressee_user = FriendUserSerializer(source='addressee', read_only=True)
 
     class Meta:
         model = Friendship
-        fields = ('id', 'addressee', 'requester', 'status', 'created_at', 'updated_at')
+        fields = (
+            'id', 'addressee', 'requester', 'status', 'created_at', 'updated_at',
+            'requester_user', 'addressee_user',
+        )
         read_only_fields = ('requester', 'status', 'created_at', 'updated_at')
 
     def validate(self, data):
