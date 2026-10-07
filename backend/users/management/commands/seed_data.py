@@ -1,15 +1,15 @@
+import os
 from datetime import timedelta
 
+from api.models import Notification
+from chat.models import Channel, ChannelMember, Message
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
 
-from users.models import User, Friendship
-from chat.models import Channel, ChannelMember, Message
-from api.models import Notification
+from users.models import Friendship, User
 
-
-PASSWORD = "Transcendence42!"
+PASSWORD = os.environ.get("SEED_PASSWORD", "Transcendence42!")
 
 USERS_DATA = [
     ("alice", "Alice", "Martin", "alice@example.test", "USER", "FR"),
@@ -43,8 +43,7 @@ class Command(BaseCommand):
         if existing.exists() and not options["reset"]:
             self.stdout.write(
                 self.style.WARNING(
-                    "Le seed est déjà présent en base. "
-                    "Utilise --reset pour le recréer."
+                    "Le seed est déjà présent en base. Utilise --reset pour le recréer."
                 )
             )
             return
@@ -73,7 +72,6 @@ class Command(BaseCommand):
         users = {}
 
         for username, first_name, last_name, email, role, language in USERS_DATA:
-
             user = User(
                 username=username,
                 first_name=first_name,
@@ -103,7 +101,6 @@ class Command(BaseCommand):
         friendships = {}
 
         for requester, addressee, status in friendships_data:
-
             friendships[(requester, addressee)] = Friendship.objects.create(
                 requester=users[requester],
                 addressee=users[addressee],
@@ -120,7 +117,6 @@ class Command(BaseCommand):
         channels = {}
 
         for name, channel_type, creator in channels_data:
-
             channel = Channel.objects.create(
                 name=name,
                 type=channel_type,
@@ -136,21 +132,17 @@ class Command(BaseCommand):
             ("general", "charlie", "MEMBER"),
             ("general", "emma", "MEMBER"),
             ("general", "admin42", "MEMBER"),
-
             ("tournament-prep", "charlie", "ADMIN"),
             ("tournament-prep", "alice", "MEMBER"),
             ("tournament-prep", "bob", "MEMBER"),
-
             ("private", "alice", "ADMIN"),
             ("private", "bob", "MEMBER"),
-
             ("espanol", "diana", "ADMIN"),
             ("espanol", "emma", "MEMBER"),
             ("espanol", "admin42", "MEMBER"),
         ]
 
         for channel, username, role in members_data:
-
             ChannelMember.objects.create(
                 channel=channels[channel],
                 user=users[username],
@@ -160,21 +152,34 @@ class Command(BaseCommand):
         messages_data = [
             ("general", "alice", "Salut tout le monde 👋"),
             ("general", "bob", "Hello Alice ! Prêt pour une partie ce soir ?"),
-            ("general", "charlie", "Je prépare aussi un petit tournoi pour ce week-end."),
+            (
+                "general",
+                "charlie",
+                "Je prépare aussi un petit tournoi pour ce week-end.",
+            ),
             ("general", "emma", "Bonne idée, je suis partante."),
-            ("general", "admin42", "Pensez à signaler les bugs trouvés pendant les tests."),
-            ("general", "alice", "Je vais tester le chat et les notifications aujourd’hui."),
-
-            ("tournament-prep", "charlie", "On utilise ce channel pour préparer le tournoi."),
+            (
+                "general",
+                "admin42",
+                "Pensez à signaler les bugs trouvés pendant les tests.",
+            ),
+            (
+                "general",
+                "alice",
+                "Je vais tester le chat et les notifications aujourd’hui.",
+            ),
+            (
+                "tournament-prep",
+                "charlie",
+                "On utilise ce channel pour préparer le tournoi.",
+            ),
             ("tournament-prep", "alice", "Je peux m’occuper du planning des matchs."),
             ("tournament-prep", "bob", "Je teste le matchmaking de mon côté."),
             ("tournament-prep", "charlie", "Parfait. On fait un point demain matin."),
-
             ("private", "alice", "Tu as vu le nouveau système de notifications ?"),
             ("private", "bob", "Oui, je viens de le tester."),
             ("private", "alice", "Super, dis-moi si tu vois un comportement bizarre."),
             ("private", "bob", "Pour le moment tout fonctionne 👍"),
-
             ("espanol", "diana", "¡Hola! Este canal es para hablar en español."),
             ("espanol", "emma", "¡Hola Diana! Estoy aprendiendo español."),
             ("espanol", "admin42", "Bienvenidos al canal."),
@@ -183,7 +188,6 @@ class Command(BaseCommand):
         start = now - timedelta(minutes=3 * len(messages_data))
 
         for i, (channel, sender, content) in enumerate(messages_data):
-
             message = Message.objects.create(
                 channel=channels[channel],
                 sender=users[sender],
@@ -208,7 +212,9 @@ class Command(BaseCommand):
                 is_read=is_read,
             )
 
-        def message_notification(recipient, channel_key, from_username, preview, is_read):
+        def message_notification(
+            recipient, channel_key, from_username, preview, is_read
+        ):
             channel = channels[channel_key]
             sender = users[from_username]
             Notification.objects.create(
@@ -234,18 +240,30 @@ class Command(BaseCommand):
         )
 
         message_notification(
-            "bob", "general", "alice",
-            "Je vais tester le chat et les notifications aujourd’hui.", False,
+            "bob",
+            "general",
+            "alice",
+            "Je vais tester le chat et les notifications aujourd’hui.",
+            False,
         )
         message_notification(
-            "alice", "private", "bob",
-            "Pour le moment tout fonctionne 👍", False,
+            "alice",
+            "private",
+            "bob",
+            "Pour le moment tout fonctionne 👍",
+            False,
         )
         message_notification(
-            "alice", "tournament-prep", "charlie",
-            "Parfait. On fait un point demain matin.", True,
+            "alice",
+            "tournament-prep",
+            "charlie",
+            "Parfait. On fait un point demain matin.",
+            True,
         )
         message_notification(
-            "emma", "espanol", "diana",
-            "¡Hola! Este canal es para hablar en español.", False,
+            "emma",
+            "espanol",
+            "diana",
+            "¡Hola! Este canal es para hablar en español.",
+            False,
         )
