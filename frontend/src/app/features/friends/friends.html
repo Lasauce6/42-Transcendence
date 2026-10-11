@@ -1,1 +1,41 @@
-<p>friends works!</p>
+<h1>{{ 'TITLES.FRIENDS' | translate }}</h1>
+
+@if (error(); as message) {
+  <p role="alert">{{ message }}</p>
+}
+
+<h2>{{ 'FRIENDS.LIST' | translate }}</h2>
+@for (f of friendsService.friends(); track f.id) {
+  <div>
+    @if (profile(f); as p) {
+      @if (p.avatar) {
+        <img [src]="p.avatar" [alt]="p.username" width="32" height="32" />
+      }
+      <span>{{ p.username }}</span>
+    }
+    <button type="button" (click)="remove(f)">{{ 'FRIENDS.REMOVE' | translate }}</button>
+  </div>
+} @empty {
+  <p>{{ 'FRIENDS.NO_FRIENDS' | translate }}</p>
+}
+
+<h2>{{ 'FRIENDS.RECEIVED' | translate }}</h2>
+@for (f of friendsService.received(); track f.id) {
+  <div>
+    <span>{{ profile(f)?.username }}</span>
+    <button type="button" (click)="accept(f)">{{ 'FRIENDS.ACCEPT' | translate }}</button>
+    <button type="button" (click)="reject(f)">{{ 'FRIENDS.REJECT' | translate }}</button>
+  </div>
+} @empty {
+  <p>{{ 'FRIENDS.NO_REQUESTS' | translate }}</p>
+}
+
+<h2>{{ 'FRIENDS.SENT' | translate }}</h2>
+@for (f of friendsService.sent(); track f.id) {
+  <div>
+    <span>{{ profile(f)?.username }}</span>
+    <button type="button" (click)="remove(f)">{{ 'FRIENDS.CANCEL' | translate }}</button>
+  </div>
+} @empty {
+  <p>{{ 'FRIENDS.NO_SENT' | translate }}</p>
+}
