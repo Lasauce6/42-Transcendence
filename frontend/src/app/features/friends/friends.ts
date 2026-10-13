@@ -1,9 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Component, effect, inject, OnInit, signal, untracked } from '@angular/core';
+import { Observable, finalize, switchMap, tap } from 'rxjs';
 import { FriendsService } from './friends.service';
 import { Friendship } from './friend.models';
 import { TranslatePipe } from '@ngx-translate/core';
+
+
 
 @Component({
   selector: 'app-friends',
