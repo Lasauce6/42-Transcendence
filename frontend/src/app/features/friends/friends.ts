@@ -17,23 +17,29 @@ export class Friends implements OnInit {
   protected readonly friendsService = inject(FriendsService);
   protected readonly error = signal<string | null>(null);
 
-  ngOnInit() {
-    this.friendsService.load().subscribe({
-      next: (list) => {
-        for (const f of list) {
-          if (f.status === 'BLOCKED') continue;
-          const id = this.friendsService.otherUserId(f);
-          if (id) this.friendsService.loadProfile(id).subscribe();
-        }
-      },
-      error: (e) => this.showError(e),
-    });
-  }
+  protected readonly loading = signal(true);
+protected readonly busy = signal(false);
+protected readonly newUsername = signal('');
 
-  protected profile(f: Friendship) {
-    const id = this.friendsService.otherUserId(f);
-    return id ? this.friendsService.profiles()[id] : undefined;
-  }
+constructor() {
+  effect(() => {
+    for (const f of this.friendsService.friendships()) {
+      if (f.status === 'BLOCKED') continue;
+      const id = this.friendsService.otherUserId(f);
+      if (id) {
+        untracked(() => this.friendsService.loadProfile(id).subscribe({ error: () => {} }));
+      }
+    }
+  });
+}
+
+
+  ngOnInit() {
+  this.friendsService
+    .load()
+    .pipe(finalize(() => this.loading.set(false)))
+    .subscribe({ error: (e) => this.showError(e) });
+}
 
   protected accept(f: Friendship) {
     this.run(this.friendsService.accept(f.id));
@@ -45,12 +51,27 @@ export class Friends implements OnInit {
     this.run(this.friendsService.remove(f.id));
   }
 
-  private run(action$: Observable<unknown>) {
-    this.error.set(null);
-    action$.subscribe({ error: (e) => this.showError(e) });
-  }
+    protected add() {
+  const username = this.newUsername().trim();
+  if (!username) return;
+  this.run(
+    this.friendsService.findUserId(username).pipe(
+      switchMap((id) => this.friendsService.sendRequest(id)),
+      tap(() => this.newUsername.set('')),
+    ),
+  );
+}
 
-  private showError(e: HttpErrorResponse) {
-    this.error.set(e.error?.detail ?? 'Une erreur est survenue.');
-  }
+  private run(action$: Observable<unknown>) {
+  if (this.busy()) return;
+  this.busy.set(true);
+  this.error.set(null);
+  action$
+    .pipe(finalize(() => this.busy.set(false)))
+    .subscribe({ error: (e) => this.showError(e) });
+}
+
+private showError(e: HttpErrorResponse) {
+  this.error.set(e.error?.detail ?? 'ERRORS.GENERIC');
+}
 }
