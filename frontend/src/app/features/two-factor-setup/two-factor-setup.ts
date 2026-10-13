@@ -9,10 +9,11 @@ import {
   FormField,
 } from '@angular/forms/signals';
 import { TranslatePipe } from '@ngx-translate/core';
+import { UiAlert, UiButton, UiField, UiSpinner } from '@shared/ui';
 
 @Component({
   selector: 'app-two-factor-setup',
-  imports: [FormField, TranslatePipe],
+  imports: [FormField, TranslatePipe, UiAlert, UiButton, UiField, UiSpinner],
   templateUrl: './two-factor-setup.html',
   styleUrl: './two-factor-setup.scss',
 })

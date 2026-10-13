@@ -1,0 +1,103 @@
+<div class="flex flex-col gap-8">
+  <ui-page-header [eyebrow]="'DESIGN_SYSTEM.EYEBROW' | translate" [heading]="'DESIGN_SYSTEM.TITLE' | translate" [subtitle]="'DESIGN_SYSTEM.SUBTITLE' | translate" />
+
+  <ui-card [heading]="'DESIGN_SYSTEM.COLORS' | translate">
+    <div class="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-3">
+      @for (c of colors; track c.name) {
+        <div class="flex flex-col gap-1.5">
+          <span [class]="'h-14 rounded-control border border-line ' + c.cls"></span>
+          <span class="font-mono text-xs text-muted">{{ c.name }}</span>
+        </div>
+      }
+    </div>
+  </ui-card>
+
+  <ui-card [heading]="'DESIGN_SYSTEM.TYPOGRAPHY' | translate">
+    <div class="flex flex-col gap-2">
+      <p class="text-4xl font-bold">Space Grotesk 700</p>
+      <p class="text-xl">Space Grotesk 400 / 500</p>
+      <p class="font-mono text-[13px] uppercase tracking-widest text-accent">JetBrains Mono · 12:34</p>
+    </div>
+  </ui-card>
+
+  <div class="grid gap-6 md:grid-cols-2">
+    <ui-card [heading]="'DESIGN_SYSTEM.BUTTONS' | translate">
+      <div class="flex flex-wrap gap-3">
+        <button uiButton type="button">Primary</button>
+        <button uiButton variant="secondary" type="button">Secondary</button>
+        <button uiButton variant="ghost" type="button">Ghost</button>
+        <button uiButton variant="danger" type="button"><ui-icon name="trash" [size]="16" />Danger</button>
+        <button uiButton size="sm" type="button">Small</button>
+        <button uiButton type="button" disabled>Disabled</button>
+      </div>
+    </ui-card>
+
+    <ui-card [heading]="'DESIGN_SYSTEM.ICONS' | translate">
+      <div class="flex flex-wrap gap-4 text-ink">
+        @for (i of icons; track i) {
+          <span class="flex size-10 items-center justify-center rounded-control bg-surface-2" [title]="i"><ui-icon [name]="i" /></span>
+        }
+      </div>
+    </ui-card>
+
+    <ui-card [heading]="'DESIGN_SYSTEM.AVATARS' | translate">
+      <div class="flex flex-wrap items-center gap-4">
+        <ui-avatar name="alice" size="sm" />
+        <ui-avatar name="bob" status="online" />
+        <ui-avatar name="charlie" status="offline" />
+        <ui-avatar name="diana" size="lg" />
+        <ui-badge>3</ui-badge>
+        <ui-badge variant="danger">99+</ui-badge>
+        <ui-badge variant="neutral">PENDING</ui-badge>
+      </div>
+    </ui-card>
+
+    <ui-card [heading]="'DESIGN_SYSTEM.FORMS' | translate">
+      <form class="flex flex-col gap-4" (submit)="$event.preventDefault()">
+        <ui-field [label]="'DESIGN_SYSTEM.USERNAME' | translate" for="ds-username" hint="3-20">
+          <input id="ds-username" type="text" placeholder="alice" />
+        </ui-field>
+        <ui-field [label]="'DESIGN_SYSTEM.EMAIL' | translate" for="ds-email" [error]="'DESIGN_SYSTEM.INVALID_EMAIL' | translate">
+          <input id="ds-email" type="email" value="alice@" />
+        </ui-field>
+      </form>
+    </ui-card>
+
+    <ui-card [heading]="'DESIGN_SYSTEM.FEEDBACK' | translate">
+      <div class="flex flex-col gap-3">
+        <ui-alert variant="success">{{ 'DESIGN_SYSTEM.SUCCESS' | translate }}</ui-alert>
+        <ui-alert variant="error">{{ 'DESIGN_SYSTEM.ERROR' | translate }}</ui-alert>
+        <ui-alert>{{ 'DESIGN_SYSTEM.INFO' | translate }}</ui-alert>
+        <ui-progress label="notes.txt" [value]="64" />
+        <ui-spinner [label]="'COMMON.LOADING' | translate" />
+      </div>
+    </ui-card>
+
+    <ui-card [heading]="'DESIGN_SYSTEM.LISTS' | translate" [padded]="false">
+      <ul>
+        <li>
+          <ui-list-item heading="general" subtitle="# channel">
+            <span leading class="flex size-11 items-center justify-center rounded-control bg-surface-2 font-mono text-accent">#</span>
+            <ui-badge meta>2</ui-badge>
+          </ui-list-item>
+        </li>
+        <li>
+          <ui-list-item heading="bob" subtitle="online">
+            <ui-avatar leading name="bob" status="online" />
+          </ui-list-item>
+        </li>
+      </ul>
+      <ui-empty-state [heading]="'DESIGN_SYSTEM.EMPTY' | translate" icon="users" />
+    </ui-card>
+  </div>
+
+  <ui-card [heading]="'DESIGN_SYSTEM.CHAT' | translate">
+    <div class="flex flex-col gap-4">
+      <ui-message-bubble author="bob" [time]="now" text="Hello Alice !" />
+      <ui-message-bubble author="alice" [time]="now" text="Salut !" [mine]="true">
+        <ui-file-card name="cours.pdf" url="#" contentType="application/pdf" [size]="1258291" />
+      </ui-message-bubble>
+      <ui-message-bubble author="charlie" [time]="now" [deleted]="true"><span deleted>{{ 'DESIGN_SYSTEM.DELETED' | translate }}</span></ui-message-bubble>
+    </div>
+  </ui-card>
+</div>

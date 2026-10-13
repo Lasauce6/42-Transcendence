@@ -1,28 +1,46 @@
-import { DatePipe } from '@angular/common';
-import { Component, effect, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core';
+import { Component, computed, DestroyRef, effect, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
+import { Channel } from '@core/models/chat.model';
 import { ChatService } from '@core/services/chat';
 import { ChatSocket } from '@core/services/chat-socket';
 import { CurrentUser } from '@core/services/current-user';
+import { UiAlert, UiAvatar, UiButton, UiEmptyState, UiFileCard, UiIcon, UiMessageBubble, UiSpinner } from '@shared/ui';
 
 // Page d'une conversation : affiche les messages et permet d'en envoyer.
 @Component({
   selector: 'app-chat-window',
-  imports: [DatePipe, RouterLink, TranslatePipe],
+  imports: [RouterLink, TranslatePipe, UiAlert, UiAvatar, UiButton, UiEmptyState, UiFileCard, UiIcon, UiMessageBubble, UiSpinner],
   providers: [ChatSocket],
   templateUrl: './chat-window.html',
-  styleUrl: './chat-window.scss',
 })
 export class ChatWindow implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly service = inject(ChatService);
+  private readonly destroyRef = inject(DestroyRef);
   readonly socket = inject(ChatSocket);
   readonly currentUser = inject(CurrentUser);
 
   readonly loading = signal(true);
   readonly error = signal(false);
   readonly draft = signal('');
+
+  readonly channelId = signal('');
+  readonly channels = this.service.channels;
+  readonly channel = computed(() => this.channels().find((c) => c.id === this.channelId()));
+  readonly title = computed(() => {
+    const c = this.channel();
+    return c ? this.service.displayName(c) : '';
+  });
+
+  displayName(c: Channel): string {
+    return this.service.displayName(c);
+  }
+
+  avatarOf(c: Channel): string | null {
+    return this.service.avatarOf(c);
+  }
 
   private readonly bottom = viewChild<ElementRef<HTMLElement>>('bottom');
 
@@ -42,22 +60,32 @@ export class ChatWindow implements OnInit, OnDestroy {
     });
   }
 
-  // Au chargement de la page : ouvre le websocket et récupère l'historique.
+  // Au chargement de la page, et à chaque changement de channel dans la liste :
+  // ouvre le websocket du channel et récupère son historique.
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id')!;
-
     this.currentUser.load().subscribe();
-    this.socket.open(id);
+    this.service.loadChannels().subscribe({ error: () => {} });
 
-    this.service.loadMessages(id).subscribe({
-      next: (history) => {
-        this.socket.setHistory(history);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loading.set(false);
-        this.error.set(true);
-      },
+    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+      const id = params.get('id')!;
+      this.channelId.set(id);
+      this.loading.set(true);
+      this.error.set(false);
+
+      this.socket.close();
+      this.socket.messages.set([]);
+      this.socket.open(id);
+
+      this.service.loadMessages(id).subscribe({
+        next: (history) => {
+          this.socket.setHistory(history);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.loading.set(false);
+          this.error.set(true);
+        },
+      });
     });
   }
 

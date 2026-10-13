@@ -4,10 +4,11 @@ import { Router } from '@angular/router';
 import { TwoFactor } from '../two-factor';
 import { AuthService } from '../auth/auth';
 import { TranslatePipe } from '@ngx-translate/core';
+import { UiAlert, UiButton, UiField } from '@shared/ui';
 
 @Component({
   selector: 'app-two-factor-verify',
-  imports: [FormField, TranslatePipe],
+  imports: [FormField, TranslatePipe, UiAlert, UiButton, UiField],
   templateUrl: './two-factor-verify.html',
   styleUrl: './two-factor-verify.scss',
 })

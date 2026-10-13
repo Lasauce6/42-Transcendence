@@ -2,15 +2,26 @@ import { DatePipe } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
+import {
+  UiAlert,
+  UiAvatar,
+  UiButton,
+  UiCard,
+  UiEmptyState,
+  UiField,
+  UiIcon,
+  UiListItem,
+  UiPageHeader,
+  UiSpinner,
+} from '@shared/ui';
 import { Channel } from '@core/models/chat.model';
 import { ChatService } from '@core/services/chat';
 import { CurrentUser } from '@core/services/current-user';
 
 @Component({
   selector: 'app-chat-list',
-  imports: [DatePipe, TranslatePipe],
+  imports: [DatePipe, TranslatePipe, UiAlert, UiAvatar, UiButton, UiCard, UiEmptyState, UiField, UiIcon, UiListItem, UiPageHeader, UiSpinner],
   templateUrl: './chat-list.html',
-  styleUrl: './chat-list.scss',
 })
 export class ChatList implements OnInit {
   private readonly service = inject(ChatService);
@@ -47,14 +58,12 @@ export class ChatList implements OnInit {
     });
   }
 
-  // En privé, on affiche l'autre personne ; sinon le nom du channel.
   displayName(c: Channel): string {
-    if (c.type === 'PRIVATE' && c.members) {
-      const me = this.currentUser.profile()?.id;
-      const other = c.members.find((m) => m.id !== me);
-      if (other) return other.username;
-    }
-    return c.name ?? '';
+    return this.service.displayName(c);
+  }
+
+  avatarOf(c: Channel): string | null {
+    return this.service.avatarOf(c);
   }
 
   onSearch(event: Event): void {

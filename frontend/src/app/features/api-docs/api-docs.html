@@ -1,4 +1,8 @@
-<section class="api-docs">
-  <h1>{{ 'API_DOCS.TITLE' | translate }}</h1>
-  <iframe src="/api/docs/" [title]="'API_DOCS.FRAME_TITLE' | translate"></iframe>
+<section class="flex flex-col gap-6">
+  <ui-page-header eyebrow="API" [heading]="'API_DOCS.TITLE' | translate" />
+  <iframe
+    src="/api/docs/"
+    [title]="'API_DOCS.FRAME_TITLE' | translate"
+    class="h-screen min-h-[800px] w-full rounded-card border border-line bg-white"
+  ></iframe>
 </section>

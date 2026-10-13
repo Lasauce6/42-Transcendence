@@ -1,5 +1,5 @@
-<label for="lang-select">{{ 'COMMON.LANGUAGE' | translate }}</label>
-<select id="lang-select" (change)="onChange($event)">
+<label for="lang-select" class="sr-only">{{ 'COMMON.LANGUAGE' | translate }}</label>
+<select id="lang-select" class="font-mono text-[13px]" (change)="onChange($event)">
   @for (l of lang.langs; track l) {
     <option [value]="l" [selected]="l === lang.current()">{{ names[l] }}</option>
   }

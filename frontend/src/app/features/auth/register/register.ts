@@ -14,10 +14,11 @@ import { AuthService, RegisterFormModel } from '../auth';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { TranslatePipe } from '@ngx-translate/core';
+import { UiAlert, UiButton, UiField } from '@shared/ui';
 
 @Component({
   selector: 'app-register',
-  imports: [FormField, RouterLink, TranslatePipe],
+  imports: [FormField, RouterLink, TranslatePipe, UiAlert, UiButton, UiField],
   templateUrl: './register.html',
   styleUrl: './register.scss',
 })

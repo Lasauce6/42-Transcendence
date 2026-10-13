@@ -1,28 +1,64 @@
-<header>
-  <a routerLink="/">{{ 'APP.NAME' | translate }}</a>
+<div class="flex min-h-screen flex-col">
+  <header class="border-b border-line bg-chrome">
+    <div class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-6 py-3.5">
+      <a routerLink="/" class="flex items-center gap-2.5 text-lg font-bold uppercase tracking-wide text-ink hover:no-underline">
+        <span class="flex size-7 items-center justify-center rounded-md bg-accent font-mono text-xs text-accent-ink">42</span>
+        {{ 'APP.NAME' | translate }}
+      </a>
 
-  <nav>
-    <a routerLink="/">{{ 'NAV.HOME' | translate }}</a>
-    <a routerLink="/api-docs">{{ 'NAV.API_DOCS' | translate }}</a>
+      <nav
+        [attr.aria-label]="'NAV.MAIN' | translate"
+        class="flex grow flex-wrap gap-1 font-mono text-[13px] uppercase tracking-wider"
+      >
+        <a routerLink="/" routerLinkActive="nav-active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link">{{ 'NAV.HOME' | translate }}</a>
+        @if (isLoggedIn()) {
+          <a routerLink="/chat" routerLinkActive="nav-active" class="nav-link">{{ 'NAV.CHAT' | translate }}</a>
+          <a routerLink="/profile" routerLinkActive="nav-active" class="nav-link">{{ 'NAV.PROFILE' | translate }}</a>
+        }
+        <a routerLink="/api-docs" routerLinkActive="nav-active" class="nav-link">{{ 'NAV.API_DOCS' | translate }}</a>
+        @if (isAdmin()) {
+          <a routerLink="/administration" routerLinkActive="nav-active" class="nav-link">{{ 'ADMIN.NAV' | translate }}</a>
+        }
+      </nav>
 
-    @if (isLoggedIn()) {
-      <a routerLink="/profile">{{ 'NAV.PROFILE' | translate }}</a>
-      <a routerLink="/chat">{{ 'NAV.CHAT' | translate }}</a>
-      <app-notification-bell />
-    }
+      <div class="flex flex-wrap items-center gap-2.5">
+        <app-language-switcher />
+        @if (isLoggedIn()) {
+          <app-notification-bell />
+          <a
+            routerLink="/profile"
+            [attr.aria-label]="'NAV.PROFILE' | translate"
+            class="flex size-11 items-center justify-center overflow-hidden rounded-control border-2 border-accent bg-surface font-bold text-ink hover:no-underline"
+          >
+            @if (avatar(); as url) {
+              <img [src]="url" alt="" class="size-full object-cover" />
+            } @else {
+              {{ initial() }}
+            }
+          </a>
+        } @else {
+          <a routerLink="/login" class="rounded-control px-3 py-2.5 text-ink">{{ 'NAV.LOGIN' | translate }}</a>
+          <a routerLink="/register" class="rounded-control bg-accent px-4 py-2.5 font-bold text-accent-ink hover:no-underline">{{ 'NAV.REGISTER' | translate }}</a>
+        }
+      </div>
+    </div>
+  </header>
 
-    @if (isAdmin()) {
-      <a routerLink="/administration">{{ 'ADMIN.NAV' | translate }}</a>
-    }
-    @if (!isLoggedIn()) {
-      <a routerLink="/login">Connexion</a>
-      <a routerLink="/register">Inscription</a>
-    }
-  </nav>
-  <app-language-switcher />
-</header>
+  <main class="grow">
+    <div class="mx-auto max-w-6xl px-6 py-8">
+      <router-outlet />
+    </div>
+  </main>
 
-<main>
-  <router-outlet />
-</main>
+  <footer class="border-t border-line bg-chrome">
+    <div class="mx-auto flex max-w-6xl flex-wrap justify-between gap-3 px-6 py-5 font-mono text-[13px] text-muted">
+      <span>{{ 'FOOTER.COPYRIGHT' | translate }}</span>
+      <nav [attr.aria-label]="'FOOTER.LEGAL' | translate" class="flex flex-wrap gap-5">
+        <a routerLink="/privacy">{{ 'FOOTER.PRIVACY' | translate }}</a>
+        <a routerLink="/terms">{{ 'FOOTER.TERMS' | translate }}</a>
+        <a routerLink="/api-docs">{{ 'NAV.API_DOCS' | translate }}</a>
+      </nav>
+    </div>
+  </footer>
+</div>
 <app-toast />

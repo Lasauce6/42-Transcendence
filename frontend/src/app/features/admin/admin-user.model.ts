@@ -6,4 +6,5 @@ export interface AdminUser {
   username: string;
   email: string;
   role: UserRole;
+  avatar: string | null;
 }

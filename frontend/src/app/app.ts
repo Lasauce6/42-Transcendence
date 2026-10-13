@@ -1,8 +1,8 @@
-import { Component, signal, effect, inject } from '@angular/core';
+import { Component, computed, effect, inject } from '@angular/core';
 import { Login } from './features/auth/login/login';
 import { Register } from './features/auth/register/register';
 import { Header } from "./features/header/header";
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { LanguageSwitcher } from './shared/components/language-switcher/language-switcher';
 import { CurrentUser } from '@core/services/current-user';
@@ -14,7 +14,7 @@ import { NotificationSocket } from '@core/services/notification-socket';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, TranslatePipe, LanguageSwitcher, Toast, NotificationBell],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, TranslatePipe, LanguageSwitcher, Toast, NotificationBell],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
@@ -24,6 +24,14 @@ export class App {
 
   readonly isLoggedIn = this.auth.isLoggedIn;
   readonly isAdmin = this.currentUser.isAdmin;
+  readonly initial = computed(
+    () => this.currentUser.profile()?.username?.charAt(0).toUpperCase() ?? '?',
+  );
+  // Photo de profil, sauf l'image par défaut (on affiche alors l'initiale).
+  readonly avatar = computed(() => {
+    const url = this.currentUser.profile()?.avatar;
+    return url && !url.endsWith('/default.png') ? url : null;
+  });
 
   private readonly notifications = inject(NotificationService);
   private readonly notificationSocket = inject(NotificationSocket);

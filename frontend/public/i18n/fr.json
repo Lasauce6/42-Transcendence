@@ -8,7 +8,9 @@
     "LOGIN": "Connexion",
     "LOGOUT": "Déconnexion",
     "CHAT": "Messages",
-    "API_DOCS": "Doc API"
+    "API_DOCS": "Doc API",
+    "MAIN": "Navigation principale",
+    "REGISTER": "Inscription"
   },
   "COMMON": {
     "LOADING": "Chargement...",
@@ -18,7 +20,36 @@
   },
   "HOME": {
     "TITLE": "Accueil",
-    "WELCOME": "Bienvenue, {{name}} !"
+    "WELCOME": "Bienvenue, {{name}} !",
+    "SESSION": "Session ouverte",
+    "UNREAD": "{{count}} notification(s) non lue(s)",
+    "NEW_CONVERSATION": "Nouvelle conversation",
+    "CONVERSATIONS": "Conversations",
+    "SEE_ALL": "Tout voir",
+    "CHANNEL_TYPE": {
+      "PUBLIC": "Channel public",
+      "GROUP": "Groupe",
+      "PRIVATE": "Conversation privée"
+    },
+    "HERO": {
+      "EYEBROW": "42 · Transcendence",
+      "TITLE": "Discute avec tes amis, en direct.",
+      "SUBTITLE": "Des conversations en temps réel, des fichiers partagés en toute sécurité et tes amis toujours à portée de main."
+    },
+    "FEATURES": {
+      "CHAT": {
+        "TITLE": "Chat en direct",
+        "TEXT": "Channels publics, groupes et conversations privées, mis à jour instantanément."
+      },
+      "FILES": {
+        "TITLE": "Partage de fichiers",
+        "TEXT": "Images, PDF et documents, visibles uniquement par les membres de la conversation."
+      },
+      "FRIENDS": {
+        "TITLE": "Amis et notifications",
+        "TEXT": "Ajoute des amis, vois qui est en ligne et ne rate aucun message."
+      }
+    }
   },
   "ADMIN": {
     "NAV": "Admin",
@@ -34,7 +65,8 @@
       "DELETED": "Utilisateur supprimé.",
       "ROLE_CHANGED": "Rôle mis à jour.",
       "EMPTY": "Aucun utilisateur.",
-      "ERROR": "Impossible de charger les utilisateurs."
+      "ERROR": "Impossible de charger les utilisateurs.",
+      "YOU": "toi"
     }
   },
   "FORBIDDEN": {
@@ -49,7 +81,10 @@
       "PASSWORD_LABEL": "Mot de passe",
       "PASSWORD_PLACEHOLDER": "Ton mot de passe",
       "SUBMIT": "Se connecter",
-      "NO_ACCOUNT": "Pas de compte ? S'inscrire"
+      "NO_ACCOUNT": "Pas de compte ? S'inscrire",
+      "TITLE": "Bon retour",
+      "SUBTITLE": "Connecte-toi pour retrouver tes conversations et tes amis.",
+      "USERNAME_PLACEHOLDER": "Ton nom d'utilisateur"
     },
     "REGISTER": {
       "USERNAME_LABEL": "Nom d'utilisateur",
@@ -57,11 +92,14 @@
       "PASSWORD_LABEL": "Mot de passe",
       "CONFIRM_LABEL": "Confirmer le mot de passe",
       "SUBMIT": "S'inscrire",
-      "HAVE_ACCOUNT": "Déjà un compte ? Se connecter"
+      "HAVE_ACCOUNT": "Déjà un compte ? Se connecter",
+      "TITLE": "Créer un compte",
+      "SUBTITLE": "Rejoins Transcendence pour discuter avec tes amis en direct."
     },
     "OAUTH": {
       "CONTINUE_WITH": "Continuer avec {{provider}}",
-      "PROVIDERS": { "GOOGLE": "Google", "GITHUB": "GitHub", "FORTYTWO": "42" }
+      "PROVIDERS": { "GOOGLE": "Google", "GITHUB": "GitHub", "FORTYTWO": "42" },
+      "OR": "ou"
     },
     "CALLBACK": { "LOADING": "Connexion en cours..." },
     "TWOFA": {
@@ -71,20 +109,53 @@
         "CODE_PLACEHOLDER": "Code à 6 chiffres",
         "CONFIRM": "Confirmer",
         "SUCCESS": "2FA activé avec succès.",
-        "GENERATING": "Génération du QR code en cours..."
+        "GENERATING": "Génération du QR code en cours...",
+        "TITLE": "Activer la double authentification",
+        "CODE_LABEL": "Code de vérification"
       },
       "VERIFY": {
         "TITLE": "Vérification en deux étapes",
         "INSTRUCTION": "Entre le code à 6 chiffres généré par ton application d'authentification.",
         "CODE_PLACEHOLDER": "Code à 6 chiffres",
-        "SUBMIT": "Vérifier"
+        "SUBMIT": "Vérifier",
+        "CODE_LABEL": "Code de vérification"
       }
     }
   },
   "PROFILE": {
     "LOADING": "Chargement du profil...",
     "AVATAR_ALT": "Avatar",
-    "LOAD_FAILED": "Impossible de charger le profil. Réessaie plus tard."
+    "LOAD_FAILED": "Impossible de charger le profil. Réessaie plus tard.",
+    "EDIT_BUTTON": "Modifier le profil",
+    "SECURITY": "Sécurité",
+    "SECURITY_TEXT": "Protège ton compte avec la double authentification : un code à usage unique sera demandé à chaque connexion.",
+    "ENABLE_2FA": "Activer la 2FA",
+    "EDIT": {
+      "INFO_TITLE": "Informations",
+      "USERNAME": "Nom d'utilisateur",
+      "FIRST_NAME": "Prénom",
+      "LAST_NAME": "Nom",
+      "BIO": "Bio",
+      "AVATAR": "Photo de profil",
+      "AVATAR_HINT": "JPEG, PNG ou WebP, 5 Mo maximum.",
+      "AVATAR_PREVIEW": "Aperçu de la photo de profil",
+      "SAVE": "Enregistrer le profil",
+      "PASSWORD_TITLE": "Mot de passe",
+      "CURRENT_PASSWORD": "Mot de passe actuel",
+      "NEW_PASSWORD": "Nouveau mot de passe",
+      "CONFIRM_PASSWORD": "Confirmer le nouveau mot de passe",
+      "CHANGE_PASSWORD": "Modifier le mot de passe",
+      "ERROR_FORMAT": "Format non supporté (JPEG, PNG ou WebP uniquement).",
+      "ERROR_SIZE": "Fichier trop volumineux (5 Mo max).",
+      "ERROR_UPDATE": "La mise à jour a échoué. Réessaie.",
+      "ERROR_PASSWORD_MISMATCH": "Les deux nouveaux mots de passe ne correspondent pas.",
+      "ERROR_PASSWORD": "Impossible de modifier le mot de passe. Vérifie ton mot de passe actuel et réessaie.",
+      "PASSWORD_CHANGED": "Mot de passe modifié avec succès.",
+      "CHOOSE_FILE": "Choisir une image",
+      "NO_FILE": "Aucune image choisie",
+      "DELETE_AVATAR": "Supprimer l'avatar",
+      "ERROR_DELETE_AVATAR": "La suppression a échoué. Réessaie."
+    }
   },
   "ERRORS": {
     "USERNAME_REQUIRED": "Le nom d'utilisateur est requis.",
@@ -156,13 +227,190 @@
     "INPUT_PLACEHOLDER": "Écris un message…",
     "SEND": "Envoyer",
     "UPLOAD_ERROR": "Impossible d'envoyer le fichier.",
+    "ATTACH": "Joindre un fichier",
     "ADD_MEMBER_PLACEHOLDER": "Nom d'utilisateur à ajouter",
     "ADD_MEMBER_BUTTON": "Ajouter",
     "ADD_MEMBER_OK": "Membre ajouté.",
-    "ADD_MEMBER_ERROR": "Impossible d'ajouter cette personne."
+    "ADD_MEMBER_ERROR": "Impossible d'ajouter cette personne.",
+    "BACK_TO_LIST": "Toutes les conversations",
+    "YOU": "vous",
+    "DELETED": "Message supprimé"
   },
   "API_DOCS": {
     "TITLE": "Documentation de l'API",
     "FRAME_TITLE": "Documentation interactive de l'API (Swagger)"
+  },
+  "FOOTER": {
+    "COPYRIGHT": "© 2026 Transcendence · projet 42",
+    "LEGAL": "Liens légaux",
+    "PRIVACY": "Politique de confidentialité",
+    "TERMS": "Conditions d'utilisation"
+  },
+  "LEGAL": {
+    "LABEL": "Informations légales",
+    "UPDATED": "Dernière mise à jour : 6 octobre 2026",
+    "PRIVACY": {
+      "TITLE": "Politique de confidentialité",
+      "INTRO": "Transcendence est un projet étudiant de l'école 42. Cette page explique quelles données nous collectons quand tu utilises le site, pourquoi, et ce que tu peux en faire.",
+      "SECTIONS": [
+        {
+          "title": "Données que nous collectons",
+          "items": [
+            "Ton compte : nom d'utilisateur, adresse e-mail, prénom, nom, bio, langue préférée et photo de profil.",
+            "Ton mot de passe, stocké uniquement sous forme hachée : personne ne peut le lire, pas même l'équipe.",
+            "Ton activité sociale : tes amis, les demandes d'ami, les conversations dont tu fais partie, tes messages et les fichiers que tu y envoies.",
+            "Ton statut en ligne et la date de ta dernière connexion, visibles par les autres utilisateurs.",
+            "Tes notifications (demandes d'ami, nouveaux messages).",
+            "Si tu actives la double authentification (2FA) : une clé secrète, stockée chiffrée.",
+            "Si tu crées des clés d'API : un nom et une empreinte de la clé (jamais la clé elle-même)."
+          ]
+        },
+        {
+          "title": "Connexion avec 42, Google ou GitHub",
+          "items": [
+            "Si tu te connectes avec l'un de ces services, nous recevons seulement les informations nécessaires pour créer ton compte : identifiant, nom d'utilisateur et adresse e-mail.",
+            "Nous n'avons jamais accès à ton mot de passe sur ces services."
+          ]
+        },
+        {
+          "title": "Pourquoi nous utilisons ces données",
+          "items": [
+            "Faire fonctionner le site : connexion, profil, amis, chat en direct, envoi de fichiers et notifications.",
+            "Protéger les comptes : double authentification, limitation du nombre de requêtes, pare-feu applicatif.",
+            "Garder une trace des actions sensibles (connexion, suppression d'un message, bannissement…) dans un journal technique, avec ton nom d'utilisateur et ton adresse IP, pour détecter les abus.",
+            "Nous ne vendons, ne louons et ne partageons aucune donnée, et il n'y a aucune publicité."
+          ]
+        },
+        {
+          "title": "Qui peut voir quoi",
+          "items": [
+            "Ton nom d'utilisateur, ta photo de profil, ta bio et ton statut en ligne sont visibles par les autres utilisateurs connectés.",
+            "Tes messages et les fichiers d'une conversation ne sont visibles que par les membres de cette conversation.",
+            "Les liens vers les fichiers du chat sont personnels et expirent au bout d'une heure ; une personne retirée ou bannie d'une conversation perd l'accès à ses fichiers.",
+            "Les administrateurs du site peuvent consulter et supprimer des comptes pour la modération."
+          ]
+        },
+        {
+          "title": "Cookies et stockage dans le navigateur",
+          "items": [
+            "Nous n'utilisons aucun cookie publicitaire ni outil de suivi.",
+            "Ta langue préférée est enregistrée dans ton navigateur pour s'appliquer à ta prochaine visite.",
+            "Tes jetons de connexion sont gardés en mémoire le temps de ta visite, et effacés quand tu te déconnectes."
+          ]
+        },
+        {
+          "title": "Durée de conservation",
+          "items": [
+            "Tes données sont conservées tant que ton compte existe.",
+            "Quand tu remplaces ta photo de profil, l'ancienne est supprimée du serveur.",
+            "Quand un message est supprimé, ses fichiers sont aussi effacés du serveur.",
+            "Quand un compte est supprimé, ses messages, fichiers, amis et notifications le sont aussi."
+          ]
+        },
+        {
+          "title": "Sécurité",
+          "items": [
+            "Toutes les connexions au site sont chiffrées (HTTPS).",
+            "Les secrets du serveur sont stockés dans un coffre-fort dédié (HashiCorp Vault).",
+            "Les mots de passe sont hachés et les clés de double authentification sont chiffrées."
+          ]
+        },
+        {
+          "title": "Tes droits",
+          "items": [
+            "Conformément au RGPD, tu peux demander l'accès à tes données, leur correction ou leur suppression.",
+            "Tu peux modifier ton profil et supprimer ta photo de profil ou tes messages directement depuis le site.",
+            "Pour toute autre demande, comme la suppression de ton compte, contacte l'équipe du projet sur github.com/Lasauce6/42-Transcendence."
+          ]
+        }
+      ]
+    },
+    "TERMS": {
+      "TITLE": "Conditions d'utilisation",
+      "INTRO": "En créant un compte ou en utilisant Transcendence, tu acceptes les règles ci-dessous. Elles servent à garder le site agréable et sûr pour tout le monde.",
+      "SECTIONS": [
+        {
+          "title": "Le service",
+          "items": [
+            "Transcendence est un réseau social réalisé dans le cadre d'un projet étudiant de l'école 42 : profils, amis, conversations en direct et partage de fichiers.",
+            "Le site est fourni tel quel, sans garantie de disponibilité permanente. Il peut être modifié, interrompu ou réinitialisé, notamment pendant son développement."
+          ]
+        },
+        {
+          "title": "Ton compte",
+          "items": [
+            "Tu es responsable de ton compte et de ce qui s'y passe. Garde ton mot de passe secret et active la double authentification si possible.",
+            "Les informations de ton profil doivent être exactes et ne pas usurper l'identité de quelqu'un d'autre.",
+            "Un compte est personnel : ne le partage pas."
+          ]
+        },
+        {
+          "title": "Règles de comportement",
+          "items": [
+            "Pas de harcèlement, d'insultes, de menaces ni de propos discriminatoires.",
+            "Pas de contenu illégal, violent, à caractère sexuel ou portant atteinte aux droits d'autrui.",
+            "Pas de spam, ni de tentative de contourner la sécurité du site ou d'accéder aux données des autres."
+          ]
+        },
+        {
+          "title": "Messages et fichiers",
+          "items": [
+            "Tu restes propriétaire de ce que tu publies, et tu es responsable de son contenu.",
+            "Fichiers acceptés : images (jpg, png, gif, webp), PDF, texte, documents Word et Excel, jusqu'à 10 Mo par fichier.",
+            "N'envoie que des fichiers que tu as le droit de partager."
+          ]
+        },
+        {
+          "title": "Modération",
+          "items": [
+            "Les administrateurs et modérateurs peuvent supprimer des messages qui ne respectent pas ces règles.",
+            "Les administrateurs d'une conversation peuvent en retirer ou en bannir des membres.",
+            "En cas d'abus grave ou répété, un compte peut être suspendu ou supprimé."
+          ]
+        },
+        {
+          "title": "API publique",
+          "items": [
+            "L'API est utilisable avec une clé d'API personnelle, que tu dois garder secrète.",
+            "Le nombre de requêtes est limité pour protéger le service. Un usage abusif peut entraîner la révocation de la clé."
+          ]
+        },
+        {
+          "title": "Données personnelles",
+          "items": [
+            "L'utilisation de tes données est décrite dans notre politique de confidentialité."
+          ]
+        },
+        {
+          "title": "Modifications et contact",
+          "items": [
+            "Ces conditions peuvent évoluer ; la date de mise à jour en haut de la page indique la dernière version.",
+            "Pour toute question, contacte l'équipe du projet sur github.com/Lasauce6/42-Transcendence."
+          ]
+        }
+      ]
+    }
+  },
+  "DESIGN_SYSTEM": {
+    "EYEBROW": "Design system",
+    "TITLE": "Composants de l'interface",
+    "SUBTITLE": "Les couleurs, la typographie et les composants réutilisables du site.",
+    "COLORS": "Couleurs",
+    "TYPOGRAPHY": "Typographie",
+    "BUTTONS": "Boutons",
+    "ICONS": "Icônes",
+    "AVATARS": "Avatars et badges",
+    "FORMS": "Formulaires",
+    "FEEDBACK": "Retours",
+    "LISTS": "Listes et état vide",
+    "CHAT": "Chat",
+    "EMPTY": "Aucun ami pour l'instant",
+    "DELETED": "Message supprimé",
+    "USERNAME": "Nom d'utilisateur",
+    "EMAIL": "Adresse e-mail",
+    "INVALID_EMAIL": "Adresse e-mail invalide",
+    "SUCCESS": "Profil enregistré.",
+    "ERROR": "Une erreur est survenue.",
+    "INFO": "Le lien expire au bout d'une heure."
   }
 }

@@ -1,24 +1,44 @@
 @if (profile(); as p) {
-  <div class="profile">
-    <h2>{{ p.username }}</h2>
-    <p>{{ p.email }}</p>
-    <p>{{ p.first_name }} {{ p.last_name }}</p>
-    @if (p.bio) {
-      <p>{{ p.bio }}</p>
-    }
-    @if (p.avatar) {
-      <img [src]="p.avatar" [alt]="'PROFILE.AVATAR_ALT' | translate" />
-    }
+  <div class="flex flex-col gap-8">
+    <ui-page-header [eyebrow]="'NAV.PROFILE' | translate" [heading]="p.username">
+      @if (!isEditing()) {
+        <button uiButton type="button" (click)="startEdit()">{{ 'PROFILE.EDIT_BUTTON' | translate }}</button>
+      }
+    </ui-page-header>
 
-    @if (!isEditing()) {
-      <button (click)="startEdit()">{{ 'PROFILE.EDIT_BUTTON' | translate }}</button>
-    } @else {
-      <app-profile-edit [profile]="p" (profileUpdated)="onProfileUpdated($event)" />
-    }
-    <a routerLink="/auth/2fa/setup"> Configurer la double authentification </a>
+    <div class="flex flex-wrap items-start gap-6">
+      <ui-card class="min-w-0 grow basis-80">
+        <div class="flex flex-col items-center gap-4 text-center">
+          <ui-avatar [name]="p.username" [src]="p.avatar" size="lg" />
+          <div class="flex flex-col gap-1">
+            <h2>{{ p.username }}</h2>
+            @if (p.first_name || p.last_name) {
+              <p class="text-muted">{{ p.first_name }} {{ p.last_name }}</p>
+            }
+            <p class="font-mono text-xs text-muted">{{ p.email }}</p>
+          </div>
+          @if (p.bio) {
+            <p class="w-full border-t border-line pt-4 text-left">{{ p.bio }}</p>
+          }
+        </div>
+      </ui-card>
+
+      <div class="flex min-w-0 grow-[999] basis-[560px] flex-col gap-6">
+        @if (isEditing()) {
+          <app-profile-edit [profile]="p" (profileUpdated)="onProfileUpdated($event)" />
+        } @else {
+          <ui-card [heading]="'PROFILE.SECURITY' | translate">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+              <p class="max-w-md text-muted">{{ 'PROFILE.SECURITY_TEXT' | translate }}</p>
+              <a uiButton variant="secondary" routerLink="/auth/2fa/setup"><ui-icon name="shield" [size]="18" />{{ 'PROFILE.ENABLE_2FA' | translate }}</a>
+            </div>
+          </ui-card>
+        }
+      </div>
+    </div>
   </div>
 } @else if (error()) {
-  <p class="error">{{ error()! | translate }}</p>
+  <ui-alert variant="error">{{ error()! | translate }}</ui-alert>
 } @else {
-  <p>{{ 'PROFILE.LOADING' | translate }}</p>
+  <ui-spinner [label]="'PROFILE.LOADING' | translate" />
 }

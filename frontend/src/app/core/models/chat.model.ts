@@ -3,7 +3,7 @@ export type ChannelType = 'PRIVATE' | 'GROUP' | 'PUBLIC';
 export interface ChannelMember {
   id: string;
   username: string;
-  avatarUrl?: string | null;
+  avatar?: string | null;
 }
 
 export interface LastMessage {
@@ -28,6 +28,7 @@ export interface ChatMessage {
   channel: string;
   sender: string;
   sender_username: string;
+  sender_avatar?: string | null;
   content: string;
   is_deleted: boolean;
   created_at: string;

@@ -1,0 +1,19 @@
+<article class="mx-auto flex max-w-3xl flex-col gap-8">
+  <header class="flex flex-col gap-2">
+    <p class="font-mono text-[13px] uppercase tracking-widest text-accent">&gt; {{ 'LEGAL.LABEL' | translate }}</p>
+    <h1>{{ 'LEGAL.' + doc + '.TITLE' | translate }}</h1>
+    <p class="font-mono text-[13px] text-muted">{{ 'LEGAL.UPDATED' | translate }}</p>
+    <p class="text-muted">{{ 'LEGAL.' + doc + '.INTRO' | translate }}</p>
+  </header>
+
+  @for (section of sections('LEGAL.' + doc + '.SECTIONS' | translate); track $index) {
+    <section class="flex flex-col gap-3 rounded-card border border-line bg-surface p-6">
+      <h2>{{ section.title }}</h2>
+      <ul class="flex list-disc flex-col gap-2 pl-5 marker:text-accent">
+        @for (item of section.items; track $index) {
+          <li>{{ item }}</li>
+        }
+      </ul>
+    </section>
+  }
+</article>

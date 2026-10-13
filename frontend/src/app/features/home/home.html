@@ -1,5 +1,81 @@
-<h1>{{ 'HOME.TITLE' | translate }}</h1>
+@if (isLoggedIn()) {
+  <div class="flex flex-col gap-8">
+    <ui-page-header
+      [eyebrow]="'HOME.SESSION' | translate"
+      [heading]="'HOME.WELCOME' | translate: { name: profile()?.username ?? '' }"
+      [subtitle]="'HOME.UNREAD' | translate: { count: unreadCount() }"
+    >
+      <a uiButton routerLink="/chat"><ui-icon name="plus" [size]="18" />{{ 'HOME.NEW_CONVERSATION' | translate }}</a>
+    </ui-page-header>
 
-@if (profile(); as p) {
-  <p>{{ 'HOME.WELCOME' | translate: { name: p.username } }}</p>
+    <div class="flex flex-wrap items-start gap-6">
+      <ui-card class="min-w-0 grow-[999] basis-[560px]" [heading]="'HOME.CONVERSATIONS' | translate" [padded]="false">
+        <a cardAction routerLink="/chat" class="text-sm">{{ 'HOME.SEE_ALL' | translate }}</a>
+        @if (loadingChannels()) {
+          <div class="p-5"><ui-spinner [label]="'COMMON.LOADING' | translate" /></div>
+        } @else if (channels().length === 0) {
+          <ui-empty-state [heading]="'CHAT.EMPTY' | translate" icon="message">
+            <a uiButton variant="secondary" size="sm" routerLink="/chat">{{ 'HOME.NEW_CONVERSATION' | translate }}</a>
+          </ui-empty-state>
+        } @else {
+          <ul>
+            @for (c of channels(); track c.id) {
+              <li>
+                <a [routerLink]="['/chat', c.id]" class="block rounded-control text-ink hover:bg-surface-2 hover:no-underline">
+                  <ui-list-item
+                    [heading]="channelName(c) || ('CHAT.UNNAMED' | translate)"
+                    [subtitle]="'HOME.CHANNEL_TYPE.' + c.type | translate"
+                  >
+                    <span leading class="flex size-11 shrink-0 items-center justify-center rounded-control bg-surface-2 font-mono font-semibold text-accent">#</span>
+                    <time meta class="font-mono text-xs text-muted" [attr.datetime]="c.created_at">{{ c.created_at | date: 'shortDate' }}</time>
+                  </ui-list-item>
+                </a>
+              </li>
+            }
+          </ul>
+        }
+      </ui-card>
+
+      <ui-card class="min-w-0 grow basis-80" [heading]="'NOTIFICATIONS.TITLE' | translate">
+        <a cardAction routerLink="/notifications" class="text-sm">{{ 'HOME.SEE_ALL' | translate }}</a>
+        @if (notifications().length === 0) {
+          <p class="text-sm text-muted">{{ 'NOTIFICATIONS.EMPTY' | translate }}</p>
+        } @else {
+          <ul class="flex flex-col divide-y divide-line">
+            @for (n of notifications(); track n.id) {
+              <li class="flex items-start gap-3 py-3 first:pt-0 last:pb-0">
+                <span class="mt-1.5 size-2 shrink-0 rounded-full" [class.bg-accent]="!n.is_read" [class.bg-line-strong]="n.is_read"></span>
+                <span class="flex flex-col gap-0.5">
+                  <span [class.font-medium]="!n.is_read">{{ notificationKey(n) | translate: notificationParams(n) }}</span>
+                  <time class="font-mono text-xs text-muted" [attr.datetime]="n.created_at">{{ n.created_at | date: 'short' }}</time>
+                </span>
+              </li>
+            }
+          </ul>
+        }
+      </ui-card>
+    </div>
+  </div>
+} @else {
+  <div class="flex flex-col gap-12 py-8">
+    <div class="flex max-w-3xl flex-col gap-5">
+      <p class="font-mono text-[13px] uppercase tracking-widest text-accent">&gt; {{ 'HOME.HERO.EYEBROW' | translate }}</p>
+      <h1 class="text-5xl leading-tight sm:text-6xl">{{ 'HOME.HERO.TITLE' | translate }}</h1>
+      <p class="text-lg text-muted">{{ 'HOME.HERO.SUBTITLE' | translate }}</p>
+      <div class="flex flex-wrap gap-3">
+        <a uiButton routerLink="/register">{{ 'NAV.REGISTER' | translate }}</a>
+        <a uiButton variant="secondary" routerLink="/login">{{ 'NAV.LOGIN' | translate }}</a>
+      </div>
+    </div>
+
+    <ul class="grid gap-6 md:grid-cols-3">
+      @for (f of features; track f.key) {
+        <li class="flex flex-col gap-3 rounded-card border border-line bg-surface p-6">
+          <span class="flex size-11 items-center justify-center rounded-control bg-surface-2 text-accent"><ui-icon [name]="f.icon" /></span>
+          <h2 class="text-lg">{{ 'HOME.FEATURES.' + f.key + '.TITLE' | translate }}</h2>
+          <p class="text-muted">{{ 'HOME.FEATURES.' + f.key + '.TEXT' | translate }}</p>
+        </li>
+      }
+    </ul>
+  </div>
 }
