@@ -8,7 +8,9 @@
     "LOGIN": "Iniciar sesión",
     "LOGOUT": "Cerrar sesión",
     "CHAT": "Mensajes",
-    "API_DOCS": "Doc API"
+    "API_DOCS": "Doc API",
+    "MAIN": "Navegación principal",
+    "REGISTER": "Registrarse"
   },
   "COMMON": {
     "LOADING": "Cargando...",
@@ -18,7 +20,36 @@
   },
   "HOME": {
     "TITLE": "Inicio",
-    "WELCOME": "¡Bienvenido, {{name}}!"
+    "WELCOME": "¡Bienvenido, {{name}}!",
+    "SESSION": "Sesión iniciada",
+    "UNREAD": "{{count}} notificación(es) sin leer",
+    "NEW_CONVERSATION": "Nueva conversación",
+    "CONVERSATIONS": "Conversaciones",
+    "SEE_ALL": "Ver todo",
+    "CHANNEL_TYPE": {
+      "PUBLIC": "Canal público",
+      "GROUP": "Grupo",
+      "PRIVATE": "Conversación privada"
+    },
+    "HERO": {
+      "EYEBROW": "42 · Transcendence",
+      "TITLE": "Chatea con tus amigos, en directo.",
+      "SUBTITLE": "Conversaciones en tiempo real, archivos compartidos de forma segura y tus amigos siempre a mano."
+    },
+    "FEATURES": {
+      "CHAT": {
+        "TITLE": "Chat en directo",
+        "TEXT": "Canales públicos, grupos y conversaciones privadas, actualizados al instante."
+      },
+      "FILES": {
+        "TITLE": "Archivos compartidos",
+        "TEXT": "Imágenes, PDF y documentos, visibles solo para los miembros de la conversación."
+      },
+      "FRIENDS": {
+        "TITLE": "Amigos y notificaciones",
+        "TEXT": "Añade amigos, mira quién está en línea y no te pierdas ningún mensaje."
+      }
+    }
   },
   "ADMIN": {
     "NAV": "Admin",
@@ -34,7 +65,8 @@
       "DELETED": "Usuario eliminado.",
       "ROLE_CHANGED": "Rol actualizado.",
       "EMPTY": "Ningún usuario.",
-      "ERROR": "No se pueden cargar los usuarios."
+      "ERROR": "No se pueden cargar los usuarios.",
+      "YOU": "tú"
     }
   },
   "FORBIDDEN": {
@@ -49,7 +81,10 @@
       "PASSWORD_LABEL": "Contraseña",
       "PASSWORD_PLACEHOLDER": "Tu contraseña",
       "SUBMIT": "Iniciar sesión",
-      "NO_ACCOUNT": "¿No tienes cuenta? Regístrate"
+      "NO_ACCOUNT": "¿No tienes cuenta? Regístrate",
+      "TITLE": "Bienvenido de nuevo",
+      "SUBTITLE": "Inicia sesión para volver a tus conversaciones y amigos.",
+      "USERNAME_PLACEHOLDER": "Tu nombre de usuario"
     },
     "REGISTER": {
       "USERNAME_LABEL": "Nombre de usuario",
@@ -57,11 +92,14 @@
       "PASSWORD_LABEL": "Contraseña",
       "CONFIRM_LABEL": "Confirmar contraseña",
       "SUBMIT": "Registrarse",
-      "HAVE_ACCOUNT": "¿Ya tienes cuenta? Inicia sesión"
+      "HAVE_ACCOUNT": "¿Ya tienes cuenta? Inicia sesión",
+      "TITLE": "Crear una cuenta",
+      "SUBTITLE": "Únete a Transcendence para chatear con tus amigos en directo."
     },
     "OAUTH": {
       "CONTINUE_WITH": "Continuar con {{provider}}",
-      "PROVIDERS": { "GOOGLE": "Google", "GITHUB": "GitHub", "FORTYTWO": "42" }
+      "PROVIDERS": { "GOOGLE": "Google", "GITHUB": "GitHub", "FORTYTWO": "42" },
+      "OR": "o"
     },
     "CALLBACK": { "LOADING": "Iniciando sesión..." },
     "TWOFA": {
@@ -71,20 +109,53 @@
         "CODE_PLACEHOLDER": "Código de 6 dígitos",
         "CONFIRM": "Confirmar",
         "SUCCESS": "2FA activado correctamente.",
-        "GENERATING": "Generando el código QR..."
+        "GENERATING": "Generando el código QR...",
+        "TITLE": "Activar la autenticación en dos pasos",
+        "CODE_LABEL": "Código de verificación"
       },
       "VERIFY": {
         "TITLE": "Verificación en dos pasos",
         "INSTRUCTION": "Introduce el código de 6 dígitos de tu aplicación de autenticación.",
         "CODE_PLACEHOLDER": "Código de 6 dígitos",
-        "SUBMIT": "Verificar"
+        "SUBMIT": "Verificar",
+        "CODE_LABEL": "Código de verificación"
       }
     }
   },
   "PROFILE": {
     "LOADING": "Cargando el perfil...",
     "AVATAR_ALT": "Avatar",
-    "LOAD_FAILED": "No se pudo cargar el perfil. Inténtalo más tarde."
+    "LOAD_FAILED": "No se pudo cargar el perfil. Inténtalo más tarde.",
+    "EDIT_BUTTON": "Editar perfil",
+    "SECURITY": "Seguridad",
+    "SECURITY_TEXT": "Protege tu cuenta con la autenticación en dos pasos: se pedirá un código de un solo uso en cada inicio de sesión.",
+    "ENABLE_2FA": "Activar la 2FA",
+    "EDIT": {
+      "INFO_TITLE": "Información",
+      "USERNAME": "Nombre de usuario",
+      "FIRST_NAME": "Nombre",
+      "LAST_NAME": "Apellido",
+      "BIO": "Biografía",
+      "AVATAR": "Foto de perfil",
+      "AVATAR_HINT": "JPEG, PNG o WebP, 5 MB como máximo.",
+      "AVATAR_PREVIEW": "Vista previa de la foto de perfil",
+      "SAVE": "Guardar perfil",
+      "PASSWORD_TITLE": "Contraseña",
+      "CURRENT_PASSWORD": "Contraseña actual",
+      "NEW_PASSWORD": "Nueva contraseña",
+      "CONFIRM_PASSWORD": "Confirmar la nueva contraseña",
+      "CHANGE_PASSWORD": "Cambiar la contraseña",
+      "ERROR_FORMAT": "Formato no compatible (solo JPEG, PNG o WebP).",
+      "ERROR_SIZE": "Archivo demasiado grande (5 MB como máximo).",
+      "ERROR_UPDATE": "La actualización ha fallado. Inténtalo de nuevo.",
+      "ERROR_PASSWORD_MISMATCH": "Las dos contraseñas nuevas no coinciden.",
+      "ERROR_PASSWORD": "No se ha podido cambiar la contraseña. Comprueba tu contraseña actual e inténtalo de nuevo.",
+      "PASSWORD_CHANGED": "Contraseña cambiada correctamente.",
+      "CHOOSE_FILE": "Elegir una imagen",
+      "NO_FILE": "Ninguna imagen elegida",
+      "DELETE_AVATAR": "Eliminar la foto",
+      "ERROR_DELETE_AVATAR": "No se pudo eliminar. Inténtalo de nuevo."
+    }
   },
   "ERRORS": {
     "USERNAME_REQUIRED": "El nombre de usuario es obligatorio.",
@@ -156,13 +227,190 @@
     "INPUT_PLACEHOLDER": "Escribe un mensaje…",
     "SEND": "Enviar",
     "UPLOAD_ERROR": "No se pudo enviar el archivo.",
+    "ATTACH": "Adjuntar un archivo",
     "ADD_MEMBER_PLACEHOLDER": "Nombre de usuario a añadir",
     "ADD_MEMBER_BUTTON": "Añadir",
     "ADD_MEMBER_OK": "Miembro añadido.",
-    "ADD_MEMBER_ERROR": "No se pudo añadir a esta persona."
+    "ADD_MEMBER_ERROR": "No se pudo añadir a esta persona.",
+    "BACK_TO_LIST": "Todas las conversaciones",
+    "YOU": "tú",
+    "DELETED": "Mensaje eliminado"
   },
   "API_DOCS": {
     "TITLE": "Documentación de la API",
     "FRAME_TITLE": "Documentación interactiva de la API (Swagger)"
+  },
+  "FOOTER": {
+    "COPYRIGHT": "© 2026 Transcendence · proyecto 42",
+    "LEGAL": "Enlaces legales",
+    "PRIVACY": "Política de privacidad",
+    "TERMS": "Condiciones de uso"
+  },
+  "LEGAL": {
+    "LABEL": "Información legal",
+    "UPDATED": "Última actualización: 6 de octubre de 2026",
+    "PRIVACY": {
+      "TITLE": "Política de privacidad",
+      "INTRO": "Transcendence es un proyecto estudiantil de la escuela 42. Esta página explica qué datos recopilamos cuando usas el sitio, por qué y qué puedes hacer con ellos.",
+      "SECTIONS": [
+        {
+          "title": "Datos que recopilamos",
+          "items": [
+            "Tu cuenta: nombre de usuario, correo electrónico, nombre, apellido, biografía, idioma preferido y foto de perfil.",
+            "Tu contraseña, guardada solo en forma cifrada (hash): nadie puede leerla, ni siquiera el equipo.",
+            "Tu actividad social: tus amigos, las solicitudes de amistad, las conversaciones en las que participas, tus mensajes y los archivos que envías en ellas.",
+            "Tu estado en línea y la hora de tu última conexión, visibles para los demás usuarios.",
+            "Tus notificaciones (solicitudes de amistad, mensajes nuevos).",
+            "Si activas la autenticación en dos pasos (2FA): una clave secreta, guardada cifrada.",
+            "Si creas claves de API: un nombre y una huella de la clave (nunca la clave en sí)."
+          ]
+        },
+        {
+          "title": "Inicio de sesión con 42, Google o GitHub",
+          "items": [
+            "Si inicias sesión con uno de estos servicios, solo recibimos lo necesario para crear tu cuenta: identificador, nombre de usuario y correo electrónico.",
+            "Nunca tenemos acceso a tu contraseña en esos servicios."
+          ]
+        },
+        {
+          "title": "Para qué usamos estos datos",
+          "items": [
+            "Para que el sitio funcione: inicio de sesión, perfil, amigos, chat en directo, envío de archivos y notificaciones.",
+            "Para proteger las cuentas: autenticación en dos pasos, límite de solicitudes y cortafuegos de aplicaciones.",
+            "Para registrar las acciones sensibles (inicio de sesión, eliminación de un mensaje, expulsiones…) en un registro técnico, con tu nombre de usuario y tu dirección IP, para detectar abusos.",
+            "No vendemos, alquilamos ni compartimos ningún dato, y no hay publicidad."
+          ]
+        },
+        {
+          "title": "Quién puede ver qué",
+          "items": [
+            "Tu nombre de usuario, foto de perfil, biografía y estado en línea son visibles para los demás usuarios conectados.",
+            "Los mensajes y archivos de una conversación solo son visibles para sus miembros.",
+            "Los enlaces a los archivos del chat son personales y caducan al cabo de una hora; quien sea retirado o expulsado de una conversación pierde el acceso a sus archivos.",
+            "Los administradores del sitio pueden consultar y eliminar cuentas para moderar."
+          ]
+        },
+        {
+          "title": "Cookies y almacenamiento en el navegador",
+          "items": [
+            "No usamos cookies publicitarias ni herramientas de seguimiento.",
+            "Tu idioma preferido se guarda en tu navegador para aplicarse en tu próxima visita.",
+            "Tus tokens de sesión se guardan en memoria durante tu visita y se borran al cerrar sesión."
+          ]
+        },
+        {
+          "title": "Tiempo de conservación",
+          "items": [
+            "Tus datos se conservan mientras exista tu cuenta.",
+            "Cuando cambias tu foto de perfil, la anterior se elimina del servidor.",
+            "Cuando se elimina un mensaje, sus archivos también se borran del servidor.",
+            "Cuando se elimina una cuenta, también se eliminan sus mensajes, archivos, amigos y notificaciones."
+          ]
+        },
+        {
+          "title": "Seguridad",
+          "items": [
+            "Todas las conexiones al sitio están cifradas (HTTPS).",
+            "Los secretos del servidor se guardan en una bóveda dedicada (HashiCorp Vault).",
+            "Las contraseñas se guardan en forma cifrada (hash) y las claves de autenticación en dos pasos están cifradas."
+          ]
+        },
+        {
+          "title": "Tus derechos",
+          "items": [
+            "Según el RGPD, puedes solicitar el acceso, la corrección o la eliminación de tus datos.",
+            "Puedes modificar tu perfil y eliminar tu foto de perfil o tus mensajes directamente desde el sitio.",
+            "Para cualquier otra solicitud, como eliminar tu cuenta, contacta con el equipo del proyecto en github.com/Lasauce6/42-Transcendence."
+          ]
+        }
+      ]
+    },
+    "TERMS": {
+      "TITLE": "Condiciones de uso",
+      "INTRO": "Al crear una cuenta o usar Transcendence, aceptas las siguientes normas. Sirven para que el sitio sea agradable y seguro para todos.",
+      "SECTIONS": [
+        {
+          "title": "El servicio",
+          "items": [
+            "Transcendence es una red social creada como proyecto estudiantil de la escuela 42: perfiles, amigos, conversaciones en directo y envío de archivos.",
+            "El sitio se ofrece tal cual, sin garantía de disponibilidad permanente. Puede modificarse, interrumpirse o reiniciarse, sobre todo durante su desarrollo."
+          ]
+        },
+        {
+          "title": "Tu cuenta",
+          "items": [
+            "Eres responsable de tu cuenta y de lo que ocurra en ella. Mantén tu contraseña en secreto y activa la autenticación en dos pasos si puedes.",
+            "La información de tu perfil debe ser exacta y no suplantar la identidad de otra persona.",
+            "Una cuenta es personal: no la compartas."
+          ]
+        },
+        {
+          "title": "Normas de conducta",
+          "items": [
+            "Nada de acoso, insultos, amenazas ni comentarios discriminatorios.",
+            "Nada de contenido ilegal, violento o sexual, ni nada que vulnere los derechos de otras personas.",
+            "Nada de spam, ni intentos de eludir la seguridad del sitio o de acceder a los datos de otros."
+          ]
+        },
+        {
+          "title": "Mensajes y archivos",
+          "items": [
+            "Sigues siendo propietario de lo que publicas y eres responsable de su contenido.",
+            "Archivos aceptados: imágenes (jpg, png, gif, webp), PDF, texto, documentos de Word y Excel, hasta 10 MB por archivo.",
+            "Envía solo archivos que tengas derecho a compartir."
+          ]
+        },
+        {
+          "title": "Moderación",
+          "items": [
+            "Los administradores y moderadores pueden eliminar mensajes que no respeten estas normas.",
+            "Los administradores de una conversación pueden retirar o expulsar a sus miembros.",
+            "En caso de abuso grave o reiterado, una cuenta puede ser suspendida o eliminada."
+          ]
+        },
+        {
+          "title": "API pública",
+          "items": [
+            "La API se usa con una clave de API personal, que debes mantener en secreto.",
+            "El número de solicitudes está limitado para proteger el servicio. Un uso abusivo puede provocar la revocación de la clave."
+          ]
+        },
+        {
+          "title": "Datos personales",
+          "items": [
+            "El uso de tus datos se describe en nuestra política de privacidad."
+          ]
+        },
+        {
+          "title": "Cambios y contacto",
+          "items": [
+            "Estas condiciones pueden cambiar; la fecha de actualización al principio de la página indica la última versión.",
+            "Para cualquier pregunta, contacta con el equipo del proyecto en github.com/Lasauce6/42-Transcendence."
+          ]
+        }
+      ]
+    }
+  },
+  "DESIGN_SYSTEM": {
+    "EYEBROW": "Design system",
+    "TITLE": "Componentes de la interfaz",
+    "SUBTITLE": "Los colores, la tipografía y los componentes reutilizables del sitio.",
+    "COLORS": "Colores",
+    "TYPOGRAPHY": "Tipografía",
+    "BUTTONS": "Botones",
+    "ICONS": "Iconos",
+    "AVATARS": "Avatares e insignias",
+    "FORMS": "Formularios",
+    "FEEDBACK": "Mensajes",
+    "LISTS": "Listas y estado vacío",
+    "CHAT": "Chat",
+    "EMPTY": "Todavía no tienes amigos",
+    "DELETED": "Mensaje eliminado",
+    "USERNAME": "Nombre de usuario",
+    "EMAIL": "Correo electrónico",
+    "INVALID_EMAIL": "Correo electrónico no válido",
+    "SUCCESS": "Perfil guardado.",
+    "ERROR": "Se ha producido un error.",
+    "INFO": "El enlace caduca al cabo de una hora."
   }
 }

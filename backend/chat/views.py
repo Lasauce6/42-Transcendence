@@ -31,7 +31,11 @@ class ChannelViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, Is2FADone]
 
     def get_queryset(self):
-        return Channel.objects.filter(members__user=self.request.user).distinct()
+        return (
+            Channel.objects.filter(members__user=self.request.user)
+            .distinct()
+            .prefetch_related('members__user')
+        )
 
     @transaction.atomic
     def perform_create(self, serializer):
@@ -125,6 +129,7 @@ class ChannelViewSet(viewsets.ModelViewSet):
         channel = self.get_object()
         messages = (
             Message.objects.filter(channel=channel)
+            .select_related("sender")
             .prefetch_related("attachments")
             .order_by("created_at")
         )
@@ -187,6 +192,7 @@ class ChannelViewSet(viewsets.ModelViewSet):
                 "message": message.content,
                 "sender": sender.username,
                 "sender_id": str(sender.id),
+                "sender_avatar": sender.avatar.url if sender.avatar else None,
                 "created_at": message.created_at.isoformat(),
                 "attachments": attachments,
             },

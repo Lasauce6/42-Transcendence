@@ -1,48 +1,69 @@
-<section class="admin-users">
-  <h1>{{ 'ADMIN.TITLE' | translate }}</h1>
-  <h2>{{ 'ADMIN.USERS.TITLE' | translate }}</h2>
+<section class="flex flex-col gap-6">
+  <ui-page-header [eyebrow]="'ADMIN.TITLE' | translate" [heading]="'ADMIN.USERS.TITLE' | translate" />
 
   <!-- 4 états : chargement, erreur, liste vide, liste -->
-  @if (loading()) {
-    <p class="loading">{{ 'COMMON.LOADING' | translate }}</p>
-  } @else if (error()) {
-    <p class="error">{{ 'ADMIN.USERS.ERROR' | translate }}</p>
-  } @else if (users().length === 0) {
-    <p class="empty">{{ 'ADMIN.USERS.EMPTY' | translate }}</p>
-  } @else {
-    <table>
-      <thead>
-        <tr>
-          <th>{{ 'ADMIN.USERS.USERNAME' | translate }}</th>
-          <th>{{ 'ADMIN.USERS.EMAIL' | translate }}</th>
-          <th>{{ 'ADMIN.USERS.ROLE' | translate }}</th>
-          <th>{{ 'ADMIN.USERS.ACTIONS' | translate }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (user of users(); track user.id) {
-          <tr>
-            <td>{{ user.username }}</td>
-            <td>{{ user.email }}</td>
-            <td>
-              <!-- Changement de rôle (désactivé sur sa propre ligne) -->
-              <select [disabled]="user.id === myId()" (change)="changeRole(user, $event)">
-                @for (role of roles; track role) {
-                  <option [value]="role" [selected]="role === user.role">{{ role }}</option>
-                }
-              </select>
-            </td>
-            <td>
-              <!-- Pas de bouton supprimer sur sa propre ligne -->
-              @if (user.id !== myId()) {
-                <button type="button" (click)="remove(user)">
-                  {{ 'ADMIN.USERS.DELETE' | translate }}
-                </button>
-              }
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  }
+  <ui-card [padded]="false">
+    @if (loading()) {
+      <div class="p-5"><ui-spinner [label]="'COMMON.LOADING' | translate" /></div>
+    } @else if (error()) {
+      <div class="p-5"><ui-alert variant="error">{{ 'ADMIN.USERS.ERROR' | translate }}</ui-alert></div>
+    } @else if (users().length === 0) {
+      <ui-empty-state [heading]="'ADMIN.USERS.EMPTY' | translate" icon="users" />
+    } @else {
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[640px] border-collapse text-left">
+          <thead>
+            <tr class="border-b border-line font-mono text-xs uppercase tracking-wider text-muted">
+              <th class="px-4 py-3 font-semibold">{{ 'ADMIN.USERS.USERNAME' | translate }}</th>
+              <th class="px-4 py-3 font-semibold">{{ 'ADMIN.USERS.EMAIL' | translate }}</th>
+              <th class="px-4 py-3 font-semibold">{{ 'ADMIN.USERS.ROLE' | translate }}</th>
+              <th class="px-4 py-3 text-right font-semibold">{{ 'ADMIN.USERS.ACTIONS' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (user of users(); track user.id) {
+              <tr class="border-b border-line last:border-b-0 hover:bg-surface-2">
+                <td class="px-4 py-3">
+                  <span class="flex items-center gap-3">
+                    <ui-avatar [name]="user.username" [src]="user.avatar" />
+                    <strong>{{ user.username }}</strong>
+                    @if (user.id === myId()) {
+                      <ui-badge variant="neutral">{{ 'ADMIN.USERS.YOU' | translate }}</ui-badge>
+                    }
+                  </span>
+                </td>
+                <td class="px-4 py-3 font-mono text-sm text-muted">{{ user.email }}</td>
+                <td class="px-4 py-3">
+                  <!-- Changement de rôle (désactivé sur sa propre ligne) -->
+                  <label [for]="'role-' + user.id" class="sr-only">{{ 'ADMIN.USERS.ROLE' | translate }}</label>
+                  <select
+                    [id]="'role-' + user.id"
+                    class="py-2 font-mono text-[13px]"
+                    [disabled]="user.id === myId()"
+                    (change)="changeRole(user, $event)"
+                  >
+                    @for (role of roles; track role) {
+                      <option [value]="role" [selected]="role === user.role">{{ role }}</option>
+                    }
+                  </select>
+                </td>
+                <td class="px-4 py-3 text-right">
+                  <!-- Pas de bouton supprimer sur sa propre ligne -->
+                  @if (user.id !== myId()) {
+                    <button
+                      type="button"
+                      class="inline-flex min-h-9 items-center gap-2 border-danger/40 bg-transparent px-3 py-1.5 text-sm text-danger hover:bg-danger/10"
+                      (click)="remove(user)"
+                    >
+                      <ui-icon name="trash" [size]="16" />{{ 'ADMIN.USERS.DELETE' | translate }}
+                    </button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </ui-card>
 </section>

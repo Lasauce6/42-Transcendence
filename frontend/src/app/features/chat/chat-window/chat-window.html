@@ -1,62 +1,126 @@
-<section class="chat-window">
-  <header>
-    <a routerLink="/chat">{{ 'CHAT.BACK' | translate }}</a>
-    <form (submit)="$event.preventDefault(); addMember()">
+<section class="flex flex-wrap items-stretch gap-5">
+  <aside class="flex min-w-0 grow basis-64 flex-col gap-3 rounded-card border border-line bg-surface p-3.5">
+    <a routerLink="/chat" class="flex items-center gap-2 px-2 py-1.5 font-mono text-xs uppercase tracking-wider text-muted">
+      <ui-icon name="arrowLeft" [size]="16" />{{ 'CHAT.BACK_TO_LIST' | translate }}
+    </a>
+    <ul class="flex flex-col gap-0.5">
+      @for (c of channels(); track c.id) {
+        <li>
+          <a
+            [routerLink]="['/chat', c.id]"
+            class="flex items-center gap-2.5 rounded-control px-3 py-2.5 text-muted hover:bg-surface-2 hover:text-ink hover:no-underline"
+            [class.bg-surface-2]="c.id === channelId()"
+            [class.text-ink]="c.id === channelId()"
+            [class.font-bold]="c.id === channelId()"
+            [class.shadow-[inset_3px_0_0_var(--color-accent)]]="c.id === channelId()"
+            [attr.aria-current]="c.id === channelId() ? 'page' : null"
+          >
+            @if (c.type === 'PRIVATE') {
+              <ui-avatar [name]="displayName(c) || '#'" [src]="avatarOf(c)" size="sm" />
+            } @else {
+              <span class="font-mono text-accent">#</span>
+            }
+            <span class="truncate">{{ displayName(c) || ('HOME.CHANNEL_TYPE.' + c.type | translate) }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+  </aside>
+
+  <div class="flex min-w-0 grow-[999] basis-[560px] flex-col rounded-card border border-line bg-surface">
+    <header class="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
+      <div class="flex flex-col">
+        <h1 class="flex items-center gap-2.5 text-lg">
+          @if (channel()?.type === 'PRIVATE') {
+            <ui-avatar [name]="title() || '#'" [src]="avatarOf(channel()!)" size="sm" />
+          } @else {
+            <span class="font-mono text-accent">#</span>
+          }
+          {{ title() || ('HOME.CHANNEL_TYPE.' + (channel()?.type ?? 'PRIVATE') | translate) }}
+        </h1>
+        <p class="font-mono text-xs uppercase text-muted">{{ 'HOME.CHANNEL_TYPE.' + (channel()?.type ?? 'PRIVATE') | translate }}</p>
+      </div>
+      @if (!socket.connected()) {
+        <span class="flex items-center gap-2 font-mono text-xs text-warning" role="status">
+          <span class="size-2 animate-pulse rounded-full bg-warning"></span>{{ 'CHAT.RECONNECTING' | translate }}
+        </span>
+      }
+    </header>
+
+    <form class="flex flex-wrap items-center gap-2.5 border-b border-line px-5 py-3" (submit)="$event.preventDefault(); addMember()">
+      <label for="member-input" class="sr-only">{{ 'CHAT.ADD_MEMBER_PLACEHOLDER' | translate }}</label>
       <input
+        id="member-input"
         type="text"
+        class="min-w-0 grow basis-48"
+        autocomplete="off"
         [placeholder]="'CHAT.ADD_MEMBER_PLACEHOLDER' | translate"
         [value]="memberName()"
         (input)="onMemberInput($event)"
       />
-      <button type="submit" [disabled]="!memberName().trim()">
-        {{ 'CHAT.ADD_MEMBER_BUTTON' | translate }}
+      <button uiButton variant="secondary" type="submit" [disabled]="!memberName().trim()">
+        <ui-icon name="plus" [size]="18" />{{ 'CHAT.ADD_MEMBER_BUTTON' | translate }}
       </button>
       @if (memberAdded()) {
-        <span>{{ 'CHAT.ADD_MEMBER_OK' | translate }}</span>
+        <span class="font-mono text-xs text-accent" role="status">{{ 'CHAT.ADD_MEMBER_OK' | translate }}</span>
       }
       @if (memberError()) {
-        <span class="error">{{ 'CHAT.ADD_MEMBER_ERROR' | translate }}</span>
+        <span class="font-mono text-xs text-danger" role="alert">{{ 'CHAT.ADD_MEMBER_ERROR' | translate }}</span>
       }
     </form>
-    @if (!socket.connected()) {
-      <span class="status">{{ 'CHAT.RECONNECTING' | translate }}</span>
-    }
-  </header>
 
-  <div class="messages">
-    @if (loading()) {
-      <p class="state">{{ 'CHAT.LOADING' | translate }}</p>
-    } @else if (error()) {
-      <p class="state">{{ 'CHAT.HISTORY_ERROR' | translate }}</p>
-    } @else if (socket.messages().length === 0) {
-      <p class="state">{{ 'CHAT.THREAD_EMPTY' | translate }}</p>
-    }
+    <div #bottom class="flex h-[60vh] min-h-80 flex-col gap-4 overflow-y-auto p-5" aria-live="polite">
+      @if (loading()) {
+        <ui-spinner [label]="'CHAT.LOADING' | translate" />
+      } @else if (error()) {
+        <ui-alert variant="error">{{ 'CHAT.HISTORY_ERROR' | translate }}</ui-alert>
+      } @else if (socket.messages().length === 0) {
+        <ui-empty-state [heading]="'CHAT.THREAD_EMPTY' | translate" icon="message" class="my-auto" />
+      }
 
-    @for (m of socket.messages(); track m.id) {
-      <div class="bubble" [class.mine]="isMine(m.sender)" [class.theirs]="!isMine(m.sender)">
-        <p>{{ m.content }}</p>
-        @for (a of m.attachments ?? []; track a.id) {
-          <a [href]="a.url" target="_blank" rel="noopener">📎 {{ a.name }}</a>
-        }        
-        <time [attr.datetime]="m.created_at">{{ m.created_at | date: 'shortTime' }}</time>
-      </div>
+      @for (m of socket.messages(); track m.id) {
+        <ui-message-bubble
+          [author]="isMine(m.sender) ? ('CHAT.YOU' | translate) : m.sender_username"
+          [time]="m.created_at"
+          [text]="m.content"
+          [mine]="isMine(m.sender)"
+          [avatar]="m.sender_avatar"
+          [deleted]="m.is_deleted"
+        >
+          <span deleted>{{ 'CHAT.DELETED' | translate }}</span>
+          @for (a of m.attachments ?? []; track a.id) {
+            <ui-file-card [name]="a.name" [url]="a.url" [contentType]="a.content_type" [size]="a.size" />
+          }
+        </ui-message-bubble>
+      }
+    </div>
+
+    <form class="flex items-center gap-2.5 border-t border-line p-4" (submit)="$event.preventDefault(); send()">
+      <label
+        class="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-control border border-line-strong text-muted hover:text-ink"
+        [class.opacity-50]="uploading()"
+        [attr.title]="'CHAT.ATTACH' | translate"
+      >
+        <span class="sr-only">{{ 'CHAT.ATTACH' | translate }}</span>
+        <ui-icon name="paperclip" [size]="18" />
+        <input type="file" class="sr-only" [disabled]="uploading()" (change)="onFileSelected($event)" />
+      </label>
+      <label for="chat-input" class="sr-only">{{ 'CHAT.INPUT_PLACEHOLDER' | translate }}</label>
+      <input
+        id="chat-input"
+        type="text"
+        class="min-w-0 grow"
+        autocomplete="off"
+        [placeholder]="'CHAT.INPUT_PLACEHOLDER' | translate"
+        [value]="draft()"
+        (input)="onInput($event)"
+      />
+      <button uiButton type="submit" [disabled]="!draft().trim() || !socket.connected()">
+        <ui-icon name="send" [size]="18" /><span class="hidden sm:inline">{{ 'CHAT.SEND' | translate }}</span>
+      </button>
+    </form>
+    @if (uploadError()) {
+      <ui-alert variant="error" class="mx-4 mb-4">{{ 'CHAT.UPLOAD_ERROR' | translate }}</ui-alert>
     }
   </div>
-
-  <form (submit)="$event.preventDefault(); send()">
-    <input
-      type="text"
-      [placeholder]="'CHAT.INPUT_PLACEHOLDER' | translate"
-      [value]="draft()"
-      (input)="onInput($event)"
-    />
-    <input type="file" [disabled]="uploading()" (change)="onFileSelected($event)" />
-    @if (uploadError()) {
-      <span class="error">{{ 'CHAT.UPLOAD_ERROR' | translate }}</span>
-    } 
-    <button type="submit" [disabled]="!draft().trim() || !socket.connected()">
-      {{ 'CHAT.SEND' | translate }}
-    </button>
-  </form>
-  <div #bottom></div>  
 </section>

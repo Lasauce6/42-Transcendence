@@ -1,4 +1,6 @@
 import { Component, effect, inject, input, OnDestroy, output, signal } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
+import { UiAlert, UiButton, UiCard, UiField, UiIcon, UiProgress } from '@shared/ui';
 import { UpdateProfilePayload, UserProfile, UserService } from '../user.service';
 import { form, maxLength, required, FormField, submit, minLength } from '@angular/forms/signals';
 import { filter, firstValueFrom, map, tap } from 'rxjs';
@@ -8,9 +10,8 @@ import { HttpEventType, HttpResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-profile-edit',
-  imports: [FormField],
+  imports: [FormField, TranslatePipe, UiAlert, UiButton, UiCard, UiField, UiIcon, UiProgress],
   templateUrl: './profile-edit.html',
-  styleUrl: './profile-edit.scss',
 })
 export class ProfileEdit implements OnDestroy {
   private readonly authService = inject(AuthService);
@@ -87,13 +88,13 @@ export class ProfileEdit implements OnDestroy {
 
     // Validation indicative (UX) : le backend doit revalider le contenu réel du fichier
     if (!this.ALLOWED_TYPES.includes(file.type)) {
-      this.error.set('Format non supporté (JPEG, PNG ou WebP uniquement).');
+      this.error.set('PROFILE.EDIT.ERROR_FORMAT');
       input.value = ''; // reset l'input pour permettre une nouvelle sélection du même fichier
       return;
     }
 
     if (file.size > this.MAX_AVATAR_SIZE) {
-      this.error.set('Fichier trop volumineux (5 Mo max).');
+      this.error.set('PROFILE.EDIT.ERROR_SIZE');
       input.value = '';
       return;
     }
@@ -156,7 +157,7 @@ export class ProfileEdit implements OnDestroy {
           this.profileUpdated.emit(updated);
         }
       } catch {
-        this.error.set('La mise à jour a échoué. Réessaie.');
+        this.error.set('PROFILE.EDIT.ERROR_UPDATE');
       } finally {
         this.saving.set(false);
         this.uploadProgress.set(0);
@@ -175,7 +176,7 @@ export class ProfileEdit implements OnDestroy {
       const updated = await firstValueFrom(this.userService.deleteAvatar());
       this.profileUpdated.emit(updated);
     } catch {
-      this.error.set('La suppression a échoué. Réessaie.');
+      this.error.set('PROFILE.EDIT.ERROR_DELETE_AVATAR');
     } finally {
       this.deleting.set(false);
     }
@@ -191,7 +192,7 @@ export class ProfileEdit implements OnDestroy {
       const data = this.passwordData();
 
       if (data.newPassword !== data.confirmPassword) {
-        this.passwordError.set('Les deux nouveaux mots de passe ne correspondent pas.');
+        this.passwordError.set('PROFILE.EDIT.ERROR_PASSWORD_MISMATCH');
         return;
       }
 
@@ -211,13 +212,11 @@ export class ProfileEdit implements OnDestroy {
           confirmPassword: '',
         });
 
-        this.passwordSuccess.set('Mot de passe modifié avec succès.');
+        this.passwordSuccess.set('PROFILE.EDIT.PASSWORD_CHANGED');
         this.authService.logout();
         this.router.navigate(['/login']);
       } catch {
-        this.passwordError.set(
-          'Impossible de modifier le mot de passe. Vérifie ton mot de passe actuel et réessaie.',
-        );
+        this.passwordError.set('PROFILE.EDIT.ERROR_PASSWORD');
       } finally {
         this.changingPassword.set(false);
       }

@@ -1,42 +1,37 @@
-<section aria-labelledby="two-factor-title">
-  <h2 id="two-factor-title">
-    {{ 'AUTH.TWOFA.VERIFY.TITLE' | translate }}
-  </h2>
+<section aria-labelledby="two-factor-title" class="mx-auto flex w-full max-w-md flex-col gap-6 py-6">
+  <div class="flex flex-col gap-1.5">
+    <p class="font-mono text-[13px] uppercase tracking-widest text-accent">&gt; 2FA</p>
+    <h1 id="two-factor-title">{{ 'AUTH.TWOFA.VERIFY.TITLE' | translate }}</h1>
+    <p id="two-factor-instruction" class="text-muted">{{ 'AUTH.TWOFA.VERIFY.INSTRUCTION' | translate }}</p>
+  </div>
 
-  <p id="two-factor-instruction">
-    {{ 'AUTH.TWOFA.VERIFY.INSTRUCTION' | translate }}
-  </p>
-
-  <form (submit)="onSubmit(); $event.preventDefault()" novalidate>
-    <label for="two-factor-code">
-      {{ 'AUTH.TWOFA.VERIFY.CODE_LABEL' | translate }}
-    </label>
-
-    <input
-      id="two-factor-code"
-      type="text"
-      inputmode="numeric"
-      autocomplete="one-time-code"
-      [formField]="verifyForm.code"
-      [placeholder]="'AUTH.TWOFA.VERIFY.CODE_PLACEHOLDER' | translate"
-      aria-describedby="two-factor-instruction two-factor-errors"
-    />
+  <form class="flex flex-col gap-4 rounded-card border border-line bg-surface p-6" (submit)="onSubmit(); $event.preventDefault()" novalidate>
+    <ui-field [label]="'AUTH.TWOFA.VERIFY.CODE_LABEL' | translate" for="two-factor-code">
+      <input
+        id="two-factor-code"
+        type="text"
+        inputmode="numeric"
+        autocomplete="one-time-code"
+        class="text-center font-mono text-xl tracking-[0.5em]"
+        [formField]="verifyForm.code"
+        [placeholder]="'AUTH.TWOFA.VERIFY.CODE_PLACEHOLDER' | translate"
+        aria-describedby="two-factor-instruction two-factor-errors"
+      />
+    </ui-field>
 
     @if (verifyForm.code().touched() && verifyForm.code().invalid()) {
-      <div id="two-factor-errors" role="alert" aria-live="polite">
+      <div id="two-factor-errors" role="alert" aria-live="polite" class="flex flex-col gap-1 text-sm text-danger">
         @for (error of verifyForm.code().errors(); track error.kind) {
-          <p class="error">{{ error.message }}</p>
+          <p>{{ error.message }}</p>
         }
       </div>
     }
 
     @if (verifyError()) {
-      <p class="error" role="alert" aria-live="assertive">
-        {{ verifyError()! | translate }}
-      </p>
+      <ui-alert variant="error">{{ verifyError()! | translate }}</ui-alert>
     }
 
-    <button type="submit" [disabled]="verifyForm().invalid()">
+    <button uiButton type="submit" class="w-full" [disabled]="verifyForm().invalid()">
       {{ 'AUTH.TWOFA.VERIFY.SUBMIT' | translate }}
     </button>
   </form>

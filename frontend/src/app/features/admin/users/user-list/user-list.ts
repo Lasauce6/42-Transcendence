@@ -5,13 +5,13 @@ import { CurrentUser } from '@core/services/current-user';
 import { ToastService } from '@core/services/toast';
 import { AdminService } from '../../admin.service';
 import { AdminUser } from '../../admin-user.model';
+import { UiAlert, UiAvatar, UiBadge, UiCard, UiEmptyState, UiIcon, UiPageHeader, UiSpinner } from '@shared/ui';
 
 // Tableau des utilisateurs : liste, changement de rôle, suppression
 @Component({
   selector: 'app-user-list',
-  imports: [TranslatePipe],
+  imports: [TranslatePipe, UiAlert, UiAvatar, UiBadge, UiCard, UiEmptyState, UiIcon, UiPageHeader, UiSpinner],
   templateUrl: './user-list.html',
-  styleUrl: './user-list.scss',
 })
 export class UserList implements OnInit {
   private readonly admin = inject(AdminService);

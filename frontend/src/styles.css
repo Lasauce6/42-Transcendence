@@ -1,0 +1,91 @@
+@import "@fontsource/space-grotesk/400.css";
+@import "@fontsource/space-grotesk/500.css";
+@import "@fontsource/space-grotesk/700.css";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/600.css";
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --color-bg: #0d1016;
+  --color-chrome: #10141b;
+  --color-surface: #151a22;
+  --color-surface-2: #1d2430;
+  --color-line: #252c38;
+  --color-line-strong: #343c4a;
+  --color-ink: #e8ecf2;
+  --color-muted: #9aa4b5;
+  --color-accent: #3de0b0;
+  --color-accent-ink: #06261d;
+  --color-link: #7fe9c9;
+  --color-danger: #ff5c7a;
+  --color-danger-ink: #1a0309;
+  --color-warning: #ffc857;
+
+  --radius-card: 14px;
+  --radius-control: 10px;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-bg text-ink font-sans text-[15px] leading-normal antialiased;
+  }
+
+  h1 {
+    @apply text-3xl font-bold tracking-tight;
+  }
+
+  h2 {
+    @apply text-xl font-bold;
+  }
+
+  h3 {
+    @apply text-lg font-bold;
+  }
+
+  a {
+    @apply text-link underline-offset-4 hover:underline;
+  }
+
+  input:not([type="checkbox"], [type="radio"], [type="file"]),
+  select,
+  textarea {
+    @apply rounded-control border border-line-strong bg-bg px-3 py-2.5 text-ink placeholder:text-muted;
+  }
+
+  button {
+    @apply cursor-pointer rounded-control border border-line-strong px-4 py-2.5 font-medium text-ink;
+  }
+
+  button[type="submit"] {
+    @apply border-transparent bg-accent font-bold text-accent-ink;
+  }
+
+  button:disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+
+  label {
+    @apply text-sm text-muted;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-accent;
+  }
+}
+
+@layer components {
+  .nav-link {
+    @apply border-b-2 border-transparent px-3 py-2.5 text-muted hover:text-ink hover:no-underline;
+  }
+
+  .nav-active {
+    @apply border-accent text-ink;
+  }
+}

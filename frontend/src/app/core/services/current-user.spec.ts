@@ -11,7 +11,7 @@ const profile: UserProfile = {
   first_name: '',
   last_name: '',
   bio: '',
-  avatarUrl: null,
+  avatar: null,
   role: 'ADMIN',
 };
 

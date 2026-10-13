@@ -42,6 +42,23 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'privacy',
+    loadComponent: () => import('@features/legal/legal-page').then((m) => m.LegalPage),
+    title: 'FOOTER.PRIVACY',
+    data: { doc: 'PRIVACY' },
+  },
+  {
+    path: 'terms',
+    loadComponent: () => import('@features/legal/legal-page').then((m) => m.LegalPage),
+    title: 'FOOTER.TERMS',
+    data: { doc: 'TERMS' },
+  },
+  {
+    path: 'design-system',
+    loadComponent: () => import('@features/design-system/design-system').then((m) => m.DesignSystem),
+    title: 'DESIGN_SYSTEM.TITLE',
+  },
+  {
     path: 'api-docs',
     loadComponent: () => import('@features/api-docs/api-docs').then((m) => m.ApiDocs),
     title: 'TITLES.API_DOCS',

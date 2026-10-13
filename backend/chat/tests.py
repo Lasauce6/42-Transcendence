@@ -46,3 +46,34 @@ class ChatTests(APITestCase):
         connected, _ = await communicator.connect()
         self.assertFalse(connected)
         await communicator.disconnect()
+
+
+class ChannelAvatarTests(APITestCase):
+    def setUp(self):
+        from chat.models import Channel, ChannelMember, Message
+
+        self.alice = User.objects.create_user(
+            username="alice", email="alice@example.test", password="password123"
+        )
+        self.bob = User.objects.create_user(
+            username="bob", email="bob@example.test", password="password123"
+        )
+        self.channel = Channel.objects.create(type="PRIVATE", created_by=self.alice)
+        ChannelMember.objects.create(channel=self.channel, user=self.alice)
+        ChannelMember.objects.create(channel=self.channel, user=self.bob)
+        Message.objects.create(channel=self.channel, sender=self.bob, content="salut")
+        token = RefreshToken.for_user(self.alice).access_token
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
+
+    def test_channels_contiennent_les_membres_avec_avatar(self):
+        response = self.client.get("/api/channels/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        members = response.data[0]["members"]
+        self.assertEqual({m["username"] for m in members}, {"alice", "bob"})
+        self.assertIn("avatar", members[0])
+
+    def test_messages_contiennent_l_avatar_de_l_auteur(self):
+        response = self.client.get(f"/api/channels/{self.channel.id}/messages/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0]["sender_username"], "bob")
+        self.assertIn("sender_avatar", response.data[0])

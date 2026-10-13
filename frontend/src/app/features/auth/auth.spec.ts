@@ -12,7 +12,7 @@ const profile = {
   first_name: '',
   last_name: '',
   bio: '',
-  avatarUrl: null,
+  avatar: null,
   role: 'ADMIN' as const,
 };
 
@@ -69,7 +69,7 @@ describe('AuthService', () => {
       first_name: '',
       last_name: '',
       bio: '',
-      avatarUrl: null,
+      avatar: null,
       role: 'USER',
     });
     expect(service.isLoggedIn()).toBe(true);

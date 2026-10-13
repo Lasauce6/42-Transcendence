@@ -4,12 +4,12 @@ import { Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AppNotification } from '@core/models/notification.model';
 import { NotificationService } from '@core/services/notification';
+import { UiButton, UiCard, UiEmptyState, UiIcon, UiPageHeader } from '@shared/ui';
 
 @Component({
   selector: 'app-notification-list',
-  imports: [DatePipe, TranslatePipe],
+  imports: [DatePipe, TranslatePipe, UiButton, UiCard, UiEmptyState, UiIcon, UiPageHeader],
   templateUrl: './notification-list.html',
-  styleUrl: './notification-list.scss',
 })
 export class NotificationList implements OnInit {
   private readonly service = inject(NotificationService);
@@ -25,6 +25,12 @@ export class NotificationList implements OnInit {
   labelKey(n: AppNotification): string {
     const action = String(n.payload?.['action'] ?? 'DEFAULT').toUpperCase();
     return `NOTIFICATIONS.ITEM.${n.type}.${action}`;
+  }
+
+  icon(n: AppNotification): string {
+    if (n.type === 'FRIEND') return 'users';
+    if (n.type === 'MESSAGE') return 'message';
+    return 'bell';
   }
 
   labelParams(n: AppNotification): Record<string, unknown> {

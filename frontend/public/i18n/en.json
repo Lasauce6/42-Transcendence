@@ -8,7 +8,9 @@
     "LOGIN": "Sign in",
     "LOGOUT": "Sign out",
     "CHAT": "Messages",
-    "API_DOCS": "API docs"
+    "API_DOCS": "API docs",
+    "MAIN": "Main navigation",
+    "REGISTER": "Sign up"
   },
   "COMMON": {
     "LOADING": "Loading...",
@@ -18,7 +20,36 @@
   },
   "HOME": {
     "TITLE": "Home",
-    "WELCOME": "Welcome, {{name}}!"
+    "WELCOME": "Welcome, {{name}}!",
+    "SESSION": "Session open",
+    "UNREAD": "{{count}} unread notification(s)",
+    "NEW_CONVERSATION": "New conversation",
+    "CONVERSATIONS": "Conversations",
+    "SEE_ALL": "See all",
+    "CHANNEL_TYPE": {
+      "PUBLIC": "Public channel",
+      "GROUP": "Group",
+      "PRIVATE": "Private conversation"
+    },
+    "HERO": {
+      "EYEBROW": "42 · Transcendence",
+      "TITLE": "Chat with your friends, live.",
+      "SUBTITLE": "Real-time conversations, securely shared files and your friends always within reach."
+    },
+    "FEATURES": {
+      "CHAT": {
+        "TITLE": "Live chat",
+        "TEXT": "Public channels, groups and private conversations, updated instantly."
+      },
+      "FILES": {
+        "TITLE": "File sharing",
+        "TEXT": "Images, PDFs and documents, visible only to the members of the conversation."
+      },
+      "FRIENDS": {
+        "TITLE": "Friends and notifications",
+        "TEXT": "Add friends, see who is online and never miss a message."
+      }
+    }
   },
   "ADMIN": {
     "NAV": "Admin",
@@ -34,7 +65,8 @@
       "DELETED": "User deleted.",
       "ROLE_CHANGED": "Role updated.",
       "EMPTY": "No users.",
-      "ERROR": "Unable to load users."
+      "ERROR": "Unable to load users.",
+      "YOU": "you"
     }
   },
   "FORBIDDEN": {
@@ -49,7 +81,10 @@
       "PASSWORD_LABEL": "Password",
       "PASSWORD_PLACEHOLDER": "Your password",
       "SUBMIT": "Sign in",
-      "NO_ACCOUNT": "No account? Sign up"
+      "NO_ACCOUNT": "No account? Sign up",
+      "TITLE": "Welcome back",
+      "SUBTITLE": "Sign in to get back to your conversations and friends.",
+      "USERNAME_PLACEHOLDER": "Your username"
     },
     "REGISTER": {
       "USERNAME_LABEL": "Username",
@@ -57,11 +92,14 @@
       "PASSWORD_LABEL": "Password",
       "CONFIRM_LABEL": "Confirm password",
       "SUBMIT": "Sign up",
-      "HAVE_ACCOUNT": "Already have an account? Sign in"
+      "HAVE_ACCOUNT": "Already have an account? Sign in",
+      "TITLE": "Create an account",
+      "SUBTITLE": "Join Transcendence to chat with your friends in real time."
     },
     "OAUTH": {
       "CONTINUE_WITH": "Continue with {{provider}}",
-      "PROVIDERS": { "GOOGLE": "Google", "GITHUB": "GitHub", "FORTYTWO": "42" }
+      "PROVIDERS": { "GOOGLE": "Google", "GITHUB": "GitHub", "FORTYTWO": "42" },
+      "OR": "or"
     },
     "CALLBACK": { "LOADING": "Signing you in..." },
     "TWOFA": {
@@ -71,20 +109,53 @@
         "CODE_PLACEHOLDER": "6-digit code",
         "CONFIRM": "Confirm",
         "SUCCESS": "2FA enabled successfully.",
-        "GENERATING": "Generating QR code..."
+        "GENERATING": "Generating QR code...",
+        "TITLE": "Enable two-factor authentication",
+        "CODE_LABEL": "Verification code"
       },
       "VERIFY": {
         "TITLE": "Two-factor verification",
         "INSTRUCTION": "Enter the 6-digit code from your authenticator app.",
         "CODE_PLACEHOLDER": "6-digit code",
-        "SUBMIT": "Verify"
+        "SUBMIT": "Verify",
+        "CODE_LABEL": "Verification code"
       }
     }
   },
   "PROFILE": {
     "LOADING": "Loading profile...",
     "AVATAR_ALT": "Avatar",
-    "LOAD_FAILED": "Could not load the profile. Please try again later."
+    "LOAD_FAILED": "Could not load the profile. Please try again later.",
+    "EDIT_BUTTON": "Edit profile",
+    "SECURITY": "Security",
+    "SECURITY_TEXT": "Protect your account with two-factor authentication: a one-time code will be required every time you sign in.",
+    "ENABLE_2FA": "Enable 2FA",
+    "EDIT": {
+      "INFO_TITLE": "Information",
+      "USERNAME": "Username",
+      "FIRST_NAME": "First name",
+      "LAST_NAME": "Last name",
+      "BIO": "Bio",
+      "AVATAR": "Profile picture",
+      "AVATAR_HINT": "JPEG, PNG or WebP, 5 MB maximum.",
+      "AVATAR_PREVIEW": "Profile picture preview",
+      "SAVE": "Save profile",
+      "PASSWORD_TITLE": "Password",
+      "CURRENT_PASSWORD": "Current password",
+      "NEW_PASSWORD": "New password",
+      "CONFIRM_PASSWORD": "Confirm the new password",
+      "CHANGE_PASSWORD": "Change password",
+      "ERROR_FORMAT": "Unsupported format (JPEG, PNG or WebP only).",
+      "ERROR_SIZE": "File too large (5 MB max).",
+      "ERROR_UPDATE": "The update failed. Please try again.",
+      "ERROR_PASSWORD_MISMATCH": "The two new passwords do not match.",
+      "ERROR_PASSWORD": "Could not change the password. Check your current password and try again.",
+      "PASSWORD_CHANGED": "Password changed successfully.",
+      "CHOOSE_FILE": "Choose an image",
+      "NO_FILE": "No image chosen",
+      "DELETE_AVATAR": "Delete avatar",
+      "ERROR_DELETE_AVATAR": "Deletion failed. Please try again."
+    }
   },
   "ERRORS": {
     "USERNAME_REQUIRED": "Username is required.",
@@ -156,13 +227,190 @@
     "INPUT_PLACEHOLDER": "Write a message…",
     "SEND": "Send",
     "UPLOAD_ERROR": "Unable to send the file.",
+    "ATTACH": "Attach a file",
     "ADD_MEMBER_PLACEHOLDER": "Username to add",
     "ADD_MEMBER_BUTTON": "Add",
     "ADD_MEMBER_OK": "Member added.",
-    "ADD_MEMBER_ERROR": "Unable to add this person."
+    "ADD_MEMBER_ERROR": "Unable to add this person.",
+    "BACK_TO_LIST": "All conversations",
+    "YOU": "you",
+    "DELETED": "Message deleted"
   },
   "API_DOCS": {
     "TITLE": "API documentation",
     "FRAME_TITLE": "Interactive API documentation (Swagger)"
+  },
+  "FOOTER": {
+    "COPYRIGHT": "© 2026 Transcendence · 42 project",
+    "LEGAL": "Legal links",
+    "PRIVACY": "Privacy policy",
+    "TERMS": "Terms of service"
+  },
+  "LEGAL": {
+    "LABEL": "Legal information",
+    "UPDATED": "Last updated: October 6, 2026",
+    "PRIVACY": {
+      "TITLE": "Privacy policy",
+      "INTRO": "Transcendence is a student project from 42 school. This page explains what data we collect when you use the site, why, and what you can do about it.",
+      "SECTIONS": [
+        {
+          "title": "Data we collect",
+          "items": [
+            "Your account: username, email address, first name, last name, bio, preferred language and profile picture.",
+            "Your password, stored only in hashed form: nobody can read it, not even the team.",
+            "Your social activity: your friends, friend requests, the conversations you are part of, your messages and the files you send in them.",
+            "Your online status and the time you were last seen, visible to other users.",
+            "Your notifications (friend requests, new messages).",
+            "If you enable two-factor authentication (2FA): a secret key, stored encrypted.",
+            "If you create API keys: a name and a fingerprint of the key (never the key itself)."
+          ]
+        },
+        {
+          "title": "Signing in with 42, Google or GitHub",
+          "items": [
+            "If you sign in with one of these services, we only receive what is needed to create your account: identifier, username and email address.",
+            "We never have access to your password on these services."
+          ]
+        },
+        {
+          "title": "Why we use this data",
+          "items": [
+            "To run the site: sign-in, profile, friends, live chat, file sharing and notifications.",
+            "To protect accounts: two-factor authentication, request rate limiting, web application firewall.",
+            "To keep a record of sensitive actions (sign-in, message deletion, bans…) in a technical log, with your username and IP address, in order to detect abuse.",
+            "We do not sell, rent or share any data, and there is no advertising."
+          ]
+        },
+        {
+          "title": "Who can see what",
+          "items": [
+            "Your username, profile picture, bio and online status are visible to other signed-in users.",
+            "Messages and files in a conversation are only visible to the members of that conversation.",
+            "Links to chat files are personal and expire after one hour; someone removed or banned from a conversation loses access to its files.",
+            "Site administrators can view and delete accounts for moderation purposes."
+          ]
+        },
+        {
+          "title": "Cookies and browser storage",
+          "items": [
+            "We use no advertising cookies and no tracking tools.",
+            "Your preferred language is saved in your browser so it applies on your next visit.",
+            "Your sign-in tokens are kept in memory during your visit and cleared when you sign out."
+          ]
+        },
+        {
+          "title": "How long we keep data",
+          "items": [
+            "Your data is kept for as long as your account exists.",
+            "When you replace your profile picture, the old one is deleted from the server.",
+            "When a message is deleted, its files are also erased from the server.",
+            "When an account is deleted, its messages, files, friends and notifications are deleted too."
+          ]
+        },
+        {
+          "title": "Security",
+          "items": [
+            "All connections to the site are encrypted (HTTPS).",
+            "Server secrets are stored in a dedicated vault (HashiCorp Vault).",
+            "Passwords are hashed and two-factor authentication keys are encrypted."
+          ]
+        },
+        {
+          "title": "Your rights",
+          "items": [
+            "Under the GDPR, you can ask to access, correct or delete your data.",
+            "You can edit your profile and delete your profile picture or your messages directly on the site.",
+            "For any other request, such as deleting your account, contact the project team on github.com/Lasauce6/42-Transcendence."
+          ]
+        }
+      ]
+    },
+    "TERMS": {
+      "TITLE": "Terms of service",
+      "INTRO": "By creating an account or using Transcendence, you agree to the rules below. They keep the site pleasant and safe for everyone.",
+      "SECTIONS": [
+        {
+          "title": "The service",
+          "items": [
+            "Transcendence is a social network built as a student project at 42 school: profiles, friends, live conversations and file sharing.",
+            "The site is provided as is, with no guarantee of permanent availability. It may be changed, interrupted or reset, especially during its development."
+          ]
+        },
+        {
+          "title": "Your account",
+          "items": [
+            "You are responsible for your account and what happens on it. Keep your password secret and enable two-factor authentication if you can.",
+            "Your profile information must be accurate and must not impersonate anyone else.",
+            "An account is personal: do not share it."
+          ]
+        },
+        {
+          "title": "Rules of conduct",
+          "items": [
+            "No harassment, insults, threats or discriminatory remarks.",
+            "No illegal, violent or sexual content, and nothing that infringes the rights of others.",
+            "No spam, and no attempt to bypass the site's security or to access other people's data."
+          ]
+        },
+        {
+          "title": "Messages and files",
+          "items": [
+            "You keep ownership of what you post, and you are responsible for its content.",
+            "Accepted files: images (jpg, png, gif, webp), PDF, text, Word and Excel documents, up to 10 MB per file.",
+            "Only send files you have the right to share."
+          ]
+        },
+        {
+          "title": "Moderation",
+          "items": [
+            "Administrators and moderators can delete messages that break these rules.",
+            "Conversation administrators can remove or ban members.",
+            "In case of serious or repeated abuse, an account can be suspended or deleted."
+          ]
+        },
+        {
+          "title": "Public API",
+          "items": [
+            "The API can be used with a personal API key, which you must keep secret.",
+            "The number of requests is limited to protect the service. Abusive use may lead to the key being revoked."
+          ]
+        },
+        {
+          "title": "Personal data",
+          "items": [
+            "How your data is used is described in our privacy policy."
+          ]
+        },
+        {
+          "title": "Changes and contact",
+          "items": [
+            "These terms may change; the update date at the top of the page shows the latest version.",
+            "For any question, contact the project team on github.com/Lasauce6/42-Transcendence."
+          ]
+        }
+      ]
+    }
+  },
+  "DESIGN_SYSTEM": {
+    "EYEBROW": "Design system",
+    "TITLE": "Interface components",
+    "SUBTITLE": "The site's colors, typography and reusable components.",
+    "COLORS": "Colors",
+    "TYPOGRAPHY": "Typography",
+    "BUTTONS": "Buttons",
+    "ICONS": "Icons",
+    "AVATARS": "Avatars and badges",
+    "FORMS": "Forms",
+    "FEEDBACK": "Feedback",
+    "LISTS": "Lists and empty state",
+    "CHAT": "Chat",
+    "EMPTY": "No friends yet",
+    "DELETED": "Message deleted",
+    "USERNAME": "Username",
+    "EMAIL": "Email address",
+    "INVALID_EMAIL": "Invalid email address",
+    "SUCCESS": "Profile saved.",
+    "ERROR": "Something went wrong.",
+    "INFO": "The link expires after one hour."
   }
 }

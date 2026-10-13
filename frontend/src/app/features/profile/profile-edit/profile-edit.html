@@ -1,71 +1,91 @@
-<form (submit)="onSubmit($event)">
-  <label for="username">Nom d'utilisateur</label>
-  <input id="username" type="text" [formField]="profileForm.username" />
+<div class="flex flex-col gap-6">
+  <ui-card [heading]="'PROFILE.EDIT.INFO_TITLE' | translate">
+    <form class="flex flex-col gap-4" (submit)="onSubmit($event)">
+      <div class="grid gap-4 sm:grid-cols-2">
+        <ui-field class="sm:col-span-2" [label]="'PROFILE.EDIT.USERNAME' | translate" for="username">
+          <input id="username" type="text" autocomplete="username" [formField]="profileForm.username" />
+        </ui-field>
+        <ui-field [label]="'PROFILE.EDIT.FIRST_NAME' | translate" for="first_name">
+          <input id="first_name" type="text" autocomplete="given-name" [formField]="profileForm.first_name" />
+        </ui-field>
+        <ui-field [label]="'PROFILE.EDIT.LAST_NAME' | translate" for="last_name">
+          <input id="last_name" type="text" autocomplete="family-name" [formField]="profileForm.last_name" />
+        </ui-field>
+        <ui-field class="sm:col-span-2" [label]="'PROFILE.EDIT.BIO' | translate" for="bio">
+          <textarea id="bio" rows="3" [formField]="profileForm.bio"></textarea>
+        </ui-field>
+      </div>
 
-  <label for="first_name">Prénom</label>
-  <input id="first_name" type="text" [formField]="profileForm.first_name" />
+      <ui-field [label]="'PROFILE.EDIT.AVATAR' | translate" for="avatar" [hint]="'PROFILE.EDIT.AVATAR_HINT' | translate">
+        <div class="flex items-center gap-4">
+          @if (avatarPreviewUrl(); as url) {
+            <img [src]="url" [alt]="'PROFILE.EDIT.AVATAR_PREVIEW' | translate" class="size-16 rounded-control object-cover" />
+          }
+          <input
+            id="avatar"
+            #avatarInput
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            class="peer sr-only"
+            (change)="onAvatarSelected($event)"
+          />
+          <span class="flex min-w-0 items-center gap-3 rounded-control outline-offset-4 peer-focus-visible:outline-2 peer-focus-visible:outline-accent">
+            <span
+              class="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-control border border-line-strong px-4 font-medium text-ink hover:bg-surface-2"
+              aria-hidden="true"
+              (click)="avatarInput.click()"
+            ><ui-icon name="image" [size]="18" />{{ 'PROFILE.EDIT.CHOOSE_FILE' | translate }}</span>
+            <span class="truncate text-sm text-muted">{{ avatarFile()?.name ?? ('PROFILE.EDIT.NO_FILE' | translate) }}</span>
+          </span>
+          @if (profile().avatar) {
+            <button uiButton variant="secondary" type="button" (click)="onDeleteAvatar()" [disabled]="deleting()">
+              <ui-icon name="trash" [size]="18" />{{ 'PROFILE.EDIT.DELETE_AVATAR' | translate }}
+            </button>
+          }
+        </div>
+      </ui-field>
 
-  <label for="last_name">Nom</label>
-  <input id="last_name" type="text" [formField]="profileForm.last_name" />
+      @if (saving() && avatarFile()) {
+        <ui-progress [label]="avatarFile()!.name" [value]="uploadProgress()" />
+      }
+      @if (error()) {
+        <ui-alert variant="error">{{ error()! | translate }}</ui-alert>
+      }
 
-  <label for="bio">Bio</label>
-  <textarea id="bio" [formField]="profileForm.bio"></textarea>
+      <div class="flex justify-end">
+        <button uiButton type="submit" [disabled]="saving()">{{ 'PROFILE.EDIT.SAVE' | translate }}</button>
+      </div>
+    </form>
+  </ui-card>
 
-  <label for="avatar">Avatar</label>
-  <input id="avatar" type="file" accept="image/*" (change)="onAvatarSelected($event)" />
+  <ui-card [heading]="'PROFILE.EDIT.PASSWORD_TITLE' | translate">
+    <form class="flex flex-col gap-4" (submit)="onPasswordSubmit($event)">
+      <ui-field [label]="'PROFILE.EDIT.CURRENT_PASSWORD' | translate" for="current-password">
+        <input id="current-password" type="password" autocomplete="current-password" [formField]="passwordForm.currentPassword" />
+      </ui-field>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <ui-field [label]="'PROFILE.EDIT.NEW_PASSWORD' | translate" for="new-password">
+          <input id="new-password" type="password" autocomplete="new-password" [formField]="passwordForm.newPassword" />
+        </ui-field>
+        <ui-field [label]="'PROFILE.EDIT.CONFIRM_PASSWORD' | translate" for="confirm-password">
+          <input id="confirm-password" type="password" autocomplete="new-password" [formField]="passwordForm.confirmPassword" />
+        </ui-field>
+      </div>
 
-  @if (avatarPreviewUrl(); as url) {
-    <img [src]="url" alt="Aperçu avatar" />
-  }
-  @if (profile().avatar) {
-    <button type="button" (click)="onDeleteAvatar()" [disabled]="deleting()">
-      Supprimer l'avatar
-    </button>
-  }
+      @if (passwordError()) {
+        <ui-alert variant="error">{{ passwordError()! | translate }}</ui-alert>
+      }
+      @if (passwordSuccess()) {
+        <ui-alert variant="success">{{ passwordSuccess()! | translate }}</ui-alert>
+      }
 
-  <button type="submit" [disabled]="saving()">Enregistrer le profil</button>
-  @if (saving() && avatarFile()) {
-    <progress max="100" [value]="uploadProgress()"></progress>
-    <span>{{ uploadProgress() }} %</span>
-  }
-  @if (error()) {
-    <p role="alert">{{ error() }}</p>
-  }
-</form>
+      <div class="flex justify-end">
+        <button uiButton variant="secondary" type="submit" [disabled]="changingPassword()">{{ 'PROFILE.EDIT.CHANGE_PASSWORD' | translate }}</button>
+      </div>
+    </form>
+  </ui-card>
 
-<form (submit)="onPasswordSubmit($event)">
-  <label for="current-password">Mot de passe actuel</label>
-  <input
-    id="current-password"
-    type="password"
-    autocomplete="current-password"
-    [formField]="passwordForm.currentPassword"
-  />
-
-  <label for="new-password">Nouveau mot de passe</label>
-  <input
-    id="new-password"
-    type="password"
-    autocomplete="new-password"
-    [formField]="passwordForm.newPassword"
-  />
-
-  <label for="confirm-password">Confirmer le nouveau mot de passe</label>
-  <input
-    id="confirm-password"
-    type="password"
-    autocomplete="new-password"
-    [formField]="passwordForm.confirmPassword"
-  />
-
-  <button type="submit" [disabled]="changingPassword()">Modifier le mot de passe</button>
-
-  @if (passwordError()) {
-    <p role="alert">{{ passwordError() }}</p>
-  }
-
-  @if (passwordSuccess()) {
-    <p role="status">{{ passwordSuccess() }}</p>
-  }
-</form>
-<button type="button" (click)="onLogout()">Se déconnecter</button>
+  <div class="flex justify-end">
+    <button uiButton variant="danger" type="button" (click)="onLogout()"><ui-icon name="logout" [size]="18" />{{ 'NAV.LOGOUT' | translate }}</button>
+  </div>
+</div>

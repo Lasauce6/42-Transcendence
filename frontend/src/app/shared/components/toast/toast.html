@@ -1,7 +1,11 @@
-<div class="toasts" role="region" [attr.aria-label]="'TOAST.REGION_LABEL' | translate">
+<div
+  class="pointer-events-none fixed top-4 right-4 z-[1000] flex w-[min(22rem,calc(100vw-2rem))] flex-col gap-2"
+  role="region"
+  [attr.aria-label]="'TOAST.REGION_LABEL' | translate"
+>
   @for (toast of toasts(); track toast.id) {
     <div
-      class="toast"
+      class="toast pointer-events-auto relative flex items-start gap-3 overflow-hidden rounded-card border border-line-strong bg-surface-2 py-3 pr-3 pl-3.5 text-sm text-ink shadow-[0_8px_24px_rgb(0_0_0/0.35)]"
       [class.toast--success]="toast.type === 'success'"
       [class.toast--error]="toast.type === 'error'"
       [class.toast--info]="toast.type === 'info'"
@@ -9,18 +13,30 @@
       role="alert"
       aria-live="polite"
     >
-      <span class="toast__text">{{ toast.key | translate: toast.params }}</span>
+      <span
+        class="mt-px flex size-6 shrink-0 items-center justify-center rounded-full"
+        [class]="toast.type === 'success' ? 'bg-accent/15 text-accent' : toast.type === 'error' ? 'bg-danger/15 text-danger' : 'bg-link/15 text-link'"
+      >
+        <ui-icon [name]="toast.type === 'success' ? 'check' : toast.type === 'error' ? 'x' : 'bell'" [size]="14" />
+      </span>
+
+      <span class="grow pt-0.5">{{ toast.key | translate: toast.params }}</span>
 
       <button
         type="button"
-        class="toast__close"
+        class="toast__close flex size-7 shrink-0 items-center justify-center rounded-control border-0 p-0 text-muted hover:bg-surface hover:text-ink"
         (click)="dismiss(toast.id)"
         [attr.aria-label]="'TOAST.CLOSE' | translate"
       >
-        &times;
+        <ui-icon name="x" [size]="16" />
       </button>
+
       @if (toast.duration > 0) {
-        <span class="toast__progress" aria-hidden="true"></span>
+        <span
+          class="toast__progress absolute bottom-0 left-0 h-0.5 w-full"
+          [class]="toast.type === 'success' ? 'bg-accent' : toast.type === 'error' ? 'bg-danger' : 'bg-link'"
+          aria-hidden="true"
+        ></span>
       }
     </div>
   }

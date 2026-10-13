@@ -5,10 +5,18 @@ from .models import Channel, Message
 MAX_MESSAGE_LENGTH = 5000
 MAX_ATTACHMENT_SIZE = 10 * 1024 * 1024
 
+class ChannelMemberUserSerializer(serializers.Serializer):
+    id = serializers.UUIDField(source='user.id', read_only=True)
+    username = serializers.CharField(source='user.username', read_only=True)
+    avatar = serializers.ImageField(source='user.avatar', read_only=True)
+
+
 class ChannelSerializer(serializers.ModelSerializer):
+    members = ChannelMemberUserSerializer(many=True, read_only=True)
+
     class Meta:
         model = Channel
-        fields = ['id', 'name', 'type', 'created_by', 'created_at']
+        fields = ['id', 'name', 'type', 'created_by', 'created_at', 'members']
         read_only_fields = ['created_by', 'created_at']
 
     def validate_name(self, value):
@@ -41,12 +49,13 @@ class ChannelSerializer(serializers.ModelSerializer):
 
 class MessageSerializer(serializers.ModelSerializer):
     sender_username = serializers.CharField(source='sender.username', read_only=True)
+    sender_avatar = serializers.ImageField(source='sender.avatar', read_only=True)
     attachments = serializers.SerializerMethodField()
 
     class Meta:
         model = Message
         fields = [
-            'id', 'channel', 'sender', 'sender_username',
+            'id', 'channel', 'sender', 'sender_username', 'sender_avatar',
             'content', 'attachments', 'is_deleted', 'created_at', 'updated_at'
         ]
         read_only_fields = ['sender', 'is_deleted', 'created_at', 'updated_at']

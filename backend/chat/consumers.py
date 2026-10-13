@@ -57,6 +57,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "message": saved_message.content,
                 "sender": self.user.username,
                 "sender_id": str(self.user.id),
+                "sender_avatar": self.user.avatar.url if self.user.avatar else None,
                 "created_at": saved_message.created_at.isoformat(),
             },
         )
@@ -76,6 +77,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     "message": event["message"],
                     "sender": event["sender"],
                     "sender_id": event["sender_id"],
+                    "sender_avatar": event.get("sender_avatar"),
                     "created_at": event["created_at"],
                     "attachments": [
                         {**a, "url": make_attachment_url(a["id"], self.user.id)}

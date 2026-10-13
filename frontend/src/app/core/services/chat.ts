@@ -2,7 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { map, Observable, switchMap, tap, throwError } from 'rxjs';
 import { environment } from '@env/environment';
-import { Channel, ChannelType, ChatMessage } from '@core/models/chat.model';
+import { Channel, ChannelMember, ChannelType, ChatMessage } from '@core/models/chat.model';
+import { CurrentUser } from '@core/services/current-user';
 
 @Injectable({
   providedIn: 'root',
@@ -10,12 +11,29 @@ import { Channel, ChannelType, ChatMessage } from '@core/models/chat.model';
 export class ChatService {
   private readonly http = inject(HttpClient);
   private readonly url = `${environment.apiUrl}/channels/`;
+  private readonly currentUser = inject(CurrentUser);
 
   private readonly _channels = signal<Channel[]>([]);
 
   readonly channels = computed(() =>
     [...this._channels()].sort((a, b) => lastActivity(b).localeCompare(lastActivity(a))),
   );
+
+  // En privé, l'autre personne de la conversation.
+  otherMember(c: Channel): ChannelMember | undefined {
+    if (c.type !== 'PRIVATE' || !c.members) return undefined;
+    const me = this.currentUser.profile()?.id;
+    return c.members.find((m) => m.id !== me);
+  }
+
+  // En privé, on affiche l'autre personne ; sinon le nom du channel.
+  displayName(c: Channel): string {
+    return this.otherMember(c)?.username ?? c.name ?? '';
+  }
+
+  avatarOf(c: Channel): string | null {
+    return this.otherMember(c)?.avatar ?? null;
+  }
 
   loadChannels(): Observable<Channel[]> {
     return this.http.get<Channel[]>(this.url).pipe(tap((list) => this._channels.set(list)));

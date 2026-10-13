@@ -10,6 +10,7 @@ interface WsMessage {
   message: string;
   sender: string;
   sender_id: string;
+  sender_avatar?: string | null;
   created_at: string;
   attachments?: Attachment[];
 }
@@ -110,6 +111,7 @@ export class ChatSocket {
       channel: this.channelId,
       sender: data.sender_id,
       sender_username: data.sender,
+      sender_avatar: data.sender_avatar ?? null,
       content: data.message,
       attachments: data.attachments ?? [],
       is_deleted: false,
