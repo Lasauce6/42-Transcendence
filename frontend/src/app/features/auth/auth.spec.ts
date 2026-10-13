@@ -4,6 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { CurrentUser } from '@core/services/current-user';
 
 import { AuthService } from './auth';
+import { environment } from '@env/environment';
 
 const profile = {
   id: '1',
@@ -37,10 +38,10 @@ describe('AuthService', () => {
   it('login() stocke le token et passe isLoggedIn à true', () => {
     service.login({ username: 'dems', password: 'secret' }).subscribe();
 
-    const req = http.expectOne('/api/token/');
+    const req = http.expectOne(`${environment.apiUrl}/users/auth/login/`);
     expect(req.request.method).toBe('POST');
     req.flush({ access: 'access-token', refresh: 'refresh-token' });
-    http.expectOne('/api/users/me/').flush(profile); // login() déclenche le chargement du profil
+    http.expectOne(`${environment.apiUrl}/users/me/`).flush(profile); // login() déclenche le chargement du profil
 
     expect(service.token()).toBe('access-token');
     expect(service.isLoggedIn()).toBe(true);
@@ -48,10 +49,13 @@ describe('AuthService', () => {
 
   it('login() en 2FA ne connecte pas encore', () => {
     service.login({ username: 'dems', password: 'secret' }).subscribe();
-    http.expectOne('/api/token/').flush({ requires2FA: true, tempToken: 'tmp' });
+    http
+      .expectOne(`${environment.apiUrl}/users/auth/login/`)
+      .flush({ access: 'tmp', refresh: '', two_fa_pending: true });
 
     expect(service.isLoggedIn()).toBe(false);
     expect(service.token()).toBeNull();
+    expect(service.tempToken()).toBe('tmp');
   });
 
   it('setTokens() connecte et charge le profil courant', () => {
@@ -60,7 +64,7 @@ describe('AuthService', () => {
     expect(service.token()).toBe('access-token');
     expect(service.isLoggedIn()).toBe(true);
 
-    const req = http.expectOne('/api/users/me/');
+    const req = http.expectOne(`${environment.apiUrl}/users/me/`);
     expect(req.request.method).toBe('GET');
     req.flush({
       id: '1',
@@ -77,8 +81,8 @@ describe('AuthService', () => {
 
   it('logout() remet le token et isLoggedIn à zéro', () => {
     service.login({ username: 'dems', password: 'secret' }).subscribe();
-    http.expectOne('/api/token/').flush({ access: 'a', refresh: 'r' });
-    http.expectOne('/api/users/me/').flush(profile); // login() déclenche le chargement du profil
+    http.expectOne(`${environment.apiUrl}/users/auth/login/`).flush({ access: 'a', refresh: 'r' });
+    http.expectOne(`${environment.apiUrl}/users/me/`).flush(profile); // login() déclenche le chargement du profil
 
     service.logout();
 
@@ -90,8 +94,8 @@ describe('AuthService', () => {
     const currentUser = TestBed.inject(CurrentUser);
 
     service.login({ username: 'dems', password: 'secret' }).subscribe();
-    http.expectOne('/api/token/').flush({ access: 'a', refresh: 'r' });
-    http.expectOne('/api/users/me/').flush(profile); // login() déclenche le chargement du profil
+    http.expectOne(`${environment.apiUrl}/users/auth/login/`).flush({ access: 'a', refresh: 'r' });
+    http.expectOne(`${environment.apiUrl}/users/me/`).flush(profile); // login() déclenche le chargement du profil
     expect(currentUser.isAdmin()).toBe(true);
 
     service.logout();
@@ -99,4 +103,3 @@ describe('AuthService', () => {
     expect(currentUser.profile()).toBeNull();
   });
 });
-

@@ -2,6 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ChatService } from './chat';
+import { environment } from '@env/environment';
 
 describe('ChatService', () => {
   let service: ChatService;
@@ -23,7 +24,7 @@ describe('ChatService', () => {
 
   it('trie les channels par dernière activité', () => {
     service.loadChannels().subscribe();
-    http.expectOne('/api/channels/').flush([
+    http.expectOne(`${environment.apiUrl}/channels/`).flush([
       { id: 'old', name: 'a', type: 'GROUP', created_by: 'u', created_at: '2026-01-01T00:00:00Z' },
       {
         id: 'recent', name: 'b', type: 'GROUP', created_by: 'u', created_at: '2026-01-01T00:00:00Z',

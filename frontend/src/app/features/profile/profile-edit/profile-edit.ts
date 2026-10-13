@@ -1,12 +1,13 @@
 import { Component, effect, inject, input, OnDestroy, output, signal } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { UiAlert, UiButton, UiCard, UiField, UiIcon, UiProgress } from '@shared/ui';
-import { UpdateProfilePayload, UserProfile, UserService } from '../user.service';
+import { UpdateProfilePayload, UserService } from '../user.service';
 import { form, maxLength, required, FormField, submit, minLength } from '@angular/forms/signals';
 import { filter, firstValueFrom, map, tap } from 'rxjs';
 import { AuthService } from '@features/auth/auth';
 import { Router } from '@angular/router';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
+import { UserProfile } from '@core/models/user.model';
 
 @Component({
   selector: 'app-profile-edit',

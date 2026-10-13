@@ -1,0 +1,57 @@
+<h1>{{ 'TITLES.FRIENDS' | translate }}</h1>
+
+@if (error(); as message) {
+  <p role="alert">{{ message | translate }}</p>
+}
+
+<form (submit)="add(); $event.preventDefault()">
+  <label for="friend-username">{{ 'FRIENDS.USERNAME' | translate }}</label>
+  <input #u id="friend-username" type="text" maxlength="30" required
+    [value]="newUsername()" (input)="newUsername.set(u.value)" />
+  <button type="submit" [disabled]="busy() || !newUsername().trim()">
+    {{ 'FRIENDS.ADD' | translate }}
+  </button>
+</form>
+
+@if (loading()) {
+  <p>{{ 'FRIENDS.LOADING' | translate }}</p>
+} @else {
+  <h2>{{ 'FRIENDS.LIST' | translate }}</h2>
+  @for (row of friendsService.friendRows(); track row.friendship.id) {
+    <div>
+      @if (row.avatar) {
+        <img [src]="row.avatar" [alt]="row.username" width="32" height="32" />
+      }
+      <span>{{ row.username }}</span>
+      <span class="presence" [class.online]="row.online">
+        {{ (row.online ? 'FRIENDS.ONLINE' : 'FRIENDS.OFFLINE') | translate }}
+      </span>
+      <button type="button" [disabled]="busy()" (click)="remove(row.friendship)">
+        {{ 'FRIENDS.REMOVE' | translate }}
+      </button>
+    </div>
+  } @empty {
+    <p>{{ 'FRIENDS.NO_FRIENDS' | translate }}</p>
+  }
+
+  <h2>{{ 'FRIENDS.RECEIVED' | translate }}</h2>
+  @for (row of friendsService.receivedRows(); track row.friendship.id) {
+    <div>
+      <span>{{ row.username }}</span>
+      <button type="button" [disabled]="busy()" (click)="accept(row.friendship)">{{ 'FRIENDS.ACCEPT' | translate }}</button>
+      <button type="button" [disabled]="busy()" (click)="reject(row.friendship)">{{ 'FRIENDS.REJECT' | translate }}</button>
+    </div>
+  } @empty {
+    <p>{{ 'FRIENDS.NO_REQUESTS' | translate }}</p>
+  }
+
+  <h2>{{ 'FRIENDS.SENT' | translate }}</h2>
+  @for (row of friendsService.sentRows(); track row.friendship.id) {
+    <div>
+      <span>{{ row.username }}</span>
+      <button type="button" [disabled]="busy()" (click)="remove(row.friendship)">{{ 'FRIENDS.CANCEL' | translate }}</button>
+    </div>
+  } @empty {
+    <p>{{ 'FRIENDS.NO_SENT' | translate }}</p>
+  }
+}
