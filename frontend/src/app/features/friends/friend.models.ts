@@ -14,3 +14,5 @@ export interface Friendship {
 export interface FriendUser extends Pick<UserProfile, 'id' | 'username' | 'avatar'> {
   is_online: boolean;
 }
+
+
