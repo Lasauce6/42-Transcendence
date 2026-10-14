@@ -42,7 +42,6 @@ server {
     add_header Strict-Transport-Security "max-age=31536000" always;
 
     client_max_body_size 12M;
-    limit_req zone=general burst=40 nodelay;
 
     location = /healthz {
         access_log off;
@@ -65,6 +64,7 @@ server {
     }
 
     location = /api/docs/ {
+		limit_req zone=general burst=40 nodelay;
 		modsecurity_rules '
 			SecAction "id:9002001,phase:1,pass,nolog,setvar:tx.blocking_paranoia_level=2"
 		';
@@ -81,6 +81,7 @@ server {
 	}
 
     location /api/ {
+        limit_req zone=general burst=40 nodelay;
         modsecurity_rules '
             SecAction "id:9002001,phase:1,pass,nolog,setvar:tx.blocking_paranoia_level=2"
         ';
@@ -93,6 +94,7 @@ server {
     }
 
     location /admin/ {
+        limit_req zone=general burst=40 nodelay;
         modsecurity_rules '
             SecAction "id:9002002,phase:1,pass,nolog,setvar:tx.blocking_paranoia_level=2,setvar:tx.inbound_anomaly_score_threshold=3"
         ';
@@ -104,6 +106,7 @@ server {
     }
 
     location /ws/ {
+        limit_req zone=general burst=40 nodelay;
         modsecurity_rules '
             SecAction "id:9002003,phase:1,pass,nolog,setvar:tx.inbound_anomaly_score_threshold=25"
         ';
