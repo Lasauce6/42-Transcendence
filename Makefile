@@ -14,8 +14,7 @@ all: up
 
 vault-prepare:
 	@sh vault/tls/gen.sh
-	@mkdir -p vault/data vault/logs
-	@chmod 770 vault/data vault/logs
+	@sh vault/fix-perms.sh
 
 up: vault-prepare
 	docker compose up --build -d

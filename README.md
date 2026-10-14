@@ -20,9 +20,14 @@ make up                # genere les certificats TLS, demarre la stack,
 ```
 
 `make up` prepare automatiquement les artefacts Vault gitignores via la cible
-`vault-prepare` (certificats TLS de `vault/tls/gen.sh`, dossiers `data/` et
-`logs/` inscriptibles) : un clone frais avec un `.env` demarre tel quel.
+`vault-prepare` (certificats TLS de `vault/tls/gen.sh`, fixation des
+permissions via `fix-perms.sh`) : un clone frais avec un `.env` demarre tel quel.
 L'init est idempotent : relancez `init.sh` apres un redemarrage pour unseal.
+
+⚠️ Si vous avez deja lance `docker compose up` directement avant `make up`,
+des dossiers peuvent etre crees par Docker en tant que root (empoisonnement).
+`make up` auto-repare ce cas : les certificats TLS sont regeneres et les
+permissions corrigees sans sudo.
 
 ### Au demarrage
 
