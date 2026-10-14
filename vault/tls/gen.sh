@@ -29,5 +29,8 @@ openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial \
 	-out server.crt -days 825 -sha256 -extfile server.ext
 
 rm -f server.csr server.ext ca.srl
-chmod 600 ca.key server.key
+# 640 requis : le conteneur vault tourne en uid=100(vault) gid=1000(vault)
+# et doit lire la cle via le groupe (gid 1000 sur l'hote = groupe vault du conteneur).
+chmod 600 ca.key
+chmod 640 server.key
 echo "Certificats TLS generes dans $DIR"

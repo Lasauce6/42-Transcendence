@@ -73,12 +73,14 @@ SECRET_ID=$(vcli write -f -field=secret_id auth/approle/role/transcendence-backe
 umask 077
 printf 'VAULT_ROLE_ID=%s\nVAULT_SECRET_ID=%s\n' "$ROLE_ID" "$SECRET_ID" > "$APPROLE_ENV"
 
-if ! grep -q '^VAULT_ROLE_ID=' .env 2>/dev/null; then
-	printf '\nVAULT_ROLE_ID=%s\nVAULT_SECRET_ID=%s\n' "$ROLE_ID" "$SECRET_ID" >> .env
-	echo "Identifiants AppRole ajoutes au .env"
-else
-	echo "Identifiants AppRole deja presents dans .env"
+# Sur une init fraiche, des identifiants AppRole preexistants dans le .env
+# proviennent necessairement d'une autre instance Vault : on les remplace.
+if grep -q '^VAULT_ROLE_ID=' .env 2>/dev/null; then
+	sed -i '/^VAULT_ROLE_ID=/d; /^VAULT_SECRET_ID=/d' .env
+	echo "Anciens identifiants AppRole retires du .env"
 fi
+printf '\nVAULT_ROLE_ID=%s\nVAULT_SECRET_ID=%s\n' "$ROLE_ID" "$SECRET_ID" >> .env
+echo "Identifiants AppRole ecrits dans le .env"
 
 echo "Injection initiale des secrets dans Vault..."
 docker compose run --rm --no-deps \
@@ -89,5 +91,10 @@ docker compose run --rm --no-deps \
 
 echo "Revocation du token root..."
 vcli token revoke -self
+
+# Recreation du backend : le conteneur a ete cree AVANT l'ajout des
+# identifiants AppRole au .env, et env_file n'est lu qu'a la creation.
+echo "Recreation du backend avec les identifiants AppRole..."
+docker compose up -d --no-deps backend
 
 echo "Initialisation terminee. Gardez $INIT_JSON et $APPROLE_ENV en lieu sur."

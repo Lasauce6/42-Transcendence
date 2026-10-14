@@ -12,14 +12,19 @@
 
 all: up
 
-up:
+vault-prepare:
+	@sh vault/tls/gen.sh
+	@mkdir -p vault/data vault/logs
+	@chmod 770 vault/data vault/logs
+
+up: vault-prepare
 	docker compose up --build -d
 	@sh vault/init.sh
 
 down:
 	docker compose down
 
-debug:
+debug: vault-prepare
 	docker compose up --build -d
 	@sh vault/init.sh
 	docker compose logs -f
