@@ -209,6 +209,20 @@ Commandes depuis la racine du projet:
 | `make fclean` | `docker compose down -v --rmi all --remove-orphans` | Tout supprimer (containers, volumes, images, orphelins) |
 | `make re` | `fclean` puis `up` | Reconstruction complete depuis zero |
 
+### Auto-reparation TLS et permissions (2026-10-14)
+
+Si vous avez deja lance `docker compose up` directement avant `make up`,
+les sources de certains bind mounts manquants ont pu etre crees par Docker
+en tant que repertoires vides appartenant a root (empoisonnement).
+
+`make up` auto-repare ce cas :
+- `vault-prepare` regenere les certificats TLS empoisonnes (`ca.crt` repertoire → fichier)
+- `fix-perms.sh` corrige les permissions sans jamais demander de sudo
+
+Ce comportement garantit que le projet fonctionne sur les postes Fedora de 42
+(et autres environnements sans sudo) grace a une strategie de permissions
+portable (chgrp 1000 → helper root → fallback 777/644).
+
 ## Demarrage rapide
 
 ```bash

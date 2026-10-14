@@ -58,7 +58,7 @@ services:
       - ./backend:/app # Hot-reload : on lie le code local au container
       - ./backend/media:/app/media
       - ./backend/logs:/app/logs
-      - ./vault/tls/ca.crt:/etc/vault/ca.crt:ro
+      - ./vault/tls:/etc/vault:ro # Montage du repertoire TLS entier pour eviter l'auto-creation de ca.crt par docker compose up
     depends_on:
       postgres:
         condition: service_started
