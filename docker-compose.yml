@@ -84,8 +84,8 @@ services:
     build: ./nginx
     restart: always
     ports:
-      - "80:8080"   # HTTP -> redirect 301 vers HTTPS
-      - "443:8443"  # HTTPS (WAF actif)
+      - "8080:8080"   # HTTP -> redirect 301 vers HTTPS
+      - "4443:8443"  # HTTPS (WAF actif)
     environment:
       MODSEC_RULE_ENGINE: ${MODSEC_RULE_ENGINE:-On}
       MODSEC_AUDIT_ENGINE: RelevantOnly
