@@ -95,7 +95,7 @@ vcli token revoke -self
 # Recreation du backend : le conteneur a ete cree AVANT l'ajout des
 # identifiants AppRole au .env, et env_file n'est lu qu'a la creation.
 echo "Recreation du backend avec les identifiants AppRole..."
-docker compose --env-file .env up -d backend
+docker compose --env-file .env up -d --no-deps --force-recreate backend
 
 
 echo "Initialisation terminee. Gardez $INIT_JSON et $APPROLE_ENV en lieu sur."

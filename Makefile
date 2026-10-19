@@ -17,15 +17,17 @@ vault-prepare:
 	@sh vault/fix-perms.sh
 
 up: vault-prepare
-	docker compose up --build -d 
+	docker compose up --build -d vault
 	@sh vault/init.sh
+	docker compose up --build -d
 
 down:
 	docker compose down
 
 debug: vault-prepare
-	docker compose up --build -d
+	docker compose up --build -d vault
 	@sh vault/init.sh
+	docker compose up --build -d
 	docker compose logs -f
 	@docker compose attach backend frontend nginx vault
 

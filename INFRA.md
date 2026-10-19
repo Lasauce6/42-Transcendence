@@ -7,7 +7,7 @@ Architecture Docker, configuration reseau et services
 ```
                     HOTE
                       |
-                  ports 80 (HTTP -> 301) et 443 (HTTPS)
+                  ports 8080 (HTTP -> 301) et 4443 (HTTPS)
                       |
                  +----------+
                  |  nginx   |  owasp/modsecurity-crs (WAF)
@@ -44,7 +44,7 @@ Architecture Docker, configuration reseau et services
 | Propriete | Valeur |
 | --- | --- |
 | Image | `owasp/modsecurity-crs:nginx` (build `nginx/Dockerfile`) |
-| Ports exposes | `80:8080` (redirect 301), `443:8443` (HTTPS) |
+| Ports exposes | `8080:8080` (redirect 301), `4443:8443` (HTTPS) |
 | Config | `nginx/templates/conf.d/default.conf.template` (envsubst au demarrage) |
 | Regles WAF | OWASP CRS + `nginx/rules/REQUEST-900-*.conf` et `RESPONSE-999-*.conf` |
 | Dependances | backend, frontend |
@@ -180,7 +180,7 @@ Fichier `.env` a la racine du projet (copie de `.env.example`):
 - **Reseau unique:** `transcendence-network` (driver `bridge`)
 - **6 services** connectes au meme reseau
 - **Service discovery:** DNS Docker (les noms de services resolvent les IPs des containers)
-- **Ports exposes sur l'hote:** Uniquement `nginx:80` (redirect) et `nginx:443` (HTTPS)
+- **Ports exposes sur l'hote:** Uniquement `nginx:8080` (redirect) et `nginx:4443` (HTTPS) — ports non privilegies, compatibles podman rootless
 
 ## Volumes
 

@@ -8,7 +8,6 @@ services:
     restart: always
     cap_add:
       - IPC_LOCK
-    env_file: .env
     environment:
       VAULT_ADDR: https://127.0.0.1:8200
       VAULT_CACERT: /vault/tls/ca.crt
@@ -100,6 +99,7 @@ services:
       PORT: 8080
       SSL_PORT: 8443
       SERVER_NAME: localhost
+      PUBLIC_HTTPS_PORT: "4443"
       SSL_CERT_FILE: /etc/nginx/conf/server.crt
       SSL_CERT_KEY_FILE: /etc/nginx/conf/server.key
     volumes:
