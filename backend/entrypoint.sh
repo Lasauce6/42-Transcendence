@@ -32,8 +32,14 @@ while ! nc -z postgres 5432; do
 done
 echo "PostgreSQL lance !"
 
-echo "Génération des migrations..."
-python manage.py makemigrations --noinput
+# Génération des migrations (development only)
+# In production, migrations should be generated during deployment and frozen.
+if [ "${DEBUG:-True}" = "True" ]; then
+    echo "Génération des migrations (development mode)..." 
+    python manage.py makemigrations --noinput
+else
+    echo "Production mode: skipping automatic migration generation"
+fi
 
 echo "Lancement des migrations..."
 python manage.py migrate

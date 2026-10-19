@@ -96,6 +96,11 @@ make up
 
 Then open **https://localhost**.
 
+> `.env` is listed in `.gitignore` and must never be committed.
+> Privacy Policy and Terms of Service pages are accessible from the application footer
+> (`/privacy` and `/terms`) with relevant content in FR/EN/ES.
+> For production deployment, set `DEBUG=False` in your environment variables
+
 ### Demo data (optional)
 
 ```sh
@@ -264,14 +269,24 @@ accounts/tokens).
 | RBAC admin panel | Admin/Moderator/User roles, user management CRUD, role-gated views on both sides (DRF permissions `IsSelfOrAdmin`, `Is2FADone`; Angular `roleGuard`) | rbaticle, oamairi (backend), ydembele (frontend) |
 | i18n (FR / EN / ES) | Full translation of every user-facing string, language switcher, per-user language preference, `i18n:check` script guards missing keys | msingh, ydembele |
 | Security perimeter | ModSecurity/OWASP CRS WAF, strict CSP, per-location rate limiting, JSON audit log of every mutating action, secrets from Vault | rbaticle |
+| Responsive & accessible UI | Clear, responsive layout across devices using Tailwind CSS; design-system page documents reusable components | ydembele, romukena |
+| Form validation | All user inputs validated on both frontend (Angular Reactive Forms + custom validators) and backend (DRF serializers + model constraints) | romukena, rbaticle |
+| Concurrent user handling | Multiple simultaneous users handled via WebSocket channel layer fan-out, unique DB constraints (e.g. `Friendship` unique pair), soft message deletes to avoid race conditions | oamairi, rbaticle |
 | Developer experience | `make` workflow, demo data seeding, Swagger UI (`/api/docs/`), design-system page, Mailpit | rbaticle, ydembele |
 
 ---
 
 ## Modules
 
-**Point calculation: Major = 2 pts, Minor = 1 pt → 7 Major (14) + 7 Minor (7) = 21 pts
-(19 of which count as bonus in the grading grid).**
+**Point calculation: Major = 2 pts, Minor = 1 pt.**
+
+- **Required minimum**: 14 pts → we selected 7 Major modules = 14 pts (validates the project).
+- **Bonus**: we selected 7 additional Minor modules = 7 pts.
+  According to the subject, only the first 5 points beyond the 14 required count as bonus,
+  so **5 bonus points** are validated (the 2 remaining Minor points are extra but do not count
+  toward the bonus cap).
+
+**Total: 21 pts / 14 required + 5 bonus (max 5).**
 
 | # | Module | Type | Pts | How it was implemented | Who |
 | - | ------ | ---- | --- | ---------------------- | --- |
@@ -296,24 +311,31 @@ accounts/tokens).
 
 | Login | Role(s) | Responsibilities |
 | ----- | ------- | ---------------- |
-| **rbaticle** (Raphaël Baticle) | Tech Lead, Backend & Infrastructure | Overall architecture; security perimeter (Vault, WAF, JWT/2FA backend); Docker/Compose/Makefile workflow; API design; code review |
-| **romukena** (Robinson Mukena) | Product Owner, Frontend Lead | Frontend architecture; authentication/2FA/OAuth UI; profile and friends UI; component library |
-| **oamairi** | Backend Lead | Chat backend (channels, messages, moderation); users API; notifications backend |
-| **msingh** (Manjot Singh) | Frontend Developer, Backend Developer, Project Manager | Friendships backend; i18n integration; admin features; meeting and task coordination |
-| **ydembele** (Yamadou Dembélé) | Frontend Developer | Chat UI; notifications UI; admin panel UI; FR/EN/ES translations |
+| **rbaticle** (Raphaël Baticle) | Tech Lead / Architect, Backend Developer | Overall architecture; security perimeter (Vault, WAF, JWT/2FA backend); Docker/Compose/Makefile workflow; API design; code review |
+| **romukena** (Robinson Mukena) | Product Owner (PO), Frontend Lead, Developer | Product vision, backlog and priorities; frontend architecture; authentication/2FA/OAuth UI; profile and friends UI; component library |
+| **oamairi** | Backend Developer | Chat backend (channels, messages, moderation); users API; notifications backend; attachment handling |
+| **msingh** (Manjot Singh) | Project Manager (PM) / Scrum Master, Backend Developer | Meeting and task coordination; GitHub Issues tracking; friendships backend; i18n integration; admin features |
+| **ydembele** (Yamadou Dembélé) | Frontend Developer | Chat UI; notifications UI; admin panel UI; home/header pages; FR/EN/ES translations |
 ---
 
 ## Project Management
 
 - **Task distribution** — work was split by domain (backend, frontend,
-  infrastructure/security), tracked as GitHub Issues and developed on feature
-  branches (`feature/…`) merged into `master` through pull requests.
-- **Tools** — GitHub (Issues, pull requests with mandatory code review) for the
-  repository and task board; Discord as the main communication channel.
-- **Communication** — a Discord discussion with regular discussion to plan, demo and unblock.
-- **Quality gates** — every PR was reviewed before merge; backend unit tests
-  (`manage.py test`) and frontend tests (`npm test` / Vitest) run in the containers;
-  `make waf-test` continuously validates the security perimeter.
+  infrastructure/security). Features were broken into small, manageable tasks
+  tracked as GitHub Issues, developed on feature branches (`feature/…`) and merged
+  into `master` through pull requests with at least one reviewer.
+- **Tools** — GitHub (Issues, Projects board, pull requests with mandatory code
+  review) for the repository and task tracking; Discord as the main communication
+  channel.
+- **Communication** — weekly planning meetings + daily Discord check-ins to sync
+  on progress and blockers; regular demos of completed features; pair-debugging
+  sessions for complex issues (Vault TLS, WAF tuning).
+- **Quality gates** — every PR was reviewed before merge; meaningful commit
+  messages describe the change; backend unit tests (`manage.py test`) and frontend
+  tests (`npm test` / Vitest) run in the containers; `make waf-test` continuously
+  validates the security perimeter.
+- **Documentation** — important technical decisions (stack, Vault design, WAF
+  exclusions) were recorded in `INFRA.md` and `AGENTS.md` files.
 
 ---
 
@@ -423,11 +445,14 @@ code. AI was used for:
 
 ## Known Limitations
 
-- Development-grade settings are still active in `core/settings.py`
-  (`DEBUG = True`, permissive CORS) — flagged in code, to be tightened for a real
-  production deployment.
-- `entrypoint.sh` runs `makemigrations` at container start (dev convenience) —
-  migrations should be frozen before production.
-- The site is served with a self-signed TLS certificate on `localhost`.
-- A game module was scaffolded (`frontend/src/app/features/game/`) but not
-  implemented — a natural candidate for future work.
+- Development-grade settings are configurable via environment variables:
+  - `DEBUG = True` by default (can be set to `False` for production)
+  - `CORS_ALLOW_ALL_ORIGINS = True` in development (switches to `CORS_ALLOWED_ORIGINS` list in production)
+- `entrypoint.sh` conditionally runs `makemigrations` only in development mode
+  (controlled by `DEBUG` environment variable) — in production, migrations should be
+  generated during deployment and frozen.
+- The site is served with a self-signed TLS certificate on `localhost` (acceptable for
+  local development; in production, use a certificate from a trusted CA like Let's Encrypt).
+- Performance: The hot-reload development setup may impact responsiveness during heavy usage.
+- Scalability: Designed for educational/local use, not optimized for high-concurrency production deployment.
+- User profile completeness: Basic profile features implemented but advanced customization options not included.
