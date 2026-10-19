@@ -1,8 +1,8 @@
 #!/bin/sh
 # Tests WAF
 
-BASE="${1:-https://127.0.0.1}"
-HTTP_BASE="${2:-http://127.0.0.1}"
+BASE="${1:-https://127.0.0.1:4443}"
+HTTP_BASE="${2:-http://127.0.0.1:8080}"
 FAILED=0
 
 code() {
