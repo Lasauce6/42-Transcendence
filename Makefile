@@ -6,7 +6,7 @@
 #    By: rbaticle <rbaticle@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/06/02 14:23:54 by rbaticle          #+#    #+#              #
-#    Updated: 2026/10/15 16:37:05 by rbaticle         ###   ########.fr        #
+#    Updated: 2026/10/20 15:13:58 by rbaticle         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,6 +37,12 @@ logs:
 waf-test:
 	./nginx/scripts/test-waf.sh
 
+back-test:
+	docker compose exec backend sh -c 'eval "$$(python3 /app/vault_fetch.py)" && python manage.py test'
+
+front-test:
+	docker compose exec frontend npm test
+
 clean:
 	docker compose down -v
 
@@ -50,4 +56,10 @@ fclean:
 re: fclean
 	@make up --no-print-directory
 
-test: up waf-test
+test: up
+	@echo "------------ WAF-TEST -------------"
+	@make waf-test --no-print-directory
+	@echo "---------- BACKEND-TEST -----------"
+	@make back-test --no-print-directory
+	@echo "---------- FRONTEND-TEST ----------"
+	@make front-test --no-print-directory

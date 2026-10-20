@@ -62,8 +62,8 @@ initialization and the TLS material generation.
 | A modern browser | — | Chrome / Firefox / Edge |
 
 No local Node.js or Python installation is required: everything runs in containers.
-Ports **80** and **443** must be free on the host (the site is served on
-`https://localhost` with a self-signed certificate — accept the browser warning).
+Ports **8000** and **4443** must be free on the host (the site is served on
+`https://localhost:4443` with a self-signed certificate — accept the browser warning).
 
 ### First run
 
@@ -90,11 +90,13 @@ make up
 | -------- | ------- |
 | `POSTGRES_DB` / `POSTGRES_USER` / `POSTGRES_PASSWORD` | database credentials |
 | `OAUTH_42_CLIENT_ID` / `OAUTH_42_CLIENT_SECRET` | 42 OAuth app (intra.42.fr) |
-| `OAUTH_GOOGLE_CLIENT_ID` / `OAUTH_GITHUB_CLIENT_ID` (+ secrets) | optional OAuth providers |
+| `OAUTH_GOOGLE_CLIENT_ID` / `OAUTH_GOOGLE_CLIENT_SECRET` | Google OAuth providers |
+| `OAUTH_GITHUB_CLIENT_ID` / `OAUTH_GITHUB_CLIENT_SECRET` | GitHub OAuth app |
 | `TOTP_ENCRYPTION_KEY` | ≥ 32 chars, used to encrypt users' TOTP secrets at rest |
 | `MODSEC_RULE_ENGINE`, `BLOCKING_PARANOIA`, `ANOMALY_INBOUND` | WAF tuning (sensible defaults provided) |
+| `DEBUG` | Set stack to debug or production mode (default to debug) |
 
-Then open **https://localhost**.
+Then open **https://localhost:4443**.
 
 > `.env` is listed in `.gitignore` and must never be committed.
 > Privacy Policy and Terms of Service pages are accessible from the application footer
@@ -118,22 +120,13 @@ friendships, channels and messages so the UI is immediately explorable.
 | `make down` | stop the stack |
 | `make logs` | follow all logs |
 | `make debug` | up + follow logs, then attach to the main services |
-| `make test` | `make up` + WAF test suite |
+| `make test` | `make up` + WAF test / Backend test / Frontend test |
 | `make waf-test` | sends SQLi / XSS / path-traversal probes and asserts they are blocked (403) |
+| `make back-test` | backend test |
+| `make front-test` | frontend unit tests (Vitest) |
 | `make clean` / `make fclean` | stop, remove volumes / also remove images |
 | `make re` | full reset then `make up` |
 
-Backend tests (secrets live in the entrypoint process, hence the `vault_fetch` prefix):
-
-```sh
-docker compose exec backend sh -c 'eval "$(python3 /app/vault_fetch.py)" && python manage.py test'
-```
-
-Frontend unit tests (Vitest):
-
-```sh
-docker compose exec frontend npm test
-```
 
 API documentation: **https://localhost/api/docs/** (Swagger UI) and `/api/redoc/`.
 Mailpit (dev SMTP catch-all) runs inside the compose network.
@@ -453,6 +446,8 @@ code. AI was used for:
   generated during deployment and frozen.
 - The site is served with a self-signed TLS certificate on `localhost` (acceptable for
   local development; in production, use a certificate from a trusted CA like Let's Encrypt).
+- Mail handling : confirmation emails are not used (Mailpit catch-all inside the stack)
+  to send emails or to confirm / recover passwords / user creation.
 - Performance: The hot-reload development setup may impact responsiveness during heavy usage.
 - Scalability: Designed for educational/local use, not optimized for high-concurrency production deployment.
 - User profile completeness: Basic profile features implemented but advanced customization options not included.

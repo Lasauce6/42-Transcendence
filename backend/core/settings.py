@@ -34,7 +34,6 @@ DEBUG = os.environ.get("DEBUG", "True").lower() == "true"
 
 ALLOWED_HOSTS = ["localhost", "backend"]
 
-
 # MAX 5Mo storage
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -127,7 +126,7 @@ DEFAULT_FROM_EMAIL = "noreply@transcendence.local"
 
 LOGIN_REDIRECT_URL = "/api/auth/oauth/jwt/"
 LOGOUT_REDIRECT_URL = "/"
-FRONTEND_URL = "https://localhost"
+FRONTEND_URL = "https://localhost:4443"
 
 AUTH_USER_MODEL = "users.User"
 
@@ -189,8 +188,7 @@ if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 else:
     CORS_ALLOWED_ORIGINS = [
-        "https://yourdomain.com",  # TODO: Replace with your production domain(s)
-        "https://www.yourdomain.com",
+        "https://localhost:4443",  # TODO: Replace with your production domain(s)
     ]
 
 ROOT_URLCONF = "core.urls"

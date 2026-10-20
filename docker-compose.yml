@@ -2,7 +2,7 @@ services:
   # Port non expose sur l'hote (surface d'attaque reduite).
   # Decommenter le mapping 8200:8200 pour deboguer l'UI Vault localement.
   vault:
-    image: hashicorp/vault:2.0
+    image: docker.io/hashicorp/vault:2.0
     container_name: vault
     command: server
     restart: always
@@ -26,7 +26,7 @@ services:
       - transcendence-network
 
   postgres:
-    image: postgres:15-alpine
+    image: docker.io/library/postgres:15-alpine
     restart: always
     env_file: .env
     volumes:
@@ -35,13 +35,13 @@ services:
       - transcendence-network
 
   redis:
-    image: redis:7-alpine
+    image: docker.io/library/redis:7-alpine
     restart: always
     networks:
       - transcendence-network
 
   mailpit:
-      image: axllent/mailpit:latest
+      image: docker.io/axllent/mailpit:latest
       container_name: mailpit
       restart: always
       networks:

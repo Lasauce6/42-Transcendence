@@ -236,10 +236,10 @@ make up
 make debug
 
 # 4. Acceder a l'application (HTTPS auto-signe : accepter le certificat)
-# Frontend: https://localhost
-# API:      https://localhost/api/
-# Admin:    https://localhost/admin/
-# (http://localhost redirige en 301 vers HTTPS)
+# Frontend: https://localhost:4443
+# API:      https://localhost:4443/api/
+# Admin:    https://localhost4443/admin/
+# (http://localhost:8000 redirige en 301 vers HTTPS)
 ```
 
 ## Consignes pour les implementations futures
