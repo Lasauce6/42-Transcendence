@@ -28,7 +28,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG mode is enabled by default for development convenience.
+# Set DEBUG=False in production.
+DEBUG = os.environ.get("DEBUG", "True").lower() == "true"
 
 ALLOWED_HOSTS = ["localhost", "backend"]
 
@@ -178,7 +180,18 @@ MIDDLEWARE = [
 ]
 
 # SECURITY WARNING: don't run with cors allow all origins on in production!
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_ALL_ORIGINS is enabled by default for development convenience.
+# In production, set CORS_ALLOWED_ORIGINS to your domain(s).
+
+# Enable CORS for all origins in development (DEBUG=True)
+# In production, set DEBUG=False and define CORS_ALLOWED_ORIGINS
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
+else:
+    CORS_ALLOWED_ORIGINS = [
+        "https://yourdomain.com",  # TODO: Replace with your production domain(s)
+        "https://www.yourdomain.com",
+    ]
 
 ROOT_URLCONF = "core.urls"
 
