@@ -8,6 +8,7 @@
     "LOGIN": "Sign in",
     "LOGOUT": "Sign out",
     "CHAT": "Messages",
+    "FRIENDS": "Friends",
     "API_DOCS": "API docs",
     "MAIN": "Main navigation",
     "REGISTER": "Sign up"
@@ -178,7 +179,8 @@
     "NOTIFICATIONS": "Notifications",
     "CHAT": "Messages",
     "API_DOCS": "API documentation",
-    "ADMIN": "Administration"
+    "ADMIN": "Administration",
+    "FRIENDS": "Friends"
   },
   "TOAST": {
     "REGION_LABEL": "Notifications",
@@ -412,5 +414,26 @@
     "SUCCESS": "Profile saved.",
     "ERROR": "Something went wrong.",
     "INFO": "The link expires after one hour."
+  },
+  "FRIENDS": {
+    "USERNAME": "Username",
+    "ADD": "Add",
+    "LOADING": "Loading friends...",
+    "LIST": "My friends",
+    "ONLINE": "Online",
+    "OFFLINE": "Offline",
+    "REMOVE": "Remove",
+    "NO_FRIENDS": "You don't have any friends yet.",
+    "RECEIVED": "Received requests",
+    "ACCEPT": "Accept",
+    "REJECT": "Decline",
+    "NO_REQUESTS": "No pending requests.",
+    "SENT": "Sent requests",
+    "CANCEL": "Cancel",
+    "NO_SENT": "No sent requests.",
+    "USER_NOT_FOUND": "No user with this name.",
+    "ERROR_SELF": "You can't add yourself.",
+    "ERROR_ALREADY": "You are already friends or a request is pending.",
+    "ERROR_REQUEST": "Unable to send a request to this user."
   }
 }

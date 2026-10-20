@@ -8,6 +8,7 @@
     "LOGIN": "Iniciar sesión",
     "LOGOUT": "Cerrar sesión",
     "CHAT": "Mensajes",
+    "FRIENDS": "Amigos",
     "API_DOCS": "Doc API",
     "MAIN": "Navegación principal",
     "REGISTER": "Registrarse"
@@ -178,7 +179,8 @@
     "NOTIFICATIONS": "Notificaciones",
     "CHAT": "Mensajes",
     "API_DOCS": "Documentación de la API",
-    "ADMIN": "Administración"
+    "ADMIN": "Administración",
+    "FRIENDS": "Amigos"
   },
   "TOAST": {
     "REGION_LABEL": "Notificaciones",
@@ -412,5 +414,26 @@
     "SUCCESS": "Perfil guardado.",
     "ERROR": "Se ha producido un error.",
     "INFO": "El enlace caduca al cabo de una hora."
+  },
+  "FRIENDS": {
+    "USERNAME": "Nombre de usuario",
+    "ADD": "Añadir",
+    "LOADING": "Cargando amigos...",
+    "LIST": "Mis amigos",
+    "ONLINE": "En línea",
+    "OFFLINE": "Desconectado",
+    "REMOVE": "Eliminar",
+    "NO_FRIENDS": "Todavía no tienes amigos.",
+    "RECEIVED": "Solicitudes recibidas",
+    "ACCEPT": "Aceptar",
+    "REJECT": "Rechazar",
+    "NO_REQUESTS": "No hay solicitudes recibidas.",
+    "SENT": "Solicitudes enviadas",
+    "CANCEL": "Cancelar",
+    "NO_SENT": "No hay solicitudes enviadas.",
+    "USER_NOT_FOUND": "Ningún usuario con este nombre.",
+    "ERROR_SELF": "No puedes añadirte a ti mismo.",
+    "ERROR_ALREADY": "Ya sois amigos o hay una solicitud pendiente.",
+    "ERROR_REQUEST": "No se pudo enviar la solicitud a este usuario."
   }
 }

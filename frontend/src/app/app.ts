@@ -11,6 +11,7 @@ import { Toast } from './shared/components/toast/toast';
 import { NotificationBell } from '@features/notifications/notification-bell/notification-bell';
 import { NotificationService } from '@core/services/notification';
 import { NotificationSocket } from '@core/services/notification-socket';
+import { FriendsService } from '@features/friends/friends.service';
 
 @Component({
   selector: 'app-root',
@@ -35,6 +36,7 @@ export class App {
 
   private readonly notifications = inject(NotificationService);
   private readonly notificationSocket = inject(NotificationSocket);
+  private readonly friends = inject(FriendsService);
 
   constructor() {
     effect(() => {
@@ -44,6 +46,7 @@ export class App {
       } else {
         this.currentUser.clear();
         this.notifications.clear();
+        this.friends.reset();
       }
     });
 
