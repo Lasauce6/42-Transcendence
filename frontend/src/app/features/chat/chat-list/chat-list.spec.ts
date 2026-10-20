@@ -26,27 +26,35 @@ describe('ChatList', () => {
     expect(component).toBeTruthy();
   });
 
-  it('démarre une conversation puis ouvre sa page', () => {
+  it('crée un channel avec le nom choisi puis ouvre sa page', () => {
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
-    component.newUsername.set('alice');
-    component.startConversation();
+    component.newName.set('projet 42');
+    component.createChannel();
 
-    http.expectOne('/api/users/').flush([{ id: 'u2', username: 'alice' }]);
-    http
-      .expectOne((req) => req.method === 'POST' && req.url === '/api/channels/')
-      .flush({ id: 'c1', name: 'alice', type: 'PRIVATE', created_by: 'u1', created_at: '2026-01-01T00:00:00Z' });
-    http.expectOne('/api/channels/c1/add-member/').flush({});
+    const create = http.expectOne((req) => req.method === 'POST' && req.url === '/api/channels/');
+    expect(create.request.body).toEqual({ name: 'projet 42', type: 'GROUP' });
+    create.flush({ id: 'c1', name: 'projet 42', type: 'GROUP', created_by: 'u1', created_at: '2026-01-01T00:00:00Z' });
 
     expect(navigate).toHaveBeenCalledWith(['/chat', 'c1']);
-    expect(component.newUsername()).toBe('');
+    expect(component.newName()).toBe('');
     expect(component.creating()).toBe(false);
   });
 
-  it('affiche une erreur si la personne est introuvable', () => {
-    component.newUsername.set('inconnu');
-    component.startConversation();
+  it('refuse un nom de moins de 3 caractères', () => {
+    component.newName.set('ab');
+    component.createChannel();
 
-    http.expectOne('/api/users/').flush([]);
+    http.expectNone((req) => req.method === 'POST' && req.url === '/api/channels/');
+    expect(component.canCreate()).toBe(false);
+  });
+
+  it('affiche une erreur si la création échoue', () => {
+    component.newName.set('projet 42');
+    component.createChannel();
+
+    http
+      .expectOne((req) => req.method === 'POST' && req.url === '/api/channels/')
+      .flush({ name: ['erreur'] }, { status: 400, statusText: 'Bad Request' });
 
     expect(component.createError()).toBe(true);
     expect(component.creating()).toBe(false);

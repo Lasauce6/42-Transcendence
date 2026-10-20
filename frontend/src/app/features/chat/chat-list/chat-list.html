@@ -50,18 +50,25 @@
       }
     </ui-card>
 
-    <ui-card class="min-w-0 grow basis-80" [heading]="'HOME.NEW_CONVERSATION' | translate">
-      <form class="flex flex-col gap-3" (submit)="$event.preventDefault(); startConversation()">
-        <ui-field [label]="'CHAT.NEW_PLACEHOLDER' | translate" for="new-conversation" [error]="createError() ? ('CHAT.NEW_ERROR' | translate) : null">
+    <ui-card class="min-w-0 grow basis-80" [heading]="'CHAT.NEW_TITLE' | translate">
+      <form class="flex flex-col gap-3" (submit)="$event.preventDefault(); createChannel()">
+        <ui-field
+          [label]="'CHAT.NEW_PLACEHOLDER' | translate"
+          for="new-channel"
+          [hint]="'CHAT.NEW_HINT' | translate"
+          [error]="createError() ? ('CHAT.NEW_ERROR' | translate) : null"
+        >
           <input
-            id="new-conversation"
+            id="new-channel"
             type="text"
+            maxlength="255"
+            autocomplete="off"
             [placeholder]="'CHAT.NEW_PLACEHOLDER' | translate"
-            [value]="newUsername()"
-            (input)="onNewUsernameInput($event)"
+            [value]="newName()"
+            (input)="onNewNameInput($event)"
           />
         </ui-field>
-        <button uiButton type="submit" [disabled]="creating() || !newUsername().trim()">
+        <button uiButton type="submit" [disabled]="!canCreate()">
           <ui-icon name="plus" [size]="18" />{{ 'CHAT.NEW_BUTTON' | translate }}
         </button>
       </form>

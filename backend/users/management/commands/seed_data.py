@@ -3,6 +3,7 @@ from datetime import timedelta
 
 from api.models import Notification
 from chat.models import Channel, ChannelMember, Message
+from chat.services import get_or_create_private_channel
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
@@ -148,6 +149,11 @@ class Command(BaseCommand):
                 user=users[username],
                 role=role,
             )
+
+        # Comme à l'acceptation d'une demande : chaque paire d'amis a son MP
+        for friendship in friendships.values():
+            if friendship.status == Friendship.Status.ACCEPTED:
+                get_or_create_private_channel(friendship.requester, friendship.addressee)
 
         messages_data = [
             ("general", "alice", "Salut tout le monde 👋"),

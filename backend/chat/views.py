@@ -3,6 +3,7 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.core import signing
 from django.db import transaction
+from django.db.models import Q
 from django.http import HttpResponse
 from django.utils.http import content_disposition_header
 from rest_framework import permissions, viewsets, status
@@ -13,6 +14,7 @@ from rest_framework.views import APIView
 from rest_framework.throttling import ScopedRateThrottle
 
 from api.models import Notification
+from users.models import Friendship
 from users.permissions import Is2FADone
 
 from .files import (
@@ -24,6 +26,7 @@ from .files import (
 )
 from .models import Attachment, Channel, Message, ChannelMember, ChannelBan
 from .serializers import AttachmentUploadSerializer, ChannelSerializer, MessageSerializer
+from .services import get_or_create_private_channel
 
 
 class ChannelViewSet(viewsets.ModelViewSet):
@@ -58,9 +61,44 @@ class ChannelViewSet(viewsets.ModelViewSet):
             channel=channel, user=user, role=ChannelMember.Role.ADMIN
         ).exists()
 
+    @action(detail=False, methods=["post"])
+    def private(self, request):
+        user_id = request.data.get("user_id")
+        if not user_id:
+            return Response(
+                {"error": "user_id est requis"}, status=status.HTTP_400_BAD_REQUEST
+            )
+        friendship = (
+            Friendship.objects.filter(status=Friendship.Status.ACCEPTED)
+            .filter(
+                Q(requester=request.user, addressee_id=user_id)
+                | Q(requester_id=user_id, addressee=request.user)
+            )
+            .select_related("requester", "addressee")
+            .first()
+        )
+        if not friendship:
+            return Response(
+                {"error": "Vous devez être amis pour discuter en privé."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        channel, created = get_or_create_private_channel(
+            friendship.requester, friendship.addressee
+        )
+        channel = self.get_queryset().get(pk=channel.pk)
+        return Response(
+            self.get_serializer(channel).data,
+            status=status.HTTP_201_CREATED if created else status.HTTP_200_OK,
+        )
+
     @action(detail=True, methods=["post"], url_path="add-member")
     def add_member(self, request, pk=None):
         channel = self.get_object()
+        if channel.type == Channel.ChannelType.PRIVATE:
+            return Response(
+                {"error": "Impossible d'ajouter un membre à une conversation privée."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         user_id = request.data.get("user_id")
         if not user_id:
             return Response(
