@@ -32,7 +32,7 @@ export class ChatList implements OnInit {
   readonly error = signal(false);
   readonly query = signal('');
 
-  readonly newUsername = signal('');
+  readonly newName = signal('');
   readonly creating = signal(false);
   readonly createError = signal(false);
 
@@ -74,21 +74,25 @@ export class ChatList implements OnInit {
     this.router.navigate(['/chat', c.id]);
   }
 
-  onNewUsernameInput(event: Event): void {
-    this.newUsername.set((event.target as HTMLInputElement).value);
+  onNewNameInput(event: Event): void {
+    this.newName.set((event.target as HTMLInputElement).value);
     this.createError.set(false);
   }
 
-  startConversation(): void {
-    const username = this.newUsername().trim();
-    if (!username || this.creating()) return;
+  canCreate(): boolean {
+    return this.newName().trim().length >= 3 && !this.creating();
+  }
+
+  createChannel(): void {
+    const name = this.newName().trim();
+    if (!this.canCreate()) return;
 
     this.creating.set(true);
     this.createError.set(false);
-    this.service.startConversation(username).subscribe({
+    this.service.createGroup(name).subscribe({
       next: (channel) => {
         this.creating.set(false);
-        this.newUsername.set('');
+        this.newName.set('');
         this.router.navigate(['/chat', channel.id]);
       },
       error: () => {

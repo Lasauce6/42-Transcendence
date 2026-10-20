@@ -161,3 +161,94 @@ class PresenceWebsocketTests(TransactionTestCase):
 
         await self.alice.arefresh_from_db()
         self.assertFalse(self.alice.is_online)
+
+
+class PrivateChannelTests(APITestCase):
+    def setUp(self):
+        from users.models import Friendship
+
+        self.alice = User.objects.create_user(
+            username="alice", email="alice@example.test", password="password123"
+        )
+        self.bob = User.objects.create_user(
+            username="bob", email="bob@example.test", password="password123"
+        )
+        self.carol = User.objects.create_user(
+            username="carol", email="carol@example.test", password="password123"
+        )
+        self.friendship = Friendship.objects.create(
+            requester=self.bob, addressee=self.alice
+        )
+        self.login(self.alice)
+
+    def login(self, user):
+        token = RefreshToken.for_user(user).access_token
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
+
+    def private_channels(self):
+        from chat.models import Channel
+
+        return Channel.objects.filter(type="PRIVATE")
+
+    def test_accepter_un_ami_cree_une_conversation_privee(self):
+        response = self.client.post(f"/api/friendships/{self.friendship.id}/accept/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        channel = self.private_channels().get()
+        self.assertEqual(
+            set(channel.members.values_list("user__username", flat=True)),
+            {"alice", "bob"},
+        )
+
+    def test_conversation_privee_reutilisee(self):
+        self.client.post(f"/api/friendships/{self.friendship.id}/accept/")
+        first = self.private_channels().get()
+
+        response = self.client.post(
+            "/api/channels/private/", {"user_id": str(self.bob.id)}, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["id"], str(first.id))
+        self.assertEqual(self.private_channels().count(), 1)
+
+    def test_conversation_privee_creee_si_absente(self):
+        self.friendship.status = "ACCEPTED"
+        self.friendship.save()
+
+        response = self.client.post(
+            "/api/channels/private/", {"user_id": str(self.bob.id)}, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(len(response.data["members"]), 2)
+
+    def test_conversation_privee_refusee_sans_amitie(self):
+        response = self.client.post(
+            "/api/channels/private/", {"user_id": str(self.carol.id)}, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertFalse(self.private_channels().exists())
+
+    def test_pas_d_ajout_de_membre_en_prive(self):
+        self.client.post(f"/api/friendships/{self.friendship.id}/accept/")
+        channel = self.private_channels().get()
+
+        response = self.client.post(
+            f"/api/channels/{channel.id}/add-member/",
+            {"user_id": str(self.carol.id)},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(channel.members.count(), 2)
+
+    def test_channel_de_groupe_avec_nom_libre(self):
+        response = self.client.post(
+            "/api/channels/", {"name": "projet 42", "type": "GROUP"}, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data["name"], "projet 42")
+
+        response = self.client.post(
+            f"/api/channels/{response.data['id']}/add-member/",
+            {"user_id": str(self.carol.id)},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)

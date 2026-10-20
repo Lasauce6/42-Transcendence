@@ -35,32 +35,30 @@ describe('ChatService', () => {
     expect(service.channels().map((c) => c.id)).toEqual(['recent', 'old']);
   });
 
-  it("démarre une conversation : cherche la personne, crée le channel, puis l'ajoute", () => {
+  it('crée un channel de groupe avec le nom choisi', () => {
     let createdId = '';
-    service.startConversation('alice').subscribe((channel) => (createdId = channel.id));
-
-    http.expectOne('/api/users/').flush([{ id: 'u2', username: 'Alice' }]);
+    service.createGroup('projet 42').subscribe((channel) => (createdId = channel.id));
 
     const create = http.expectOne('/api/channels/');
-    expect(create.request.body).toEqual({ name: 'Alice', type: 'PRIVATE' });
-    create.flush({ id: 'c1', name: 'Alice', type: 'PRIVATE', created_by: 'u1', created_at: '2026-01-01T00:00:00Z' });
-
-    const add = http.expectOne('/api/channels/c1/add-member/');
-    expect(add.request.body).toEqual({ user_id: 'u2' });
-    add.flush({});
+    expect(create.request.body).toEqual({ name: 'projet 42', type: 'GROUP' });
+    create.flush({ id: 'c1', name: 'projet 42', type: 'GROUP', created_by: 'u1', created_at: '2026-01-01T00:00:00Z' });
 
     expect(createdId).toBe('c1');
     expect(service.channels().map((c) => c.id)).toEqual(['c1']);
   });
 
-  it('ne crée pas de channel si la personne est introuvable', () => {
-    let failed = false;
-    service.startConversation('inconnu').subscribe({ error: () => (failed = true) });
+  it("ouvre la conversation privée avec un ami sans la dupliquer dans la liste", () => {
+    const channel = { id: 'p1', name: null, type: 'PRIVATE', created_by: 'u1', created_at: '2026-01-01T00:00:00Z' };
 
-    http.expectOne('/api/users/').flush([{ id: 'u2', username: 'alice' }]);
+    service.openPrivate('u2').subscribe();
+    const req = http.expectOne('/api/channels/private/');
+    expect(req.request.body).toEqual({ user_id: 'u2' });
+    req.flush(channel);
 
-    http.expectNone('/api/channels/');
-    expect(failed).toBe(true);
+    service.openPrivate('u2').subscribe();
+    http.expectOne('/api/channels/private/').flush(channel);
+
+    expect(service.channels().map((c) => c.id)).toEqual(['p1']);
   });
 
   it("ajoute un membre à partir de son nom d'utilisateur", () => {

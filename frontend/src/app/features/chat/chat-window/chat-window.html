@@ -47,27 +47,30 @@
       }
     </header>
 
-    <form class="flex flex-wrap items-center gap-2.5 border-b border-line px-5 py-3" (submit)="$event.preventDefault(); addMember()">
-      <label for="member-input" class="sr-only">{{ 'CHAT.ADD_MEMBER_PLACEHOLDER' | translate }}</label>
-      <input
-        id="member-input"
-        type="text"
-        class="min-w-0 grow basis-48"
-        autocomplete="off"
-        [placeholder]="'CHAT.ADD_MEMBER_PLACEHOLDER' | translate"
-        [value]="memberName()"
-        (input)="onMemberInput($event)"
-      />
-      <button uiButton variant="secondary" type="submit" [disabled]="!memberName().trim()">
-        <ui-icon name="plus" [size]="18" />{{ 'CHAT.ADD_MEMBER_BUTTON' | translate }}
-      </button>
-      @if (memberAdded()) {
-        <span class="font-mono text-xs text-accent" role="status">{{ 'CHAT.ADD_MEMBER_OK' | translate }}</span>
-      }
-      @if (memberError()) {
-        <span class="font-mono text-xs text-danger" role="alert">{{ 'CHAT.ADD_MEMBER_ERROR' | translate }}</span>
-      }
-    </form>
+    <!-- Une conversation privée reste à deux -->
+    @if (channel()?.type !== 'PRIVATE') {
+      <form class="flex flex-wrap items-center gap-2.5 border-b border-line px-5 py-3" (submit)="$event.preventDefault(); addMember()">
+        <label for="member-input" class="sr-only">{{ 'CHAT.ADD_MEMBER_PLACEHOLDER' | translate }}</label>
+        <input
+          id="member-input"
+          type="text"
+          class="min-w-0 grow basis-48"
+          autocomplete="off"
+          [placeholder]="'CHAT.ADD_MEMBER_PLACEHOLDER' | translate"
+          [value]="memberName()"
+          (input)="onMemberInput($event)"
+        />
+        <button uiButton variant="secondary" type="submit" [disabled]="!memberName().trim()">
+          <ui-icon name="plus" [size]="18" />{{ 'CHAT.ADD_MEMBER_BUTTON' | translate }}
+        </button>
+        @if (memberAdded()) {
+          <span class="font-mono text-xs text-accent" role="status">{{ 'CHAT.ADD_MEMBER_OK' | translate }}</span>
+        }
+        @if (memberError()) {
+          <span class="font-mono text-xs text-danger" role="alert">{{ 'CHAT.ADD_MEMBER_ERROR' | translate }}</span>
+        }
+      </form>
+    }
 
     <div #bottom class="flex h-[60vh] min-h-80 flex-col gap-4 overflow-y-auto p-5" aria-live="polite">
       @if (loading()) {

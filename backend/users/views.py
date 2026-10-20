@@ -17,6 +17,7 @@ from rest_framework.throttling import ScopedRateThrottle
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from users.models import Friendship
+from chat.services import get_or_create_private_channel
 
 from .permissions import Is2FADone, IsSelfOrAdmin
 from .permissions import IsSelfOrAdmin, IsAdmin
@@ -271,6 +272,9 @@ class FriendshipViewSet(viewsets.ModelViewSet):
             )
         friendship.status = Friendship.Status.ACCEPTED
         friendship.save()
+
+        # Les deux amis ont directement une conversation privée
+        get_or_create_private_channel(friendship.requester, friendship.addressee)
 
         notification = Notification.objects.create(
             recipient=friendship.requester,

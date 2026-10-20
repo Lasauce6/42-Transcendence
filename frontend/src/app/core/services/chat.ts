@@ -79,18 +79,19 @@ export class ChatService {
     return this.http.post(`${this.url}${channelId}/add-member/`, { user_id: userId });
   }
 
-  // Démarre une conversation : trouve la personne, crée le channel, puis l'ajoute dedans.
-  startConversation(username: string): Observable<Channel> {
-    return this.findUser(username).pipe(
-      switchMap((user) => {
-        // Personne introuvable : on s'arrête avant de créer un channel vide.
-        if (!user) {
-          return throwError(() => new Error('USER_NOT_FOUND'));
-        }
-        return this.createChannel(user.username).pipe(
-          switchMap((channel) => this.addMember(channel.id, user.id).pipe(map(() => channel))),
-        );
-      }),
+  // Crée un channel de groupe avec le nom choisi ; les membres s'ajoutent ensuite.
+  createGroup(name: string): Observable<Channel> {
+    return this.createChannel(name, 'GROUP');
+  }
+
+  // Ouvre la conversation privée avec un ami (le back la crée si elle n'existe pas encore).
+  openPrivate(userId: string): Observable<Channel> {
+    return this.http.post<Channel>(`${this.url}private/`, { user_id: userId }).pipe(
+      tap((channel) =>
+        this._channels.update((list) =>
+          list.some((c) => c.id === channel.id) ? list : [channel, ...list],
+        ),
+      ),
     );
   }
 
