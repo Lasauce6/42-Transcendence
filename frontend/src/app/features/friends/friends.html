@@ -1,57 +1,147 @@
-<h1>{{ 'TITLES.FRIENDS' | translate }}</h1>
+<section class="flex flex-col gap-6">
+  <ui-page-header
+    [eyebrow]="'NAV.FRIENDS' | translate"
+    [heading]="'FRIENDS.LIST' | translate"
+    [subtitle]="'FRIENDS.ONLINE_COUNT' | translate: { count: onlineCount() }"
+  />
 
-@if (error(); as message) {
-  <p role="alert">{{ message | translate }}</p>
-}
+  @if (error(); as message) {
+    <ui-alert variant="error">{{ message | translate }}</ui-alert>
+  }
 
-<form (submit)="add(); $event.preventDefault()">
-  <label for="friend-username">{{ 'FRIENDS.USERNAME' | translate }}</label>
-  <input #u id="friend-username" type="text" maxlength="30" required
-    [value]="newUsername()" (input)="newUsername.set(u.value)" />
-  <button type="submit" [disabled]="busy() || !newUsername().trim()">
-    {{ 'FRIENDS.ADD' | translate }}
-  </button>
-</form>
-
-@if (loading()) {
-  <p>{{ 'FRIENDS.LOADING' | translate }}</p>
-} @else {
-  <h2>{{ 'FRIENDS.LIST' | translate }}</h2>
-  @for (row of friendsService.friendRows(); track row.friendship.id) {
-    <div>
-      @if (row.avatar) {
-        <img [src]="row.avatar" [alt]="row.username" width="32" height="32" />
+  <div class="flex flex-wrap items-start gap-6">
+    <ui-card class="min-w-0 grow-[999] basis-[560px]" [padded]="false">
+      @if (loading()) {
+        <div class="p-5"><ui-spinner [label]="'FRIENDS.LOADING' | translate" /></div>
+      } @else {
+        <ul class="p-1.5">
+          @for (row of friendRows(); track row.friendship.id) {
+            <li class="flex flex-wrap items-center gap-2 rounded-control pr-3.5 hover:bg-surface-2">
+              <ui-list-item
+                class="grow"
+                [heading]="row.username"
+                [subtitle]="(row.online ? 'FRIENDS.ONLINE' : 'FRIENDS.OFFLINE') | translate"
+              >
+                <ui-avatar
+                  leading
+                  [name]="row.username"
+                  [src]="row.avatar"
+                  [status]="row.online ? 'online' : 'offline'"
+                />
+              </ui-list-item>
+              <div class="flex gap-2 pb-3 pl-3.5 sm:p-0">
+                <button
+                  uiButton
+                  variant="secondary"
+                  size="sm"
+                  type="button"
+                  [disabled]="busy()"
+                  (click)="message(row)"
+                >
+                  <ui-icon name="message" [size]="16" />{{ 'FRIENDS.MESSAGE' | translate }}
+                </button>
+                <button
+                  uiButton
+                  variant="ghost"
+                  size="sm"
+                  type="button"
+                  [disabled]="busy()"
+                  [attr.aria-label]="('FRIENDS.REMOVE' | translate) + ' ' + row.username"
+                  (click)="remove(row.friendship)"
+                >
+                  <ui-icon name="trash" [size]="16" />{{ 'FRIENDS.REMOVE' | translate }}
+                </button>
+              </div>
+            </li>
+          } @empty {
+            <li><ui-empty-state [heading]="'FRIENDS.NO_FRIENDS' | translate" icon="users" /></li>
+          }
+        </ul>
       }
-      <span>{{ row.username }}</span>
-      <span class="presence" [class.online]="row.online">
-        {{ (row.online ? 'FRIENDS.ONLINE' : 'FRIENDS.OFFLINE') | translate }}
-      </span>
-      <button type="button" [disabled]="busy()" (click)="remove(row.friendship)">
-        {{ 'FRIENDS.REMOVE' | translate }}
-      </button>
-    </div>
-  } @empty {
-    <p>{{ 'FRIENDS.NO_FRIENDS' | translate }}</p>
-  }
+    </ui-card>
 
-  <h2>{{ 'FRIENDS.RECEIVED' | translate }}</h2>
-  @for (row of friendsService.receivedRows(); track row.friendship.id) {
-    <div>
-      <span>{{ row.username }}</span>
-      <button type="button" [disabled]="busy()" (click)="accept(row.friendship)">{{ 'FRIENDS.ACCEPT' | translate }}</button>
-      <button type="button" [disabled]="busy()" (click)="reject(row.friendship)">{{ 'FRIENDS.REJECT' | translate }}</button>
-    </div>
-  } @empty {
-    <p>{{ 'FRIENDS.NO_REQUESTS' | translate }}</p>
-  }
+    <div class="flex min-w-0 grow basis-80 flex-col gap-6">
+      <ui-card [heading]="'FRIENDS.ADD_TITLE' | translate">
+        <form class="flex flex-col gap-3" (submit)="$event.preventDefault(); add()">
+          <ui-field [label]="'FRIENDS.USERNAME' | translate" for="friend-username">
+            <input
+              #u
+              id="friend-username"
+              type="text"
+              maxlength="30"
+              autocomplete="off"
+              [placeholder]="'FRIENDS.USERNAME' | translate"
+              [value]="newUsername()"
+              (input)="newUsername.set(u.value)"
+            />
+          </ui-field>
+          <button uiButton type="submit" [disabled]="busy() || !newUsername().trim()">
+            <ui-icon name="plus" [size]="18" />{{ 'FRIENDS.ADD' | translate }}
+          </button>
+        </form>
+      </ui-card>
 
-  <h2>{{ 'FRIENDS.SENT' | translate }}</h2>
-  @for (row of friendsService.sentRows(); track row.friendship.id) {
-    <div>
-      <span>{{ row.username }}</span>
-      <button type="button" [disabled]="busy()" (click)="remove(row.friendship)">{{ 'FRIENDS.CANCEL' | translate }}</button>
+      <ui-card [heading]="'FRIENDS.RECEIVED' | translate">
+        @if (receivedRows().length > 0) {
+          <ui-badge cardAction>{{ receivedRows().length }}</ui-badge>
+        }
+        <ul class="flex flex-col divide-y divide-line">
+          @for (row of receivedRows(); track row.friendship.id) {
+            <li class="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
+              <ui-avatar [name]="row.username" [src]="row.avatar" size="sm" />
+              <strong class="min-w-0 grow truncate">{{ row.username }}</strong>
+              <button
+                uiButton
+                size="sm"
+                type="button"
+                [disabled]="busy()"
+                [attr.aria-label]="('FRIENDS.ACCEPT' | translate) + ' ' + row.username"
+                [title]="'FRIENDS.ACCEPT' | translate"
+                (click)="accept(row.friendship)"
+              >
+                <ui-icon name="check" [size]="16" />
+              </button>
+              <button
+                uiButton
+                variant="secondary"
+                size="sm"
+                type="button"
+                [disabled]="busy()"
+                [attr.aria-label]="('FRIENDS.REJECT' | translate) + ' ' + row.username"
+                [title]="'FRIENDS.REJECT' | translate"
+                (click)="reject(row.friendship)"
+              >
+                <ui-icon name="x" [size]="16" />
+              </button>
+            </li>
+          } @empty {
+            <li class="text-sm text-muted">{{ 'FRIENDS.NO_REQUESTS' | translate }}</li>
+          }
+        </ul>
+      </ui-card>
+
+      <ui-card [heading]="'FRIENDS.SENT' | translate">
+        <ul class="flex flex-col divide-y divide-line">
+          @for (row of sentRows(); track row.friendship.id) {
+            <li class="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
+              <ui-avatar [name]="row.username" [src]="row.avatar" size="sm" />
+              <strong class="min-w-0 grow truncate">{{ row.username }}</strong>
+              <button
+                uiButton
+                variant="ghost"
+                size="sm"
+                type="button"
+                [disabled]="busy()"
+                (click)="remove(row.friendship)"
+              >
+                {{ 'FRIENDS.CANCEL' | translate }}
+              </button>
+            </li>
+          } @empty {
+            <li class="text-sm text-muted">{{ 'FRIENDS.NO_SENT' | translate }}</li>
+          }
+        </ul>
+      </ui-card>
     </div>
-  } @empty {
-    <p>{{ 'FRIENDS.NO_SENT' | translate }}</p>
-  }
-}
+  </div>
+</section>

@@ -436,6 +436,11 @@
     "USER_NOT_FOUND": "Ningún usuario con este nombre.",
     "ERROR_SELF": "No puedes añadirte a ti mismo.",
     "ERROR_ALREADY": "Ya sois amigos o hay una solicitud pendiente.",
-    "ERROR_REQUEST": "No se pudo enviar la solicitud a este usuario."
+    "ERROR_REQUEST": "No se pudo enviar la solicitud a este usuario.",
+    "ADD_TITLE": "Añadir un amigo",
+    "ONLINE_COUNT": "{{count}} amigo(s) en línea",
+    "MESSAGE": "Mensaje",
+    "NONE_ONLINE": "Ningún amigo en línea por ahora.",
+    "PENDING": "{{count}} solicitud(es) pendiente(s)"
   }
 }

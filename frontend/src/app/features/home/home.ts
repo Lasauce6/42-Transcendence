@@ -8,23 +8,27 @@ import { ChatService } from '@core/services/chat';
 import { CurrentUser } from '@core/services/current-user';
 import { NotificationService } from '@core/services/notification';
 import { AuthService } from '@features/auth/auth';
-import { UiButton, UiCard, UiEmptyState, UiIcon, UiListItem, UiPageHeader, UiSpinner } from '@shared/ui';
+import { FriendsService } from '@features/friends/friends.service';
+import { UiAvatar, UiBadge, UiButton, UiCard, UiEmptyState, UiIcon, UiListItem, UiPageHeader, UiSpinner } from '@shared/ui';
 
 @Component({
   selector: 'app-home',
-  imports: [DatePipe, RouterLink, TranslatePipe, UiButton, UiCard, UiEmptyState, UiIcon, UiListItem, UiPageHeader, UiSpinner],
+  imports: [DatePipe, RouterLink, TranslatePipe, UiAvatar, UiBadge, UiButton, UiCard, UiEmptyState, UiIcon, UiListItem, UiPageHeader, UiSpinner],
   templateUrl: './home.html',
 })
 export class Home {
   private readonly currentUser = inject(CurrentUser);
   private readonly chat = inject(ChatService);
   private readonly notificationService = inject(NotificationService);
+  private readonly friends = inject(FriendsService);
 
   readonly isLoggedIn = inject(AuthService).isLoggedIn;
   readonly profile = this.currentUser.profile;
   readonly unreadCount = this.notificationService.unreadCount;
   readonly channels = computed(() => this.chat.channels().slice(0, 5));
   readonly notifications = computed(() => this.notificationService.notifications().slice(0, 4));
+  readonly onlineFriends = computed(() => this.friends.onlineRows().slice(0, 5));
+  readonly pendingCount = computed(() => this.friends.received().length);
   readonly loadingChannels = signal(true);
 
   readonly features = [
@@ -40,12 +44,13 @@ export class Home {
           next: () => this.loadingChannels.set(false),
           error: () => this.loadingChannels.set(false),
         });
+        this.friends.load().subscribe({ error: () => undefined });
       }
     });
   }
 
   channelName(c: Channel): string {
-    return c.name ?? '';
+    return this.chat.displayName(c);
   }
 
   notificationKey(n: AppNotification): string {

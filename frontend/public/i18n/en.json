@@ -436,6 +436,11 @@
     "USER_NOT_FOUND": "No user with this name.",
     "ERROR_SELF": "You can't add yourself.",
     "ERROR_ALREADY": "You are already friends or a request is pending.",
-    "ERROR_REQUEST": "Unable to send a request to this user."
+    "ERROR_REQUEST": "Unable to send a request to this user.",
+    "ADD_TITLE": "Add a friend",
+    "ONLINE_COUNT": "{{count}} friend(s) online",
+    "MESSAGE": "Message",
+    "NONE_ONLINE": "No friends online right now.",
+    "PENDING": "{{count}} pending request(s)"
   }
 }

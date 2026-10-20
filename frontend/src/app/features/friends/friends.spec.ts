@@ -2,12 +2,13 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
 import { CurrentUser } from '@core/services/current-user';
 import { UserProfile } from '@core/models/user.model';
 import { Friendship, FriendUser } from './friend.models';
 import { Friends } from './friends';
-import { FriendsService } from './friends.service';
+import { FriendRow, FriendsService } from './friends.service';
 
 const user = (id: string, username: string, is_online = false): FriendUser => ({
   id,
@@ -39,7 +40,12 @@ const charlie = user('u3', 'charlie');
 const diana = user('u4', 'diana');
 
 // Accès aux membres protégés du composant dans les tests.
-type View = { newUsername: WritableSignal<string>; add(): void; error(): string | null };
+type View = {
+  newUsername: WritableSignal<string>;
+  add(): void;
+  message(row: FriendRow): void;
+  error(): string | null;
+};
 
 describe('Friends', () => {
   let component: View;
@@ -114,6 +120,27 @@ describe('Friends', () => {
     http.expectOne((r) => r.url === '/api/users/').flush([]);
 
     expect(component.error()).toBe('FRIENDS.USER_NOT_FOUND');
+  });
+
+  it('met les amis en ligne en premier', () => {
+    service.accept('f2').subscribe();
+    http.expectOne('/api/friendships/f2/accept/').flush(friendship('f2', charlie, me, 'ACCEPTED'));
+    service.setPresence('u2', false);
+    service.setPresence('u3', true);
+
+    expect(service.friendRows().map((r) => r.username)).toEqual(['charlie', 'bob']);
+    expect(service.onlineRows().map((r) => r.username)).toEqual(['charlie']);
+  });
+
+  it('ouvre la conversation privée avec un ami', () => {
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    component.message(service.friendRows()[0]);
+
+    const req = http.expectOne('/api/channels/private/');
+    expect(req.request.body).toEqual({ user_id: 'u2' });
+    req.flush({ id: 'c1', type: 'PRIVATE' });
+
+    expect(navigate).toHaveBeenCalledWith(['/chat', 'c1']);
   });
 
   it('accepte une demande reçue', () => {

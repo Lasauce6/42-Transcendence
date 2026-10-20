@@ -36,24 +36,47 @@
         }
       </ui-card>
 
-      <ui-card class="min-w-0 grow basis-80" [heading]="'NOTIFICATIONS.TITLE' | translate">
-        <a cardAction routerLink="/notifications" class="text-sm">{{ 'HOME.SEE_ALL' | translate }}</a>
-        @if (notifications().length === 0) {
-          <p class="text-sm text-muted">{{ 'NOTIFICATIONS.EMPTY' | translate }}</p>
-        } @else {
-          <ul class="flex flex-col divide-y divide-line">
-            @for (n of notifications(); track n.id) {
-              <li class="flex items-start gap-3 py-3 first:pt-0 last:pb-0">
-                <span class="mt-1.5 size-2 shrink-0 rounded-full" [class.bg-accent]="!n.is_read" [class.bg-line-strong]="n.is_read"></span>
-                <span class="flex flex-col gap-0.5">
-                  <span [class.font-medium]="!n.is_read">{{ notificationKey(n) | translate: notificationParams(n) }}</span>
-                  <time class="font-mono text-xs text-muted" [attr.datetime]="n.created_at">{{ n.created_at | date: 'short' }}</time>
-                </span>
-              </li>
-            }
-          </ul>
-        }
-      </ui-card>
+      <div class="flex min-w-0 grow basis-80 flex-col gap-6">
+        <ui-card [heading]="'NAV.FRIENDS' | translate">
+          <a cardAction routerLink="/friends" class="text-sm">{{ 'HOME.SEE_ALL' | translate }}</a>
+          @if (pendingCount() > 0) {
+            <a routerLink="/friends" class="mb-3 flex items-center gap-2 text-sm">
+              <ui-badge>{{ pendingCount() }}</ui-badge>{{ 'FRIENDS.PENDING' | translate: { count: pendingCount() } }}
+            </a>
+          }
+          @if (onlineFriends().length === 0) {
+            <p class="text-sm text-muted">{{ 'FRIENDS.NONE_ONLINE' | translate }}</p>
+          } @else {
+            <ul class="flex flex-col gap-3">
+              @for (f of onlineFriends(); track f.friendship.id) {
+                <li class="flex items-center gap-3">
+                  <ui-avatar [name]="f.username" [src]="f.avatar" size="sm" status="online" />
+                  <span class="min-w-0 truncate">{{ f.username }}</span>
+                </li>
+              }
+            </ul>
+          }
+        </ui-card>
+
+        <ui-card [heading]="'NOTIFICATIONS.TITLE' | translate">
+          <a cardAction routerLink="/notifications" class="text-sm">{{ 'HOME.SEE_ALL' | translate }}</a>
+          @if (notifications().length === 0) {
+            <p class="text-sm text-muted">{{ 'NOTIFICATIONS.EMPTY' | translate }}</p>
+          } @else {
+            <ul class="flex flex-col divide-y divide-line">
+              @for (n of notifications(); track n.id) {
+                <li class="flex items-start gap-3 py-3 first:pt-0 last:pb-0">
+                  <span class="mt-1.5 size-2 shrink-0 rounded-full" [class.bg-accent]="!n.is_read" [class.bg-line-strong]="n.is_read"></span>
+                  <span class="flex flex-col gap-0.5">
+                    <span [class.font-medium]="!n.is_read">{{ notificationKey(n) | translate: notificationParams(n) }}</span>
+                    <time class="font-mono text-xs text-muted" [attr.datetime]="n.created_at">{{ n.created_at | date: 'short' }}</time>
+                  </span>
+                </li>
+              }
+            </ul>
+          }
+        </ui-card>
+      </div>
     </div>
   </div>
 } @else {

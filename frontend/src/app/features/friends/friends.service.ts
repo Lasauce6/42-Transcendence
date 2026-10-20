@@ -35,7 +35,13 @@ export class FriendsService {
   );
   readonly friends = computed(() => this.filter((f) => f.status === 'ACCEPTED'));
 
-  readonly friendRows = computed(() => this.rows(this.friends()));
+  // En ligne d'abord, puis par ordre alphabétique.
+  readonly friendRows = computed(() =>
+    this.rows(this.friends()).sort(
+      (a, b) => Number(b.online) - Number(a.online) || a.username.localeCompare(b.username),
+    ),
+  );
+  readonly onlineRows = computed(() => this.friendRows().filter((r) => r.online));
   readonly receivedRows = computed(() => this.rows(this.received()));
   readonly sentRows = computed(() => this.rows(this.sent()));
 
