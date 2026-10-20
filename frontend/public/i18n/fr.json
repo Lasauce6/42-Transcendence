@@ -436,6 +436,11 @@
     "USER_NOT_FOUND": "Aucun utilisateur avec ce nom.",
     "ERROR_SELF": "Tu ne peux pas t'ajouter toi-même.",
     "ERROR_ALREADY": "Vous êtes déjà amis ou une demande est en cours.",
-    "ERROR_REQUEST": "Impossible d'envoyer la demande à cet utilisateur."
+    "ERROR_REQUEST": "Impossible d'envoyer la demande à cet utilisateur.",
+    "ADD_TITLE": "Ajouter un ami",
+    "ONLINE_COUNT": "{{count}} ami(s) en ligne",
+    "MESSAGE": "Message",
+    "NONE_ONLINE": "Aucun ami en ligne pour le moment.",
+    "PENDING": "{{count}} demande(s) en attente"
   }
 }
