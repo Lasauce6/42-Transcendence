@@ -1,5 +1,5 @@
 ARG CRS_TAG=nginx
-FROM owasp/modsecurity-crs:${CRS_TAG}
+FROM docker.io/owasp/modsecurity-crs:${CRS_TAG}
 
 USER root
 COPY --chown=nginx:nginx templates/ /etc/nginx/templates/

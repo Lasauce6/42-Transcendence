@@ -1,7 +1,7 @@
 #!/bin/bash
 # test_audit_logs.sh — Teste tous les audit logs (#58)
 
-API="http://localhost"
+API="https://localhost:4443"
 
 # ============================================
 # 1. SETUP — Données de test
