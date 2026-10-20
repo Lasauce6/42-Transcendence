@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from chat import presence
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -54,7 +55,10 @@ class LastSeenMiddleware:
             return
         self._last_cleanup = now
 
-        User.objects.filter(
+        stale = User.objects.filter(
             is_online=True,
             last_seen__lt=now - timedelta(minutes=5),
-        ).update(is_online=False)
+        )
+        # Un websocket encore ouvert = toujours en ligne, même sans requête HTTP récente
+        still_connected = presence.connected_ids(stale.values_list("id", flat=True))
+        stale.exclude(id__in=still_connected).update(is_online=False)

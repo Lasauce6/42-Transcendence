@@ -8,6 +8,7 @@
     "LOGIN": "Connexion",
     "LOGOUT": "Déconnexion",
     "CHAT": "Messages",
+    "FRIENDS": "Amis",
     "API_DOCS": "Doc API",
     "MAIN": "Navigation principale",
     "REGISTER": "Inscription"
@@ -178,7 +179,8 @@
     "NOTIFICATIONS": "Notifications",
     "CHAT": "Messages",
     "API_DOCS": "Documentation API",
-    "ADMIN": "Administration"
+    "ADMIN": "Administration",
+    "FRIENDS": "Amis"
   },
   "TOAST": {
     "REGION_LABEL": "Notifications",
@@ -412,5 +414,26 @@
     "SUCCESS": "Profil enregistré.",
     "ERROR": "Une erreur est survenue.",
     "INFO": "Le lien expire au bout d'une heure."
+  },
+  "FRIENDS": {
+    "USERNAME": "Nom d'utilisateur",
+    "ADD": "Ajouter",
+    "LOADING": "Chargement des amis...",
+    "LIST": "Mes amis",
+    "ONLINE": "En ligne",
+    "OFFLINE": "Hors ligne",
+    "REMOVE": "Retirer",
+    "NO_FRIENDS": "Tu n'as pas encore d'amis.",
+    "RECEIVED": "Demandes reçues",
+    "ACCEPT": "Accepter",
+    "REJECT": "Refuser",
+    "NO_REQUESTS": "Aucune demande reçue.",
+    "SENT": "Demandes envoyées",
+    "CANCEL": "Annuler",
+    "NO_SENT": "Aucune demande envoyée.",
+    "USER_NOT_FOUND": "Aucun utilisateur avec ce nom.",
+    "ERROR_SELF": "Tu ne peux pas t'ajouter toi-même.",
+    "ERROR_ALREADY": "Vous êtes déjà amis ou une demande est en cours.",
+    "ERROR_REQUEST": "Impossible d'envoyer la demande à cet utilisateur."
   }
 }

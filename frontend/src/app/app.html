@@ -13,6 +13,7 @@
         <a routerLink="/" routerLinkActive="nav-active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link">{{ 'NAV.HOME' | translate }}</a>
         @if (isLoggedIn()) {
           <a routerLink="/chat" routerLinkActive="nav-active" class="nav-link">{{ 'NAV.CHAT' | translate }}</a>
+          <a routerLink="/friends" routerLinkActive="nav-active" class="nav-link">{{ 'NAV.FRIENDS' | translate }}</a>
           <a routerLink="/profile" routerLinkActive="nav-active" class="nav-link">{{ 'NAV.PROFILE' | translate }}</a>
         }
         <a routerLink="/api-docs" routerLinkActive="nav-active" class="nav-link">{{ 'NAV.API_DOCS' | translate }}</a>

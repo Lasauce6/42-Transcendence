@@ -3,6 +3,7 @@ import json
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
+from . import presence
 from .files import make_attachment_url
 
 
@@ -178,11 +179,58 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(self.user_group_name, self.channel_name)
         await self.accept()
 
+        if await database_sync_to_async(presence.connect)(self.user.id):
+            await self._set_online(True)
+
     async def disconnect(self, close_code):
         if hasattr(self, "user_group_name"):
             await self.channel_layer.group_discard(
                 self.user_group_name, self.channel_name
             )
+            if await database_sync_to_async(presence.disconnect)(self.user.id):
+                await self._set_online(False)
+
+    async def _set_online(self, is_online):
+        friends = await self._save_presence(is_online)
+        for username in friends:
+            await self.channel_layer.group_send(
+                f"user_{username}",
+                {
+                    "type": "presence_update",
+                    "user_id": str(self.user.id),
+                    "is_online": is_online,
+                },
+            )
+
+    @database_sync_to_async
+    def _save_presence(self, is_online):
+        from django.contrib.auth import get_user_model
+        from django.db.models import Q
+        from django.utils import timezone
+        from users.models import Friendship
+
+        get_user_model().objects.filter(pk=self.user.pk).update(
+            is_online=is_online, last_seen=timezone.now()
+        )
+        friendships = Friendship.objects.filter(
+            Q(requester=self.user) | Q(addressee=self.user),
+            status=Friendship.Status.ACCEPTED,
+        ).select_related("requester", "addressee")
+        return [
+            f.addressee.username if f.requester_id == self.user.id else f.requester.username
+            for f in friendships
+        ]
+
+    async def presence_update(self, event):
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "type": "presence",
+                    "user_id": event["user_id"],
+                    "is_online": event["is_online"],
+                }
+            )
+        )
 
     async def notification_message(self, event):
         await self.send(
