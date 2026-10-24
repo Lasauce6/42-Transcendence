@@ -34,6 +34,9 @@ export class ChatWindow implements OnInit, OnDestroy {
     return c ? this.service.displayName(c) : '';
   });
 
+  // Les membres de la conversation ouverte (renvoyés par le back avec le channel).
+  readonly members = computed(() => this.channel()?.members ?? []);
+
   displayName(c: Channel): string {
     return this.service.displayName(c);
   }
@@ -166,6 +169,8 @@ export class ChatWindow implements OnInit, OnDestroy {
       next: () => {
         this.memberName.set('');
         this.memberAdded.set(true);
+        // Recharge les channels pour que la personne ajoutée apparaisse dans la liste.
+        this.service.loadChannels().subscribe({ error: () => {} });
       },
       error: () => this.memberError.set(true),
     });

@@ -236,6 +236,7 @@
     "ADD_MEMBER_BUTTON": "Ajouter",
     "ADD_MEMBER_OK": "Membre ajouté.",
     "ADD_MEMBER_ERROR": "Impossible d'ajouter cette personne.",
+    "MEMBERS": "Membres ({{count}})",
     "BACK_TO_LIST": "Toutes les conversations",
     "YOU": "vous",
     "DELETED": "Message supprimé"
