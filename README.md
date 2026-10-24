@@ -305,9 +305,9 @@ accounts/tokens).
 | Login | Role(s) | Responsibilities |
 | ----- | ------- | ---------------- |
 | **rbaticle** (Raphaël Baticle) | Tech Lead / Architect, Backend Developer | Overall architecture; security perimeter (Vault, WAF, JWT/2FA backend); Docker/Compose/Makefile workflow; API design; code review |
-| **romukena** (Robinson Mukena) | Product Owner (PO), Frontend Lead, Developer | Product vision, backlog and priorities; frontend architecture; authentication/2FA/OAuth UI; profile and friends UI; component library |
-| **oamairi** | Backend Developer | Chat backend (channels, messages, moderation); users API; notifications backend; attachment handling |
-| **msingh** (Manjot Singh) | Project Manager (PM) / Scrum Master, Backend Developer | Meeting and task coordination; GitHub Issues tracking; friendships backend; i18n integration; admin features |
+| **romukena** (Robinson Mukena) |  Project Manager (PM), Frontend Lead, Developer | Meeting and task coordination; GitHub Issues tracking; Frontend architecture; authentication/2FA/OAuth UI; profile and friends UI; component library |
+| **oamairi** | Product Owner (PO), Backend Developer | Product vision, backlog and priorities; Chat backend (channels, messages, moderation); users API; notifications backend; attachment handling |
+| **msingh** (Manjot Singh) |  Fullstack Developer | Friendships backend; i18n integration; admin features |
 | **ydembele** (Yamadou Dembélé) | Frontend Developer | Chat UI; notifications UI; admin panel UI; home/header pages; FR/EN/ES translations |
 ---
 
