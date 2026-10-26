@@ -4,12 +4,12 @@ import { AppNotification } from '@core/models/notification.model';
 import { NotificationService } from '@core/services/notification';
 import { ToastService } from '@core/services/toast';
 import { AuthService } from '@features/auth/auth';
-import { FriendsService } from '@features/friends/friends.service';
 
-// Messages envoyés par le back sur le websocket (consumers.py → notification_message, presence_update).
-type WsEvent =
-  | { type: 'notification'; notification: AppNotification }
-  | { type: 'presence'; user_id: string; is_online: boolean };
+// Format d'un message envoyé par le back sur le websocket (consumers.py → notification_message).
+interface WsNotification {
+  type: string;
+  notification: AppNotification;
+}
 
 // Temps d'attente avant de retenter une connexion (en millisecondes).
 const RETRY_DELAY = 3000;
@@ -22,28 +22,10 @@ export class NotificationSocket {
   private readonly auth = inject(AuthService);
   private readonly notifications = inject(NotificationService);
   private readonly toast = inject(ToastService);
-  private readonly friends = inject(FriendsService);
 
   private ws: WebSocket | null = null;
   private retryTimer = 0;
   private closedByUs = false;
-  private pausedByPageHide = false;
-
-  constructor() {
-    // Le navigateur peut garder la page quittée en mémoire (cache précédent/suivant) avec son
-    // websocket ouvert : l'utilisateur resterait « en ligne ». On le ferme en quittant la page
-    // et on le rouvre si la page revient de ce cache.
-    window.addEventListener('pagehide', () => {
-      this.pausedByPageHide = this.ws !== null;
-      this.close();
-    });
-    window.addEventListener('pageshow', (event) => {
-      if (event.persisted && this.pausedByPageHide) {
-        this.pausedByPageHide = false;
-        this.open();
-      }
-    });
-  }
 
   // Ouvre la connexion (ferme d'abord l'ancienne s'il y en a une).
   open(): void {
@@ -84,12 +66,8 @@ export class NotificationSocket {
     };
   }
 
-  // Notification : ajoutée en haut de la liste avec un toast. Présence : mise à jour du statut de l'ami.
-  private receive(data: WsEvent): void {
-    if (data.type === 'presence') {
-      this.friends.setPresence(data.user_id, data.is_online);
-      return;
-    }
+  // Ajoute la notification reçue en haut de la liste et affiche un toast.
+  private receive(data: WsNotification): void {
     if (data.type !== 'notification') {
       return;
     }

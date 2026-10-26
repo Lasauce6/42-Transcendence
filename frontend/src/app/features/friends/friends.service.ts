@@ -24,9 +24,6 @@ export class FriendsService {
   private readonly _friendships = signal<Friendship[]>([]);
   readonly friendships = this._friendships.asReadonly();
 
-  // Présence reçue en direct par le websocket ; prioritaire sur is_online de l'API.
-  private readonly _online = signal<Record<string, boolean>>({});
-
   readonly received = computed(() =>
     this.filter((f, me) => f.status === 'PENDING' && f.addressee === me),
   );
@@ -103,15 +100,9 @@ export class FriendsService {
     return f.requester === this.currentUser.profile()?.id ? f.addressee_user : f.requester_user;
   }
 
-  // Appelé par le websocket des notifications quand un ami se connecte ou se déconnecte.
-  setPresence(userId: string, isOnline: boolean) {
-    this._online.update((m) => ({ ...m, [userId]: isOnline }));
-  }
-
   // Vide tout à la déconnexion.
   reset() {
     this._friendships.set([]);
-    this._online.set({});
   }
 
   private filter(keep: (f: Friendship, me: string) => boolean): Friendship[] {
@@ -124,7 +115,6 @@ export class FriendsService {
   }
 
   private rows(list: Friendship[]): FriendRow[] {
-    const online = this._online();
     return list.map((f) => {
       const user = this.otherUser(f);
       return {
@@ -132,7 +122,7 @@ export class FriendsService {
         userId: user.id,
         username: user.username,
         avatar: user.avatar,
-        online: online[user.id] ?? user.is_online,
+        online: user.is_online,
       };
     });
   }
