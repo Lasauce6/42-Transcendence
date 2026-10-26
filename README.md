@@ -62,7 +62,7 @@ initialization and the TLS material generation.
 | A modern browser | — | Chrome / Firefox / Edge |
 
 No local Node.js or Python installation is required: everything runs in containers.
-Ports **8000** and **4443** must be free on the host (the site is served on
+Ports **8080** and **4443** must be free on the host (the site is served on
 `https://localhost:4443` with a self-signed certificate — accept the browser warning).
 
 ### First run
@@ -128,7 +128,7 @@ friendships, channels and messages so the UI is immediately explorable.
 | `make re` | full reset then `make up` |
 
 
-API documentation: **https://localhost/api/docs/** (Swagger UI) and `/api/redoc/`.
+API documentation: **https://localhost:4443/api/docs/** (Swagger UI) and `/api/redoc/`.
 Mailpit (dev SMTP catch-all) runs inside the compose network.
 
 ### Vault operations
@@ -252,20 +252,20 @@ accounts/tokens).
 | Two-factor authentication (TOTP) | Per-user 2FA setup with QR code, encrypted secret at rest, 10 single-use backup codes, 2FA-gated chat access | rbaticle (backend), romukena (frontend) |
 | Profiles | Public profile page (avatar, bio, stats), edit own profile, online status / last seen | oamairi (backend), romukena (frontend) |
 | Avatar upload | Upload / replace / delete avatar with client + server validation; a default avatar is never deletable | rbaticle, oamairi |
-| Friends | Send / accept / decline / remove friendships, block users, friends list with online status | oamairi, msingh (backend), romukena (frontend) |
+| Friends | Send / accept / decline / remove friendships, block users, friends list with online status, private conversation created automatically when a request is accepted | oamairi, msingh (backend), romukena (frontend) |
 | Channels (private / group / public) | Create channels, invite members, membership roles (admin/member) | oamairi, msingh |
-| Real-time chat | WebSocket messaging with live fan-out (Redis channel layer), soft delete of messages, graceful connect/disconnect, reconnecting client | oamairi, msingh (backend), ydembele (frontend) |
-| Moderation | Ban a user from a channel (with reason), kick members, admin/member rights per channel | oamairi, msingh |
-| File sharing (attachments) | Upload images/documents to messages (≤ 5 MB, type/size validated both sides), previews, deletion, downloads served only through short-lived signed URLs | oamairi, rbaticle (backend), ydembele (frontend) |
-| Notifications | Live (WebSocket) + REST notification inbox for messages and friend events, mark as read | oamairi, msingh (backend), ydembele (frontend) |
+| Real-time chat | WebSocket messaging with live fan-out (Redis channel layer), soft delete of messages, graceful connect/disconnect, reconnecting client | oamairi (backend), ydembele (frontend) |
+| Moderation | Ban a user from a channel (with reason), kick members, admin/member rights per channel | oamairi |
+| File sharing (attachments) | Upload images/documents to messages (≤ 5 MB, type/size validated both sides), previews, deletion, downloads served only through short-lived signed URLs | oamairi, rbaticle, msingh (backend), ydembele (frontend) |
+| Notifications | Live (WebSocket) + REST notification inbox for messages and friend events, mark as read | oamairi (backend), ydembele (frontend) |
 | Public REST API + API keys | Full CRUD (`GET/POST/PUT/PATCH/DELETE`) on users, channels, friendships, notifications and API keys; personal `sk_…` keys stored as SHA-256 hashes, with expiry and usage tracking | rbaticle, oamairi |
 | RBAC admin panel | Admin/Moderator/User roles, user management CRUD, role-gated views on both sides (DRF permissions `IsSelfOrAdmin`, `Is2FADone`; Angular `roleGuard`) | rbaticle, oamairi (backend), ydembele (frontend) |
 | i18n (FR / EN / ES) | Full translation of every user-facing string, language switcher, per-user language preference, `i18n:check` script guards missing keys | msingh, ydembele |
 | Security perimeter | ModSecurity/OWASP CRS WAF, strict CSP, per-location rate limiting, JSON audit log of every mutating action, secrets from Vault | rbaticle |
-| Responsive & accessible UI | Clear, responsive layout across devices using Tailwind CSS; design-system page documents reusable components | ydembele, romukena |
+| Responsive & accessible UI | Clear, responsive layout across devices using Tailwind CSS; design-system page documents reusable components | msingh |
 | Form validation | All user inputs validated on both frontend (Angular Reactive Forms + custom validators) and backend (DRF serializers + model constraints) | romukena, rbaticle |
 | Concurrent user handling | Multiple simultaneous users handled via WebSocket channel layer fan-out, unique DB constraints (e.g. `Friendship` unique pair), soft message deletes to avoid race conditions | oamairi, rbaticle |
-| Developer experience | `make` workflow, demo data seeding, Swagger UI (`/api/docs/`), design-system page, Mailpit | rbaticle, ydembele |
+| Developer experience | `make` workflow, demo data seeding, Swagger UI (`/api/docs/`), design-system page, Mailpit | rbaticle, msingh |
 
 ---
 
@@ -274,29 +274,30 @@ accounts/tokens).
 **Point calculation: Major = 2 pts, Minor = 1 pt.**
 
 - **Required minimum**: 14 pts → we selected 7 Major modules = 14 pts (validates the project).
-- **Bonus**: we selected 7 additional Minor modules = 7 pts.
+- **Bonus**: we selected 8 additional Minor modules = 8 pts.
   According to the subject, only the first 5 points beyond the 14 required count as bonus,
-  so **5 bonus points** are validated (the 2 remaining Minor points are extra but do not count
+  so **5 bonus points** are validated (the 3 remaining Minor points are extra but do not count
   toward the bonus cap).
 
-**Total: 21 pts / 14 required + 5 bonus (max 5).**
+**Total: 22 pts / 14 required + 5 bonus (max 5).**
 
 | # | Module | Type | Pts | How it was implemented | Who |
 | - | ------ | ---- | --- | ---------------------- | --- |
 | 1 | Use a framework for both the frontend and the backend | Major | 2 | Angular 21 SPA ↔ Django 6 + DRF REST API, in two containers behind NGINX | rbaticle (arch.), everyone |
 | 2 | Users interact with other users (chat, profile, friends) | Major | 2 | Channels + messages, profile pages, friendship system with online status | oamairi, msingh, romukena, ydembele |
-| 3 | Real-time features using WebSockets | Major | 2 | Django Channels (`/ws/chat/<id>/`, `/ws/notifications/`) over a Redis channel layer; JWT-authenticated WS middleware; reconnecting client | oamairi, msingh, ydembele |
+| 3 | Real-time features using WebSockets | Major | 2 | Django Channels (`/ws/chat/<id>/`, `/ws/notifications/`) over a Redis channel layer; JWT-authenticated WS middleware; reconnecting client | oamairi, ydembele |
 | 4 | Public API with secured API key, rate limiting, docs, ≥ 5 endpoints | Major | 2 | DRF router exposes 5+ CRUD resources; `APIKey` model (SHA-256, `sk_` prefix, expiry); DRF throttling; Swagger/ReDoc via drf-spectacular | rbaticle, oamairi |
 | 5 | Standard user management and authentication | Major | 2 | Register, JWT login (throttled), profile edit, avatar upload (default avatar), friends + online status, profile pages | rbaticle, oamairi, romukena |
 | 6 | Advanced permissions system | Major | 2 | Roles (Admin/Moderator/User) in the DB, DRF permission classes (`IsSelfOrAdmin`, `Is2FADone`), Angular `roleGuard`/`authGuard`, admin panel | rbaticle, oamairi, ydembele |
 | 7 | WAF / ModSecurity (hardened) + HashiCorp Vault for secrets | Major | 2 | NGINX with ModSecurity v3 + OWASP CRS (Paranoia 1, tuned per location, `/ws/` excluded from CRS), verified by `make waf-test`; Vault 2.0 server mode, AppRole login, KV v2, internal TLS, secrets fetched at boot | rbaticle |
 | 8 | Use an ORM for the database | Minor | 1 | Django ORM with migrations for every model; UUID PKs, constraints and indexes | oamairi, rbaticle |
-| 9 | Complete notification system | Minor | 1 | `Notification` model + real-time push (NotificationConsumer) + REST inbox with read tracking for message/friend events | oamairi, msingh, ydembele |
-| 10 | File upload and management | Minor | 1 | Chat attachments: multi-type uploads ≤ 5 MB, client+server validation, signed-token downloads, previews, deletion; avatars | oamairi, rbaticle, ydembele |
+| 9 | Complete notification system | Minor | 1 | `Notification` model + real-time push (NotificationConsumer) + REST inbox with read tracking for message/friend events | oamairi, ydembele |
+| 10 | File upload and management | Minor | 1 | Chat attachments: multi-type uploads ≤ 5 MB, client+server validation, signed-token downloads, previews, deletion; avatars | oamairi, rbaticle, msingh, ydembele |
 | 11 | Multiple languages (≥ 3) | Minor | 1 | ngx-translate with complete FR/EN/ES catalogs, UI switcher, per-user preference, CI-checkable `i18n:check` | msingh, ydembele |
 | 12 | Additional browsers support | Minor | 1 | Only standard APIs (WebSocket, fetch) — exercised on Chromium and Firefox during development; Edge is covered by the same engine; no browser-specific limitation known | ydembele, romukena |
 | 13 | Remote authentication (OAuth 2.0) | Minor | 1 | django-allauth with a **custom provider for the 42 API** + Google + GitHub | rbaticle, romukena |
 | 14 | Two-factor authentication | Minor | 1 | TOTP (pyotp + QR), Fernet-encrypted secrets, 10 hashed backup codes, 2FA enforcement on chat | rbaticle, romukena |
+| 15 | Custom-made design system | Minor | 1 | 14 reusable Angular components in `shared/ui` (button, card, avatar, badge, field, alert, spinner, progress, list item, empty state, file card, message bubble, page header, icon), Tailwind v4 theme tokens (colour palette, typography with Space Grotesk / JetBrains Mono, radii), custom SVG icon set, all documented on the `/design-system` page | msingh |
 
 ---
 
@@ -307,7 +308,7 @@ accounts/tokens).
 | **rbaticle** (Raphaël Baticle) | Tech Lead / Architect, Backend Developer | Overall architecture; security perimeter (Vault, WAF, JWT/2FA backend); Docker/Compose/Makefile workflow; API design; code review |
 | **romukena** (Robinson Mukena) |  Project Manager (PM), Frontend Lead, Developer | Meeting and task coordination; GitHub Issues tracking; Frontend architecture; authentication/2FA/OAuth UI; profile and friends UI; component library |
 | **oamairi** | Product Owner (PO), Backend Developer | Product vision, backlog and priorities; Chat backend (channels, messages, moderation); users API; notifications backend; attachment handling |
-| **msingh** (Manjot Singh) |  Fullstack Developer | Friendships backend; i18n integration; admin features |
+| **msingh** (Manjot Singh) |  Fullstack Developer | Design system and UI of every page; friends (backend + page); file storage; demo data seeding; i18n integration; admin features |
 | **ydembele** (Yamadou Dembélé) | Frontend Developer | Chat UI; notifications UI; admin panel UI; home/header pages; FR/EN/ES translations |
 ---
 
@@ -373,15 +374,22 @@ accounts/tokens).
 - **Challenges**: keeping WebSocket state consistent across reconnects and
   making every mutating endpoint audit-logged without duplicating boilerplate.
 
-### msingh — Backend Developer, Project Manager
+### msingh — Fullstack Developer
 
-- Friendships backend (request/accept/decline/block state machine), admin and
-  moderation features, parts of the chat API.
-- i18n integration end-to-end (backend language preference + frontend catalogs).
-- Coordinated meetings and task follow-up.
-- **Challenges**: guaranteeing the friendship states could never be inconsistent
-  (unique constraints + status transitions) and keeping all three translation
-  catalogs complete (automated with an `i18n:check` script).
+- Design system: Tailwind v4 theme (palette, typography, icons), 14 reusable
+  components in `shared/ui` with the `/design-system` page, redesign of every page
+  (home, chat, profile, notifications, admin, toasts), Privacy Policy and Terms of
+  Service pages, avatars across the app.
+- Friends: friendships backend (request/accept/decline/block state machine), user
+  details embedded in `/api/friendships/`, private conversation created when a
+  request is accepted, friends page and friends block on the home page.
+- Chat: attachment storage (signed download URLs, cleanup of old files), channels
+  with a free name.
+- Demo data seeding (`seed_data --reset`), i18n integration end-to-end, admin
+  features.
+- **Challenges**: building one consistent component set that every page could reuse
+  without breaking existing features, and keeping all three translation catalogs
+  complete (automated with an `i18n:check` script).
 
 ### ydembele — Frontend Developer
 

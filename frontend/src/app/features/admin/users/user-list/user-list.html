@@ -10,7 +10,7 @@
     } @else if (users().length === 0) {
       <ui-empty-state [heading]="'ADMIN.USERS.EMPTY' | translate" icon="users" />
     } @else {
-      <div class="overflow-x-auto">
+      <div class="relative overflow-x-auto">
         <table class="w-full min-w-[640px] border-collapse text-left">
           <thead>
             <tr class="border-b border-line font-mono text-xs uppercase tracking-wider text-muted">

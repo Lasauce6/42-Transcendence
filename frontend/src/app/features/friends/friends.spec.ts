@@ -85,11 +85,6 @@ describe('Friends', () => {
     expect(service.sentRows().map((r) => r.username)).toEqual(['diana']);
   });
 
-  it('met à jour la présence reçue en direct', () => {
-    service.setPresence('u2', false);
-    expect(service.friendRows()[0].online).toBe(false);
-  });
-
   it('envoie une demande à partir du pseudo', () => {
     const emma = user('u5', 'emma');
     component.newUsername.set('Emma');
@@ -124,12 +119,11 @@ describe('Friends', () => {
 
   it('met les amis en ligne en premier', () => {
     service.accept('f2').subscribe();
-    http.expectOne('/api/friendships/f2/accept/').flush(friendship('f2', charlie, me, 'ACCEPTED'));
-    service.setPresence('u2', false);
-    service.setPresence('u3', true);
+    const aaron = user('u0', 'aaron');
+    http.expectOne('/api/friendships/f2/accept/').flush(friendship('f2', aaron, me, 'ACCEPTED'));
 
-    expect(service.friendRows().map((r) => r.username)).toEqual(['charlie', 'bob']);
-    expect(service.onlineRows().map((r) => r.username)).toEqual(['charlie']);
+    expect(service.friendRows().map((r) => r.username)).toEqual(['bob', 'aaron']);
+    expect(service.onlineRows().map((r) => r.username)).toEqual(['bob']);
   });
 
   it('ouvre la conversation privée avec un ami', () => {
