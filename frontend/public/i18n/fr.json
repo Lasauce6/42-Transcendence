@@ -155,7 +155,8 @@
       "CHOOSE_FILE": "Choisir une image",
       "NO_FILE": "Aucune image choisie",
       "DELETE_AVATAR": "Supprimer l'avatar",
-      "ERROR_DELETE_AVATAR": "La suppression a échoué. Réessaie."
+      "ERROR_DELETE_AVATAR": "La suppression a échoué. Réessaie.",
+      "CONFIRM_DELETE_AVATAR": "Supprimer ton avatar ?"
     }
   },
   "ERRORS": {
@@ -166,7 +167,10 @@
     "INVALID_CREDENTIALS": "Identifiants invalides.",
     "INVALID_CODE": "Code invalide, réessaie.",
     "QRCODE_FAILED": "Erreur lors de la génération du QR code.",
-    "GENERIC": "Une erreur est survenue, réessayez."
+    "GENERIC": "Une erreur est survenue, réessayez.",
+    "CODE_REQUIRED": "Le code est requis.",
+    "CODE_LENGTH": "Le code doit faire 6 chiffres.",
+    "CODE_DIGITS": "Seuls les chiffres sont autorisés."
   },
   "TITLES": {
     "LOGIN": "Connexion",

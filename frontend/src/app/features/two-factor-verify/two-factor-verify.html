@@ -22,7 +22,7 @@
     @if (verifyForm.code().touched() && verifyForm.code().invalid()) {
       <div id="two-factor-errors" role="alert" aria-live="polite" class="flex flex-col gap-1 text-sm text-danger">
         @for (error of verifyForm.code().errors(); track error.kind) {
-          <p>{{ error.message }}</p>
+          <p>{{ (error.message ?? '') | translate }}</p>
         }
       </div>
     }

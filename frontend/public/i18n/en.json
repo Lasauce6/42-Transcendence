@@ -155,7 +155,8 @@
       "CHOOSE_FILE": "Choose an image",
       "NO_FILE": "No image chosen",
       "DELETE_AVATAR": "Delete avatar",
-      "ERROR_DELETE_AVATAR": "Deletion failed. Please try again."
+      "ERROR_DELETE_AVATAR": "Deletion failed. Please try again.",
+      "CONFIRM_DELETE_AVATAR": "Delete your avatar?"
     }
   },
   "ERRORS": {
@@ -166,7 +167,10 @@
     "INVALID_CREDENTIALS": "Invalid credentials.",
     "INVALID_CODE": "Invalid code, try again.",
     "QRCODE_FAILED": "Could not generate the QR code.",
-    "GENERIC": "Something went wrong, please try again."
+    "GENERIC": "Something went wrong, please try again.",
+    "CODE_REQUIRED": "The code is required.",
+    "CODE_LENGTH": "The code must be 6 digits.",
+    "CODE_DIGITS": "Only digits are allowed."
   },
   "TITLES": {
     "LOGIN": "Sign in",
