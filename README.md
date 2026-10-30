@@ -196,6 +196,138 @@ Mailpit (dev SMTP catch-all) runs inside the compose network.
 
 ## Database Schema
 
+```mermaid
+erDiagram
+    User {
+        uuid id PK
+        string username UK
+        string email UK
+        string avatar
+        string bio "max 500 chars"
+        string role "ADMIN / MODERATOR / USER"
+        boolean is_online
+        datetime last_seen
+        string language "FR / EN / ES"
+        boolean two_fa_enabled
+        boolean two_fa_verified
+        string otp_secret "Fernet encrypted"
+        datetime created_at
+        datetime updated_at
+    }
+
+    BackupCode {
+        uuid id PK
+        uuid user_id FK
+        string digest "SHA-256"
+        boolean used
+        datetime created_at
+    }
+
+    APIKey {
+        uuid id PK
+        uuid user_id FK
+        string name
+        string key_hash "SHA-256 unique"
+        string key_prefix "sk_..."
+        boolean is_active
+        datetime expires_at
+        datetime last_used_at
+    }
+
+    Notification {
+        uuid id PK
+        uuid recipient_id FK
+        string type "MESSAGE / FRIEND"
+        string entity_type
+        uuid entity_id
+        json payload
+        boolean is_read
+    }
+
+    Friendship {
+        uuid id PK
+        uuid requester_id FK
+        uuid addressee_id FK
+        string status "PENDING / ACCEPTED / BLOCKED"
+    }
+
+    SocialAccount {
+        uuid id PK
+        uuid user_id FK
+        string provider "42 / Google / GitHub"
+        string uid
+    }
+
+    SocialToken {
+        uuid id PK
+        uuid social_account_id FK
+        string token
+        string token_secret
+        datetime expires_at
+    }
+
+    Channel {
+        uuid id PK
+        string name "nullable"
+        string type "PRIVATE / GROUP / PUBLIC"
+        uuid created_by_id FK
+        datetime created_at
+    }
+
+    ChannelMember {
+        uuid id PK
+        uuid channel_id FK
+        uuid user_id FK
+        string role "ADMIN / MEMBER"
+        datetime joined_at
+    }
+
+    Message {
+        uuid id PK
+        uuid channel_id FK
+        uuid sender_id FK
+        text content
+        boolean is_deleted "soft delete"
+        datetime created_at
+        datetime updated_at
+    }
+
+    Attachment {
+        uuid id PK
+        uuid message_id FK
+        file file
+        string original_name
+        string content_type
+        integer size "max 5MB"
+    }
+
+    ChannelBan {
+        uuid id PK
+        uuid channel_id FK
+        uuid user_id FK "banned user"
+        uuid banned_by_id FK "SET_NULL"
+        text reason
+        datetime created_at
+    }
+
+    %% Relations
+    User ||--o{ BackupCode : "has"
+    User ||--o{ APIKey : "has"
+    User ||--o{ Notification : "receives"
+    User ||--o{ Friendship : "requests"
+    User ||--o{ Friendship : "receives"
+    User ||--o{ SocialAccount : "links"
+    SocialAccount ||--o{ SocialToken : "stores"
+    User ||--o{ Channel : "creates"
+    Channel ||--o{ ChannelMember : "contains"
+    User ||--o{ ChannelMember : "joins"
+    Channel ||--o{ Message : "contains"
+    User ||--o{ Message : "sends"
+    Message ||--o{ Attachment : "has"
+    Channel ||--o{ ChannelBan : "restricts"
+    User ||--o{ ChannelBan : "bans"
+```
+
 Django ORM + migrations (`backend/users/models.py`, `backend/chat/models.py`,
 `backend/api/models.py`). All primary keys are UUIDs.
 
