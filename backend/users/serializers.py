@@ -9,6 +9,19 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 
 User = get_user_model()
 
+
+def _has_control_chars(value):
+    if not value:
+        return False
+    return any(ord(c) < 32 and c not in '\n\r\t' for c in value)
+
+
+def _has_null_chars(value):
+    if not value:
+        return False
+    return '\x00' in value
+
+
 RESERVED_USERNAMES = {
     'admin', 'root', 'system', 'api', 'user', 'users',
     'support', 'help', 'moderator', 'mod', 'staff',
@@ -161,6 +174,14 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 "La bio ne doit pas dépasser 500 caractères."
             )
+        if _has_control_chars(value):
+            raise serializers.ValidationError(
+                "La bio contient des caractères de contrôle non autorisés."
+            )
+        if _has_null_chars(value):
+            raise serializers.ValidationError(
+                "La bio contient des caractères nuls non autorisés."
+            )
         return value
 
     def validate_first_name(self, value):
@@ -171,6 +192,14 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 "Le prénom ne doit pas dépasser 150 caractères."
             )
+        if _has_control_chars(value):
+            raise serializers.ValidationError(
+                "Le prénom contient des caractères de contrôle non autorisés."
+            )
+        if _has_null_chars(value):
+            raise serializers.ValidationError(
+                "Le prénom contient des caractères nuls non autorisés."
+            )
         return value
 
     def validate_last_name(self, value):
@@ -180,6 +209,14 @@ class UserSerializer(serializers.ModelSerializer):
         if len(value) > 150:
             raise serializers.ValidationError(
                 "Le nom ne doit pas dépasser 150 caractères."
+            )
+        if _has_control_chars(value):
+            raise serializers.ValidationError(
+                "Le nom contient des caractères de contrôle non autorisés."
+            )
+        if _has_null_chars(value):
+            raise serializers.ValidationError(
+                "Le nom contient des caractères nuls non autorisés."
             )
         return value
 
