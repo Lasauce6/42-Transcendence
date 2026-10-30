@@ -18,7 +18,6 @@ class ChatTests(APITestCase):
         )
 
     def test_obtain_jwt_token(self):
-        """Teste l'obtention du token JWT."""
         url = reverse("token_obtain_pair")
         response = self.client.post(
             url, {"username": self.username, "password": self.password}, format="json"
@@ -27,7 +26,6 @@ class ChatTests(APITestCase):
         self.assertIn("access", response.data)
 
     async def test_websocket_connect_success(self):
-        """Teste la connexion WebSocket avec un token JWT valide."""
         refresh = RefreshToken.for_user(self.user)
         access_token = str(refresh.access_token)
 
@@ -39,7 +37,6 @@ class ChatTests(APITestCase):
         await communicator.disconnect()
 
     async def test_websocket_connect_rejects_invalid_token(self):
-        """Teste le refus de connexion avec un mauvais token."""
         communicator = WebsocketCommunicator(
             application, "ws/notifications/?token=token_invalide"
         )
@@ -168,3 +165,110 @@ class PrivateChannelTests(APITestCase):
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+
+class ChatInputValidationTests(APITestCase):
+    def setUp(self):
+        from chat.models import Channel, ChannelMember
+
+        self.alice = User.objects.create_user(
+            username="alice", email="alice@example.test", password="password123"
+        )
+        self.bob = User.objects.create_user(
+            username="bob", email="bob@example.test", password="password123"
+        )
+        self.channel = Channel.objects.create(
+            name="test-channel", type="GROUP", created_by=self.alice
+        )
+        ChannelMember.objects.create(
+            channel=self.channel, user=self.alice, role="ADMIN"
+        )
+        ChannelMember.objects.create(channel=self.channel, user=self.bob)
+        token = RefreshToken.for_user(self.alice).access_token
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
+
+    def test_message_trop_long(self):
+        """Rejette les messages de plus de 5000 caractères."""
+        response = self.client.post(
+            f"/api/channels/{self.channel.id}/attachments/",
+            {"content": "A" * 5001},
+            format="multipart",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_message_avec_caracteres_nuls(self):
+        """Rejette les messages contenant des caractères nuls."""
+        response = self.client.post(
+            f"/api/channels/{self.channel.id}/attachments/",
+            {"content": "Hello\x00World"},
+            format="multipart",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_channel_name_trop_court(self):
+        """Rejette les noms de channel de moins de 3 caractères."""
+        response = self.client.post(
+            "/api/channels/",
+            {"name": "ab", "type": "GROUP"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("name", response.data)
+
+    def test_channel_name_trop_long(self):
+        """Rejette les noms de channel de plus de 255 caractères."""
+        response = self.client.post(
+            "/api/channels/",
+            {"name": "A" * 256, "type": "GROUP"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("name", response.data)
+
+    def test_channel_public_sans_nom(self):
+        """Rejette la création d'un channel public sans nom."""
+        response = self.client.post(
+            "/api/channels/",
+            {"name": "", "type": "PUBLIC"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_channel_xss_dans_nom(self):
+        """Rejette les noms de channel contenant du XSS."""
+        response = self.client.post(
+            "/api/channels/",
+            {"name": "<script>alert(1)</script>", "type": "GROUP"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("name", response.data)
+
+    def test_bannissement_auto_interdit(self):
+        """Rejette le bannissement de soi-même."""
+        response = self.client.post(
+            f"/api/channels/{self.channel.id}/ban-member/",
+            {"user_id": str(self.alice.id)},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_retrait_auto_interdit(self):
+        """Rejette le retrait de soi-même."""
+        response = self.client.post(
+            f"/api/channels/{self.channel.id}/remove-member/",
+            {"user_id": str(self.alice.id)},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_fichier_trop_volumineux(self):
+        """Rejette les fichiers de plus de 10 Mo."""
+        from io import BytesIO
+        gros_fichier = BytesIO(b"A" * (10 * 1024 * 1024 + 1))
+        response = self.client.post(
+            f"/api/channels/{self.channel.id}/attachments/",
+            {"file": gros_fichier, "content": "test"},
+            format="multipart",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

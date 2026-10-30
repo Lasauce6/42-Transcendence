@@ -5,6 +5,19 @@ from .models import Channel, Message
 MAX_MESSAGE_LENGTH = 5000
 MAX_ATTACHMENT_SIZE = 10 * 1024 * 1024
 
+
+def _has_control_chars(value):
+    if not value:
+        return False
+    return any(ord(c) < 32 and c not in '\n\r\t' for c in value)
+
+
+def _has_null_chars(value):
+    if not value:
+        return False
+    return '\x00' in value
+
+
 class ChannelMemberUserSerializer(serializers.Serializer):
     id = serializers.UUIDField(source='user.id', read_only=True)
     username = serializers.CharField(source='user.username', read_only=True)
@@ -32,6 +45,14 @@ class ChannelSerializer(serializers.ModelSerializer):
         if len(value) > 255:
             raise serializers.ValidationError(
                 "Le nom du channel ne doit pas dépasser 255 caractères."
+            )
+        if _has_control_chars(value):
+            raise serializers.ValidationError(
+                "Le nom contient des caractères de contrôle non autorisés."
+            )
+        if _has_null_chars(value):
+            raise serializers.ValidationError(
+                "Le nom contient des caractères nuls non autorisés."
             )
         return value
 
@@ -88,5 +109,13 @@ class AttachmentUploadSerializer(serializers.Serializer):
         if len(value) > MAX_MESSAGE_LENGTH:
             raise serializers.ValidationError(
                 f"Le contenu ne doit pas dépasser {MAX_MESSAGE_LENGTH} caractères."
+            )
+        if _has_control_chars(value):
+            raise serializers.ValidationError(
+                "Le contenu contient des caractères de contrôle non autorisés."
+            )
+        if _has_null_chars(value):
+            raise serializers.ValidationError(
+                "Le contenu contient des caractères nuls non autorisés."
             )
         return value
