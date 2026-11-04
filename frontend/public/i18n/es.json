@@ -196,7 +196,9 @@
       "FRIEND_REQUEST_SENT": "Solicitud de amistad enviada.",
       "FRIEND_ACCEPTED": "Solicitud de amistad aceptada.",
       "FRIEND_REJECTED": "Solicitud de amistad rechazada.",
-      "FRIEND_REMOVED": "Amigo eliminado."
+      "FRIEND_REMOVED": "Amigo eliminado.",
+      "FILE_SENT": "Archivo enviado.",
+      "MESSAGE_DELETED": "Mensaje eliminado."
     },
     "ERROR": {
       "NETWORK": "Servidor inaccesible. Comprueba tu conexión.",
@@ -251,7 +253,11 @@
     "ADD_MEMBER_ERROR": "No se pudo añadir a esta persona.",
     "BACK_TO_LIST": "Todas las conversaciones",
     "YOU": "tú",
-    "DELETED": "Mensaje eliminado"
+    "DELETED": "Mensaje eliminado",
+    "DELETE_MESSAGE": "Eliminar",
+    "CONFIRM_DELETE_MESSAGE": "¿Eliminar este mensaje?",
+    "FILE_BAD_TYPE": "Formato no aceptado (jpg, png, gif, webp, pdf, txt, docx, xlsx).",
+    "FILE_TOO_BIG": "Archivo demasiado grande (10 MB máximo)."
   },
   "API_DOCS": {
     "TITLE": "Documentación de la API",

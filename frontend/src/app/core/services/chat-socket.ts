@@ -60,6 +60,13 @@ export class ChatSocket {
     return true;
   }
 
+  // Affiche un message comme supprimé (sans ses fichiers).
+  markDeleted(messageId: string): void {
+    this.messages.update((list) =>
+      list.map((m) => (m.id === messageId ? { ...m, is_deleted: true, attachments: [] } : m)),
+    );
+  }
+  
   // Ferme la connexion et annule toute tentative de reconnexion.
   close(): void {
     this.closedByUs = true;

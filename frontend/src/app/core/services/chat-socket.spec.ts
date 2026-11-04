@@ -123,4 +123,13 @@ describe('ChatSocket (messages reçus en direct)', () => {
 
   expect(socket.connected()).toBe(true);
 });
+
+  it('affiche un message comme supprimé et retire ses fichiers', () => {
+    socket.setHistory([{ ...fakeMessage('1'), attachments: [{ id: 'a1' } as never] }, fakeMessage('2')]);
+    socket.markDeleted('1');
+
+    expect(socket.messages()[0].is_deleted).toBe(true);
+    expect(socket.messages()[0].attachments).toEqual([]);
+    expect(socket.messages()[1].is_deleted).toBe(false);
+  });
 });
