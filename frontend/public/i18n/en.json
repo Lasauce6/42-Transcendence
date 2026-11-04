@@ -67,7 +67,21 @@
       "ROLE_CHANGED": "Role updated.",
       "EMPTY": "No users.",
       "ERROR": "Unable to load users.",
-      "YOU": "you"
+      "YOU": "you",
+      "SEARCH": "Search by name or email",
+      "FILTER_ROLE": "Filter by role",
+      "ALL_ROLES": "All roles",
+      "NO_RESULT": "No matching user.",
+      "SELECT": "Select",
+      "SELECT_ALL": "Select all",
+      "DELETE_SELECTED": "Delete selection ({{count}})",
+      "CONFIRM_DELETE_SELECTED": "Permanently delete {{count}} user(s)?",
+      "DELETED_SELECTED": "{{count}} user(s) deleted.",
+      "EDIT": "Edit",
+      "SAVE": "Save",
+      "CANCEL": "Cancel",
+      "UPDATED": "User updated.",
+      "UPDATE_ERROR": "Could not update this user (name or email already taken?)."
     }
   },
   "FORBIDDEN": {

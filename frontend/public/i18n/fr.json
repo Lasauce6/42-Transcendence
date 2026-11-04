@@ -67,7 +67,21 @@
       "ROLE_CHANGED": "Rôle mis à jour.",
       "EMPTY": "Aucun utilisateur.",
       "ERROR": "Impossible de charger les utilisateurs.",
-      "YOU": "toi"
+      "YOU": "toi",
+      "SEARCH": "Rechercher par nom ou email",
+      "FILTER_ROLE": "Filtrer par rôle",
+      "ALL_ROLES": "Tous les rôles",
+      "NO_RESULT": "Aucun utilisateur ne correspond.",
+      "SELECT": "Sélectionner",
+      "SELECT_ALL": "Tout sélectionner",
+      "DELETE_SELECTED": "Supprimer la sélection ({{count}})",
+      "CONFIRM_DELETE_SELECTED": "Supprimer définitivement {{count}} utilisateur(s) ?",
+      "DELETED_SELECTED": "{{count}} utilisateur(s) supprimé(s).",
+      "EDIT": "Modifier",
+      "SAVE": "Enregistrer",
+      "CANCEL": "Annuler",
+      "UPDATED": "Utilisateur modifié.",
+      "UPDATE_ERROR": "Impossible de modifier cet utilisateur (nom ou email déjà pris ?)."
     }
   },
   "FORBIDDEN": {

@@ -24,6 +24,11 @@ export class AdminService {
     return this.http.post<AdminUser>(`${this.url}${id}/promote/`, { role });
   }
 
+  // Modifie le nom d'utilisateur et/ou l'email d'un utilisateur
+  updateUser(id: string, changes: Partial<Pick<AdminUser, 'username' | 'email'>>): Observable<AdminUser> {
+    return this.http.patch<AdminUser>(`${this.url}${id}/`, changes);
+  }
+
   // Supprime définitivement un utilisateur
   deleteUser(id: string): Observable<void> {
     return this.http.delete<void>(`${this.url}${id}/`);

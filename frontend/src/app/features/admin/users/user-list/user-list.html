@@ -1,6 +1,37 @@
 <section class="flex flex-col gap-6">
   <ui-page-header [eyebrow]="'ADMIN.TITLE' | translate" [heading]="'ADMIN.USERS.TITLE' | translate" />
 
+  <!-- Recherche, filtre par rôle et suppression en masse -->
+  @if (!loading() && !error() && users().length > 0) {
+    <div class="flex flex-wrap items-center gap-3">
+      <label for="admin-search" class="sr-only">{{ 'ADMIN.USERS.SEARCH' | translate }}</label>
+      <input
+        id="admin-search"
+        type="search"
+        class="min-w-0 grow basis-56"
+        autocomplete="off"
+        [placeholder]="'ADMIN.USERS.SEARCH' | translate"
+        [value]="search()"
+        (input)="onSearch($event)"
+      />
+      <label for="admin-role-filter" class="sr-only">{{ 'ADMIN.USERS.FILTER_ROLE' | translate }}</label>
+      <select id="admin-role-filter" class="py-2 font-mono text-[13px]" (change)="onRoleFilter($event)">
+        <option value="">{{ 'ADMIN.USERS.ALL_ROLES' | translate }}</option>
+        @for (role of roles; track role) {
+          <option [value]="role">{{ role }}</option>
+        }
+      </select>
+      <button
+        type="button"
+        class="inline-flex min-h-9 items-center gap-2 border-danger/40 bg-transparent px-3 py-1.5 text-sm text-danger hover:bg-danger/10 disabled:opacity-50"
+        [disabled]="selected().size === 0"
+        (click)="removeSelected()"
+      >
+        <ui-icon name="trash" [size]="16" />{{ 'ADMIN.USERS.DELETE_SELECTED' | translate: { count: selected().size } }}
+      </button>
+    </div>
+  }
+
   <!-- 4 états : chargement, erreur, liste vide, liste -->
   <ui-card [padded]="false">
     @if (loading()) {
@@ -14,6 +45,14 @@
         <table class="w-full min-w-[640px] border-collapse text-left">
           <thead>
             <tr class="border-b border-line font-mono text-xs uppercase tracking-wider text-muted">
+              <th class="w-10 px-4 py-3">
+                <input
+                  type="checkbox"
+                  [attr.aria-label]="'ADMIN.USERS.SELECT_ALL' | translate"
+                  [checked]="allSelected()"
+                  (change)="toggleAll()"
+                />
+              </th>
               <th class="px-4 py-3 font-semibold">{{ 'ADMIN.USERS.USERNAME' | translate }}</th>
               <th class="px-4 py-3 font-semibold">{{ 'ADMIN.USERS.EMAIL' | translate }}</th>
               <th class="px-4 py-3 font-semibold">{{ 'ADMIN.USERS.ROLE' | translate }}</th>
@@ -21,18 +60,52 @@
             </tr>
           </thead>
           <tbody>
-            @for (user of users(); track user.id) {
+            @for (user of filteredUsers(); track user.id) {
               <tr class="border-b border-line last:border-b-0 hover:bg-surface-2">
                 <td class="px-4 py-3">
-                  <span class="flex items-center gap-3">
-                    <ui-avatar [name]="user.username" [src]="user.avatar" />
-                    <strong>{{ user.username }}</strong>
-                    @if (user.id === myId()) {
-                      <ui-badge variant="neutral">{{ 'ADMIN.USERS.YOU' | translate }}</ui-badge>
-                    }
-                  </span>
+                  @if (user.id !== myId()) {
+                    <input
+                      type="checkbox"
+                      [attr.aria-label]="('ADMIN.USERS.SELECT' | translate) + ' ' + user.username"
+                      [checked]="selected().has(user.id)"
+                      (change)="toggle(user.id)"
+                    />
+                  }
                 </td>
-                <td class="px-4 py-3 font-mono text-sm text-muted">{{ user.email }}</td>
+                @if (editingId() === user.id) {
+                  <!-- Ligne en mode modification -->
+                  <td class="px-4 py-3">
+                    <label [for]="'edit-username-' + user.id" class="sr-only">{{ 'ADMIN.USERS.USERNAME' | translate }}</label>
+                    <input
+                      [id]="'edit-username-' + user.id"
+                      type="text"
+                      class="w-full"
+                      [value]="editUsername()"
+                      (input)="onEditUsername($event)"
+                    />
+                  </td>
+                  <td class="px-4 py-3">
+                    <label [for]="'edit-email-' + user.id" class="sr-only">{{ 'ADMIN.USERS.EMAIL' | translate }}</label>
+                    <input
+                      [id]="'edit-email-' + user.id"
+                      type="email"
+                      class="w-full"
+                      [value]="editEmail()"
+                      (input)="onEditEmail($event)"
+                    />
+                  </td>
+                } @else {
+                  <td class="px-4 py-3">
+                    <span class="flex items-center gap-3">
+                      <ui-avatar [name]="user.username" [src]="user.avatar" />
+                      <strong>{{ user.username }}</strong>
+                      @if (user.id === myId()) {
+                        <ui-badge variant="neutral">{{ 'ADMIN.USERS.YOU' | translate }}</ui-badge>
+                      }
+                    </span>
+                  </td>
+                  <td class="px-4 py-3 font-mono text-sm text-muted">{{ user.email }}</td>
+                }
                 <td class="px-4 py-3">
                   <!-- Changement de rôle (désactivé sur sa propre ligne) -->
                   <label [for]="'role-' + user.id" class="sr-only">{{ 'ADMIN.USERS.ROLE' | translate }}</label>
@@ -48,8 +121,21 @@
                   </select>
                 </td>
                 <td class="px-4 py-3 text-right">
+                  <span class="inline-flex flex-wrap justify-end gap-2">
+                  @if (editingId() === user.id) {
+                    <button uiButton size="sm" type="button" [disabled]="!canSave()" (click)="saveEdit(user)">
+                      {{ 'ADMIN.USERS.SAVE' | translate }}
+                    </button>
+                    <button uiButton variant="ghost" size="sm" type="button" (click)="cancelEdit()">
+                      {{ 'ADMIN.USERS.CANCEL' | translate }}
+                    </button>
+                  } @else {
+                    <button uiButton variant="secondary" size="sm" type="button" (click)="startEdit(user)">
+                      {{ 'ADMIN.USERS.EDIT' | translate }}
+                    </button>
+                  }
                   <!-- Pas de bouton supprimer sur sa propre ligne -->
-                  @if (user.id !== myId()) {
+                  @if (user.id !== myId() && editingId() !== user.id) {
                     <button
                       type="button"
                       class="inline-flex min-h-9 items-center gap-2 border-danger/40 bg-transparent px-3 py-1.5 text-sm text-danger hover:bg-danger/10"
@@ -58,11 +144,15 @@
                       <ui-icon name="trash" [size]="16" />{{ 'ADMIN.USERS.DELETE' | translate }}
                     </button>
                   }
+                  </span>
                 </td>
               </tr>
             }
           </tbody>
         </table>
+        @if (filteredUsers().length === 0) {
+          <p class="p-5 text-center text-muted">{{ 'ADMIN.USERS.NO_RESULT' | translate }}</p>
+        }
       </div>
     }
   </ui-card>
