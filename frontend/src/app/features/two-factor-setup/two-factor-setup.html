@@ -32,7 +32,7 @@
           @if (twoFactorForm.code().touched() && twoFactorForm.code().invalid()) {
             <div id="two-factor-setup-errors" role="alert" aria-live="polite" class="flex flex-col gap-1 text-sm text-danger">
               @for (error of twoFactorForm.code().errors(); track error) {
-                <p>{{ error.message || error.kind }}</p>
+                <p>{{ (error.message ?? '') | translate }}</p>
               }
             </div>
           }

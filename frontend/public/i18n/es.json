@@ -155,7 +155,8 @@
       "CHOOSE_FILE": "Elegir una imagen",
       "NO_FILE": "Ninguna imagen elegida",
       "DELETE_AVATAR": "Eliminar la foto",
-      "ERROR_DELETE_AVATAR": "No se pudo eliminar. Inténtalo de nuevo."
+      "ERROR_DELETE_AVATAR": "No se pudo eliminar. Inténtalo de nuevo.",
+      "CONFIRM_DELETE_AVATAR": "¿Eliminar tu avatar?"
     }
   },
   "ERRORS": {
@@ -166,7 +167,10 @@
     "INVALID_CREDENTIALS": "Credenciales inválidas.",
     "INVALID_CODE": "Código inválido, inténtalo de nuevo.",
     "QRCODE_FAILED": "Error al generar el código QR.",
-    "GENERIC": "Se ha producido un error, inténtalo de nuevo."
+    "GENERIC": "Se ha producido un error, inténtalo de nuevo.",
+    "CODE_REQUIRED": "El código es obligatorio.",
+    "CODE_LENGTH": "El código debe tener 6 cifras.",
+    "CODE_DIGITS": "Solo se permiten cifras."
   },
   "TITLES": {
     "LOGIN": "Iniciar sesión",

@@ -21,16 +21,16 @@ export class TwoFactorVerify {
   readonly tempToken = this.authService.tempToken;
   readonly verifyForm = form(this.codeData, (path) => {
     required(path.code, {
-      message: 'Le code est requis',
+      message: 'ERRORS.CODE_REQUIRED',
     });
     minLength(path.code, 6, {
-      message: 'Le code doit faire 6 chiffres',
+      message: 'ERRORS.CODE_LENGTH',
     });
     maxLength(path.code, 6, {
-      message: 'Le code doit faire 6 chiffres',
+      message: 'ERRORS.CODE_LENGTH',
     });
     pattern(path.code, /^\d{6}$/, {
-      message: 'Seuls les chiffres sont autorisés',
+      message: 'ERRORS.CODE_DIGITS',
     });
   });
   constructor() {

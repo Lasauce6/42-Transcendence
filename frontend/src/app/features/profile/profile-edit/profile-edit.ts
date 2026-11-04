@@ -1,5 +1,5 @@
 import { Component, effect, inject, input, OnDestroy, output, signal } from '@angular/core';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { UiAlert, UiButton, UiCard, UiField, UiIcon, UiProgress } from '@shared/ui';
 import { UpdateProfilePayload, UserService } from '../user.service';
 import { form, maxLength, required, FormField, submit, minLength } from '@angular/forms/signals';
@@ -17,6 +17,7 @@ import { UserProfile } from '@core/models/user.model';
 export class ProfileEdit implements OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly translate = inject(TranslateService);
   private readonly userService = inject(UserService);
   readonly profile = input.required<UserProfile>();
   readonly profileUpdated = output<UserProfile>();
@@ -167,7 +168,7 @@ export class ProfileEdit implements OnDestroy {
   }
 
   async onDeleteAvatar(): Promise<void> {
-    if (!confirm('Supprimer ton avatar ?')) {
+    if (!confirm(this.translate.instant('PROFILE.EDIT.CONFIRM_DELETE_AVATAR'))) {
       return;
     }
     this.error.set(null);
