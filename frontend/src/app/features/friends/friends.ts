@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Observable, finalize, tap } from 'rxjs';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ChatService } from '@core/services/chat';
+import { ToastService } from '@core/services/toast';
 import {
   UiAlert,
   UiAvatar,
@@ -41,6 +42,7 @@ export class Friends implements OnInit {
   private readonly friendsService = inject(FriendsService);
   private readonly chat = inject(ChatService);
   private readonly router = inject(Router);
+  private readonly toast = inject(ToastService);
 
   protected readonly friendRows = this.friendsService.friendRows;
   protected readonly receivedRows = this.friendsService.receivedRows;
@@ -60,21 +62,24 @@ export class Friends implements OnInit {
   }
 
   protected accept(f: Friendship) {
-    this.run(this.friendsService.accept(f.id));
+    this.run(this.friendsService.accept(f.id), 'TOAST.SUCCESS.FRIEND_ACCEPTED');
   }
 
   protected reject(f: Friendship) {
-    this.run(this.friendsService.reject(f.id));
+    this.run(this.friendsService.reject(f.id), 'TOAST.SUCCESS.FRIEND_REJECTED');
   }
 
   protected remove(f: Friendship) {
-    this.run(this.friendsService.remove(f.id));
+    this.run(this.friendsService.remove(f.id), 'TOAST.SUCCESS.FRIEND_REMOVED');
   }
 
   protected add() {
     const username = this.newUsername().trim();
     if (!username) return;
-    this.run(this.friendsService.addByUsername(username).pipe(tap(() => this.newUsername.set(''))));
+    this.run(
+      this.friendsService.addByUsername(username).pipe(tap(() => this.newUsername.set(''))),
+      'TOAST.SUCCESS.FRIEND_REQUEST_SENT',
+    );
   }
 
   // Ouvre (ou crée) la conversation privée avec cet ami.
@@ -86,12 +91,16 @@ export class Friends implements OnInit {
     );
   }
 
-  private run(action$: Observable<unknown>) {
+  // Lance l'action ; si successKey est donné, affiche un toast quand elle réussit.
+  private run(action$: Observable<unknown>, successKey?: string) {
     if (this.busy()) return;
     this.busy.set(true);
     this.error.set(null);
-    action$
-      .pipe(finalize(() => this.busy.set(false)))
-      .subscribe({ error: (e) => this.error.set(friendsErrorKey(e)) });
+    action$.pipe(finalize(() => this.busy.set(false))).subscribe({
+      next: () => {
+        if (successKey) this.toast.success(successKey);
+      },
+      error: (e) => this.error.set(friendsErrorKey(e)),
+    });
   }
 }

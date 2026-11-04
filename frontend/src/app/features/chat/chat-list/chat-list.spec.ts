@@ -3,6 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter, Router } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
+import { ToastService } from '@core/services/toast';
 import { ChatList } from './chat-list';
 
 describe('ChatList', () => {
@@ -38,6 +39,19 @@ describe('ChatList', () => {
     expect(navigate).toHaveBeenCalledWith(['/chat', 'c1']);
     expect(component.newName()).toBe('');
     expect(component.creating()).toBe(false);
+  });
+
+  it('affiche un toast de succès après la création du channel', () => {
+    vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    const success = vi.spyOn(TestBed.inject(ToastService), 'success');
+    component.newName.set('projet 42');
+    component.createChannel();
+
+    http
+      .expectOne((req) => req.method === 'POST' && req.url === '/api/channels/')
+      .flush({ id: 'c1', name: 'projet 42', type: 'GROUP', created_by: 'u1', created_at: '2026-01-01T00:00:00Z' });
+
+    expect(success).toHaveBeenCalledWith('TOAST.SUCCESS.CHANNEL_CREATED');
   });
 
   it('refuse un nom de moins de 3 caractères', () => {

@@ -8,6 +8,7 @@ import { AuthService } from '@features/auth/auth';
 import { Router } from '@angular/router';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { UserProfile } from '@core/models/user.model';
+import { ToastService } from '@core/services/toast';
 
 @Component({
   selector: 'app-profile-edit',
@@ -19,6 +20,7 @@ export class ProfileEdit implements OnDestroy {
   private readonly router = inject(Router);
   private readonly translate = inject(TranslateService);
   private readonly userService = inject(UserService);
+  private readonly toast = inject(ToastService);
   readonly profile = input.required<UserProfile>();
   readonly profileUpdated = output<UserProfile>();
   readonly profileData = signal<ProfileFormData>({
@@ -158,6 +160,7 @@ export class ProfileEdit implements OnDestroy {
           );
           this.profileUpdated.emit(updated);
         }
+        this.toast.success('TOAST.SUCCESS.PROFILE_SAVED');
       } catch {
         this.error.set('PROFILE.EDIT.ERROR_UPDATE');
       } finally {
@@ -177,6 +180,7 @@ export class ProfileEdit implements OnDestroy {
     try {
       const updated = await firstValueFrom(this.userService.deleteAvatar());
       this.profileUpdated.emit(updated);
+      this.toast.success('TOAST.SUCCESS.AVATAR_DELETED');
     } catch {
       this.error.set('PROFILE.EDIT.ERROR_DELETE_AVATAR');
     } finally {

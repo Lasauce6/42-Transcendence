@@ -189,6 +189,15 @@
   "TOAST": {
     "REGION_LABEL": "Notificaciones",
     "CLOSE": "Cerrar",
+    "SUCCESS": {
+      "PROFILE_SAVED": "Perfil guardado.",
+      "AVATAR_DELETED": "Avatar eliminado.",
+      "CHANNEL_CREATED": "Canal creado.",
+      "FRIEND_REQUEST_SENT": "Solicitud de amistad enviada.",
+      "FRIEND_ACCEPTED": "Solicitud de amistad aceptada.",
+      "FRIEND_REJECTED": "Solicitud de amistad rechazada.",
+      "FRIEND_REMOVED": "Amigo eliminado."
+    },
     "ERROR": {
       "NETWORK": "Servidor inaccesible. Comprueba tu conexión.",
       "FORBIDDEN": "No tienes permiso para hacer eso.",

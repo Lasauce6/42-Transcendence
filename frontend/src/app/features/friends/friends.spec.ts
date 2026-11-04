@@ -5,6 +5,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
 import { CurrentUser } from '@core/services/current-user';
+import { ToastService } from '@core/services/toast';
 import { UserProfile } from '@core/models/user.model';
 import { Friendship, FriendUser } from './friend.models';
 import { Friends } from './friends';
@@ -143,5 +144,28 @@ describe('Friends', () => {
 
     expect(service.friendRows().map((r) => r.username)).toEqual(['bob', 'charlie']);
     expect(service.receivedRows()).toEqual([]);
+  });
+
+  it("affiche un toast de succès quand la demande d'ami est envoyée", () => {
+    const success = vi.spyOn(TestBed.inject(ToastService), 'success');
+    component.newUsername.set('emma');
+    component.add();
+
+    http.expectOne((r) => r.url === '/api/users/').flush([{ id: 'u5', username: 'emma' }]);
+    http
+      .expectOne((r) => r.method === 'POST' && r.url === '/api/friendships/')
+      .flush(friendship('f4', me, user('u5', 'emma'), 'PENDING'));
+
+    expect(success).toHaveBeenCalledWith('TOAST.SUCCESS.FRIEND_REQUEST_SENT');
+  });
+
+  it("n'affiche pas de toast de succès si l'action échoue", () => {
+    const success = vi.spyOn(TestBed.inject(ToastService), 'success');
+    component.newUsername.set('inconnu');
+    component.add();
+
+    http.expectOne((r) => r.url === '/api/users/').flush([]);
+
+    expect(success).not.toHaveBeenCalled();
   });
 });
