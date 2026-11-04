@@ -17,6 +17,7 @@ import {
 import { Channel } from '@core/models/chat.model';
 import { ChatService } from '@core/services/chat';
 import { CurrentUser } from '@core/services/current-user';
+import { ToastService } from '@core/services/toast';
 
 @Component({
   selector: 'app-chat-list',
@@ -27,6 +28,7 @@ export class ChatList implements OnInit {
   private readonly service = inject(ChatService);
   private readonly currentUser = inject(CurrentUser);
   private readonly router = inject(Router);
+  private readonly toast = inject(ToastService);
 
   readonly loading = signal(true);
   readonly error = signal(false);
@@ -93,6 +95,7 @@ export class ChatList implements OnInit {
       next: (channel) => {
         this.creating.set(false);
         this.newName.set('');
+        this.toast.success('TOAST.SUCCESS.CHANNEL_CREATED');
         this.router.navigate(['/chat', channel.id]);
       },
       error: () => {

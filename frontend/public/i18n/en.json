@@ -189,6 +189,15 @@
   "TOAST": {
     "REGION_LABEL": "Notifications",
     "CLOSE": "Close",
+    "SUCCESS": {
+      "PROFILE_SAVED": "Profile saved.",
+      "AVATAR_DELETED": "Avatar deleted.",
+      "CHANNEL_CREATED": "Channel created.",
+      "FRIEND_REQUEST_SENT": "Friend request sent.",
+      "FRIEND_ACCEPTED": "Friend request accepted.",
+      "FRIEND_REJECTED": "Friend request declined.",
+      "FRIEND_REMOVED": "Friend removed."
+    },
     "ERROR": {
       "NETWORK": "Server unreachable. Check your connection.",
       "FORBIDDEN": "You are not allowed to do that.",

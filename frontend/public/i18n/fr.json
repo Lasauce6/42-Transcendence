@@ -189,6 +189,15 @@
   "TOAST": {
     "REGION_LABEL": "Notifications",
     "CLOSE": "Fermer",
+    "SUCCESS": {
+      "PROFILE_SAVED": "Profil enregistré.",
+      "AVATAR_DELETED": "Avatar supprimé.",
+      "CHANNEL_CREATED": "Channel créé.",
+      "FRIEND_REQUEST_SENT": "Demande d'ami envoyée.",
+      "FRIEND_ACCEPTED": "Demande d'ami acceptée.",
+      "FRIEND_REJECTED": "Demande d'ami refusée.",
+      "FRIEND_REMOVED": "Ami retiré."
+    },
     "ERROR": {
       "NETWORK": "Serveur injoignable. Vérifie ta connexion.",
       "FORBIDDEN": "Tu n'as pas les droits pour faire ça.",
