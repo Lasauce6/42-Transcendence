@@ -19,6 +19,7 @@ authentication).
 - [Project Management](#project-management)
 - [Individual Contributions](#individual-contributions)
 - [Resources](#resources)
+- [Browser Support](#browser-support)
 - [Known Limitations](#known-limitations)
 
 ---
@@ -426,7 +427,7 @@ accounts/tokens).
 | 9 | Complete notification system | Minor | 1 | `Notification` model + real-time push (NotificationConsumer) + REST inbox with read tracking for message/friend events | oamairi, ydembele |
 | 10 | File upload and management | Minor | 1 | Chat attachments: multi-type uploads ≤ 5 MB, client+server validation, signed-token downloads, previews, deletion; avatars | oamairi, rbaticle, msingh, ydembele |
 | 11 | Multiple languages (≥ 3) | Minor | 1 | ngx-translate with complete FR/EN/ES catalogs, UI switcher, per-user preference, CI-checkable `i18n:check` | msingh, ydembele |
-| 12 | Additional browsers support | Minor | 1 | Only standard APIs (WebSocket, fetch) — exercised on Chromium and Firefox during development; Edge is covered by the same engine; no browser-specific limitation known | ydembele, romukena |
+| 12 | Additional browsers support | Minor | 1 | Every page and feature tested on Chrome, Firefox and Edge (desktop + mobile widths): same layout, no console error, real-time chat works across browsers. Only standard APIs (WebSocket, fetch, CSS grid/flex). Limitations documented in [Browser Support](#browser-support) | ydembele, romukena |
 | 13 | Remote authentication (OAuth 2.0) | Minor | 1 | django-allauth with a **custom provider for the 42 API** + Google + GitHub | rbaticle, romukena |
 | 14 | Two-factor authentication | Minor | 1 | TOTP (pyotp + QR), Fernet-encrypted secrets, 10 hashed backup codes, 2FA enforcement on chat | rbaticle, romukena |
 | 15 | Custom-made design system | Minor | 1 | 14 reusable Angular components in `shared/ui` (button, card, avatar, badge, field, alert, spinner, progress, list item, empty state, file card, message bubble, page header, icon), Tailwind v4 theme tokens (colour palette, typography with Space Grotesk / JetBrains Mono, radii), custom SVG icon set, all documented on the `/design-system` page | msingh |
@@ -575,6 +576,35 @@ code. AI was used for:
 
 
 ---
+## Browser Support
+
+| Browser | Engine | Tested version | Status |
+| ------- | ------ | -------------- | ------ |
+| Google Chrome | Blink | latest stable | ✅ full support (reference browser) |
+| Mozilla Firefox | Gecko | latest stable | ✅ full support |
+| Microsoft Edge | Blink | latest stable | ✅ full support |
+| Safari | WebKit | — | ⚠️ not tested (no macOS machine in the team) |
+
+How it was tested: every page (login, register, home, chat, friends, profile,
+notifications, admin, privacy, terms, design system, API docs) at desktop (1440px)
+and mobile (390px) widths, checking the console for errors, plus a real-time chat
+test between two users connected at the same time.
+
+Known browser-specific limitations and workarounds:
+
+- **Self-signed certificate** — each browser shows its own warning page on first visit
+  (`NET::ERR_CERT_AUTHORITY_INVALID` in Chrome/Edge, `SEC_ERROR_UNKNOWN_ISSUER` in
+  Firefox). Accept it once; Firefox may also need the exception to open the WebSocket
+  (`wss://`) — reload the page after accepting.
+- **No polyfills needed** — Angular 21 targets the latest browser versions and the app
+  only uses standard APIs (WebSocket, fetch, `URL.createObjectURL`, CSS grid/flex),
+  so no `polyfills.ts` is required.
+- **Development server** — in dev mode, Firefox may log `Loading failed for the module …`
+  if you navigate away while a lazy page is still loading (Angular hot reload). It does
+  not happen in a production build.
+- **File picker** — the `accept` filter of the attachment input is only a hint (some
+  browsers let the user pick "All files"); type and size are always re-checked by the
+  app before upload and by the backend.
 
 ## Known Limitations
 
