@@ -196,7 +196,9 @@
       "FRIEND_REQUEST_SENT": "Demande d'ami envoyée.",
       "FRIEND_ACCEPTED": "Demande d'ami acceptée.",
       "FRIEND_REJECTED": "Demande d'ami refusée.",
-      "FRIEND_REMOVED": "Ami retiré."
+      "FRIEND_REMOVED": "Ami retiré.",
+      "FILE_SENT": "Fichier envoyé.",
+      "MESSAGE_DELETED": "Message supprimé."
     },
     "ERROR": {
       "NETWORK": "Serveur injoignable. Vérifie ta connexion.",
@@ -251,7 +253,11 @@
     "ADD_MEMBER_ERROR": "Impossible d'ajouter cette personne.",
     "BACK_TO_LIST": "Toutes les conversations",
     "YOU": "vous",
-    "DELETED": "Message supprimé"
+    "DELETED": "Message supprimé",
+    "DELETE_MESSAGE": "Supprimer",
+    "CONFIRM_DELETE_MESSAGE": "Supprimer ce message ?",
+    "FILE_BAD_TYPE": "Format non accepté (jpg, png, gif, webp, pdf, txt, docx, xlsx).",
+    "FILE_TOO_BIG": "Fichier trop lourd (10 Mo maximum)."
   },
   "API_DOCS": {
     "TITLE": "Documentation de l'API",

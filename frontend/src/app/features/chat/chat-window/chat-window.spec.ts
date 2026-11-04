@@ -6,8 +6,8 @@ import { provideRouter } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
 import { ChatMessage } from '@core/models/chat.model';
 import { ChatSocket } from '@core/services/chat-socket';
-import { ChatWindow } from './chat-window';
-
+import { ToastService } from '@core/services/toast';
+import { ChatWindow, MAX_FILE_SIZE } from './chat-window';
 
 // Faux socket : mêmes fonctions que le vrai, mais sans connexion réseau.
 const fakeSocket = {
@@ -17,6 +17,7 @@ const fakeSocket = {
   setHistory: () => {},
   send: () => true,
   close: () => {},
+  markDeleted: vi.fn(),
 };
 
 describe('ChatWindow', () => {
@@ -106,5 +107,60 @@ describe('ChatWindow', () => {
 
     expect(component.memberError()).toBe(true);
     expect(component.memberAdded()).toBe(false);
+  });
+
+  // Fabrique l'événement du champ fichier pour un fichier donné.
+  function eventFor(file: File): Event {
+    return { target: { files: [file], value: file.name } } as unknown as Event;
+  }
+
+  it("refuse un format de fichier non accepté sans l'envoyer", () => {
+    component.onFileSelected(eventFor(new File(['x'], 'script.exe')));
+
+    http.expectNone((req) => req.url.endsWith('/attachments/'));
+    expect(component.fileError()).toBe('CHAT.FILE_BAD_TYPE');
+    expect(component.uploading()).toBe(false);
+  });
+
+  it("refuse un fichier trop lourd sans l'envoyer", () => {
+    const big = new File(['x'], 'gros.pdf');
+    Object.defineProperty(big, 'size', { value: MAX_FILE_SIZE + 1 });
+    component.onFileSelected(eventFor(big));
+
+    http.expectNone((req) => req.url.endsWith('/attachments/'));
+    expect(component.fileError()).toBe('CHAT.FILE_TOO_BIG');
+  });
+
+  it("demande la progression de l'envoi et affiche un toast à la fin", () => {
+    const success = vi.spyOn(TestBed.inject(ToastService), 'success');
+    component.onFileSelected(fileEvent());
+
+    const req = http.expectOne((r) => r.url.endsWith('/attachments/'));
+    expect(req.request.reportProgress).toBe(true);
+    req.flush({});
+
+    expect(success).toHaveBeenCalledWith('TOAST.SUCCESS.FILE_SENT');
+  });
+
+  it('supprime un message après confirmation', () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const message = { id: 'm1', sender: 'u1', is_deleted: false } as ChatMessage;
+    component.deleteMessage(message);
+
+    const req = http.expectOne((r) => r.method === 'DELETE' && r.url.endsWith('/messages/m1/'));
+    req.flush(null, { status: 204, statusText: 'No Content' });
+
+    expect(fakeSocket.markDeleted).toHaveBeenCalledWith('m1');
+  });
+
+  it("ne supprime rien si l'utilisateur annule", () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(false);
+    component.deleteMessage({ id: 'm1', sender: 'u1', is_deleted: false } as ChatMessage);
+
+    http.expectNone((r) => r.method === 'DELETE');
+  });
+
+  it("ne propose pas de supprimer le message d'un autre", () => {
+    expect(component.canDelete({ id: 'm2', sender: 'quelqu-un', is_deleted: false } as ChatMessage)).toBe(false);
   });
 });

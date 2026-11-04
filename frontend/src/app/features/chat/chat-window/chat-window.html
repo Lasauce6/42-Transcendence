@@ -94,6 +94,15 @@
           @for (a of m.attachments ?? []; track a.id) {
             <ui-file-card [name]="a.name" [url]="a.url" [contentType]="a.content_type" [size]="a.size" />
           }
+          @if (canDelete(m)) {
+            <button
+              type="button"
+              class="inline-flex items-center gap-1 border-0 bg-transparent p-0 font-mono text-xs text-muted hover:text-danger"
+              (click)="deleteMessage(m)"
+            >
+              <ui-icon name="trash" [size]="14" />{{ 'CHAT.DELETE_MESSAGE' | translate }}
+            </button>
+          }
         </ui-message-bubble>
       }
     </div>
@@ -106,7 +115,7 @@
       >
         <span class="sr-only">{{ 'CHAT.ATTACH' | translate }}</span>
         <ui-icon name="paperclip" [size]="18" />
-        <input type="file" class="sr-only" [disabled]="uploading()" (change)="onFileSelected($event)" />
+        <input type="file" class="sr-only" [accept]="accept" [disabled]="uploading()" (change)="onFileSelected($event)" />
       </label>
       <label for="chat-input" class="sr-only">{{ 'CHAT.INPUT_PLACEHOLDER' | translate }}</label>
       <input
@@ -122,6 +131,12 @@
         <ui-icon name="send" [size]="18" /><span class="hidden sm:inline">{{ 'CHAT.SEND' | translate }}</span>
       </button>
     </form>
+    @if (uploading()) {
+      <ui-progress class="mx-4 mb-4" [label]="uploadName()" [value]="uploadProgress()" />
+    }
+    @if (fileError()) {
+      <ui-alert variant="error" class="mx-4 mb-4">{{ fileError()! | translate }}</ui-alert>
+    }
     @if (uploadError()) {
       <ui-alert variant="error" class="mx-4 mb-4">{{ 'CHAT.UPLOAD_ERROR' | translate }}</ui-alert>
     }

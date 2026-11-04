@@ -196,7 +196,9 @@
       "FRIEND_REQUEST_SENT": "Friend request sent.",
       "FRIEND_ACCEPTED": "Friend request accepted.",
       "FRIEND_REJECTED": "Friend request declined.",
-      "FRIEND_REMOVED": "Friend removed."
+      "FRIEND_REMOVED": "Friend removed.",
+      "FILE_SENT": "File sent.",
+      "MESSAGE_DELETED": "Message deleted."
     },
     "ERROR": {
       "NETWORK": "Server unreachable. Check your connection.",
@@ -251,7 +253,11 @@
     "ADD_MEMBER_ERROR": "Unable to add this person.",
     "BACK_TO_LIST": "All conversations",
     "YOU": "you",
-    "DELETED": "Message deleted"
+    "DELETED": "Message deleted",
+    "DELETE_MESSAGE": "Delete",
+    "CONFIRM_DELETE_MESSAGE": "Delete this message?",
+    "FILE_BAD_TYPE": "Format not accepted (jpg, png, gif, webp, pdf, txt, docx, xlsx).",
+    "FILE_TOO_BIG": "File too large (10 MB max)."
   },
   "API_DOCS": {
     "TITLE": "API documentation",

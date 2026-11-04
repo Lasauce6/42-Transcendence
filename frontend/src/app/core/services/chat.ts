@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpEvent } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { map, Observable, switchMap, tap, throwError } from 'rxjs';
 import { environment } from '@env/environment';
@@ -61,11 +61,20 @@ export class ChatService {
   }
 
   // Envoie un fichier (avec un texte optionnel) dans une conversation.
-  sendAttachment(channelId: string, file: File, content = ''): Observable<ChatMessage> {
+  // On reçoit tous les événements HTTP pour suivre la progression de l'envoi.
+  sendAttachment(channelId: string, file: File, content = ''): Observable<HttpEvent<ChatMessage>> {
     const form = new FormData();
     form.append('file', file);
     form.append('content', content);
-    return this.http.post<ChatMessage>(`${this.url}${channelId}/attachments/`, form);
+    return this.http.post<ChatMessage>(`${this.url}${channelId}/attachments/`, form, {
+      reportProgress: true,
+      observe: 'events',
+    });
+  }
+
+  // Supprime un message (et ses fichiers) d'une conversation.
+  deleteMessage(channelId: string, messageId: string): Observable<void> {
+    return this.http.delete<void>(`${this.url}${channelId}/messages/${messageId}/`);
   }
   // Cherche un utilisateur par son nom (le back n'a pas de recherche, on filtre la liste).
   findUser(username: string): Observable<{ id: string; username: string } | undefined> {
