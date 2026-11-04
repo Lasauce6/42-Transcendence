@@ -22,6 +22,7 @@ describe('AuthService', () => {
   let http: HttpTestingController;
 
   beforeEach(() => {
+    sessionStorage.clear();
     TestBed.configureTestingModule({
       providers: [provideHttpClient(), provideHttpClientTesting()],
     });
@@ -29,7 +30,10 @@ describe('AuthService', () => {
     http = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => http.verify());
+  afterEach(() => {
+    sessionStorage.clear();
+    http.verify();
+  });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
