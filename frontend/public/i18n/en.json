@@ -198,7 +198,8 @@
     "CHAT": "Messages",
     "API_DOCS": "API documentation",
     "ADMIN": "Administration",
-    "FRIENDS": "Friends"
+    "FRIENDS": "Friends",
+    "USER_PROFILE": "User profile"
   },
   "TOAST": {
     "REGION_LABEL": "Notifications",
@@ -475,5 +476,18 @@
     "MESSAGE": "Message",
     "NONE_ONLINE": "No friends online right now.",
     "PENDING": "{{count}} pending request(s)"
+  },
+  "USER_PROFILE": {
+    "EYEBROW": "Profile",
+    "UNAVAILABLE": "This profile is not available.",
+    "LAST_SEEN": "Last seen {{date}}",
+    "NO_BIO": "No bio yet.",
+    "RELATION": "Friendship",
+    "IS_FRIEND": "You and {{name}} are friends.",
+    "REQUEST_SENT": "Your request is pending.",
+    "REQUEST_RECEIVED": "{{name}} sent you a friend request.",
+    "BLOCKED": "You cannot interact with this user.",
+    "NOT_FRIEND": "You are not friends with {{name}} yet.",
+    "ADD_FRIEND": "Add friend"
   }
 }

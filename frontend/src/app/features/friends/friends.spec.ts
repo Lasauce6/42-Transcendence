@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
 import { CurrentUser } from '@core/services/current-user';
 import { ToastService } from '@core/services/toast';
@@ -57,7 +57,12 @@ describe('Friends', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Friends],
-      providers: [provideHttpClient(), provideHttpClientTesting(), provideTranslateService()],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideTranslateService(),
+        provideRouter([]),
+      ],
     }).compileComponents();
 
     service = TestBed.inject(FriendsService);

@@ -1,10 +1,11 @@
 import { DatePipe } from '@angular/common';
 import { Component, input } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { UiAvatar } from './avatar';
 
 @Component({
   selector: 'ui-message-bubble',
-  imports: [DatePipe, UiAvatar],
+  imports: [DatePipe, RouterLink, UiAvatar],
   host: {
     class: 'flex max-w-[75%] items-end gap-2.5',
     '[class.self-end]': 'mine()',
@@ -14,7 +15,14 @@ import { UiAvatar } from './avatar';
       <ui-avatar [name]="author()" [src]="avatar()" size="sm" class="mb-0.5" />
     }
     <div class="flex min-w-0 flex-col gap-1.5" [class.items-end]="mine()" [class.items-start]="!mine()">
-      <span class="font-mono text-xs text-muted">{{ author() }} · {{ time() | date: 'HH:mm' }}</span>
+      <span class="font-mono text-xs text-muted">
+        @if (authorLink(); as link) {
+          <a [routerLink]="link" class="text-muted hover:text-ink">{{ author() }}</a>
+        } @else {
+          {{ author() }}
+        }
+        · {{ time() | date: 'HH:mm' }}
+      </span>
       @if (deleted()) {
         <p class="rounded-xl border border-dashed border-line-strong px-3.5 py-2.5 text-sm italic text-muted">
           <ng-content select="[deleted]" />
@@ -33,6 +41,8 @@ import { UiAvatar } from './avatar';
 })
 export class UiMessageBubble {
   readonly author = input.required<string>();
+  // Lien vers le profil de l'auteur, s'il y en a un.
+  readonly authorLink = input<string[] | null>(null);
   readonly time = input.required<string>();
   readonly text = input<string>('');
   readonly mine = input(false);
