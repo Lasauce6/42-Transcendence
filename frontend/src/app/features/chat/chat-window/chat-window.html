@@ -84,6 +84,7 @@
       @for (m of socket.messages(); track m.id) {
         <ui-message-bubble
           [author]="isMine(m.sender) ? ('CHAT.YOU' | translate) : m.sender_username"
+          [authorLink]="isMine(m.sender) ? null : ['/users', m.sender]"
           [time]="m.created_at"
           [text]="m.content"
           [mine]="isMine(m.sender)"

@@ -1,0 +1,116 @@
+@if (profile(); as p) {
+  <div class="flex flex-col gap-6">
+    <ui-page-header [eyebrow]="'USER_PROFILE.EYEBROW' | translate" [heading]="p.username" />
+
+    @if (actionError(); as message) {
+      <ui-alert variant="error">{{ message | translate }}</ui-alert>
+    }
+
+    <div class="flex flex-wrap items-start gap-6">
+      <ui-card class="min-w-0 grow basis-80">
+        <div class="flex flex-col items-center gap-4 text-center">
+          <ui-avatar
+            [name]="p.username"
+            [src]="p.avatar"
+            size="lg"
+            [status]="p.is_online ? 'online' : 'offline'"
+          />
+          <div class="flex flex-col items-center gap-1">
+            <h2>{{ p.username }}</h2>
+            @if (p.first_name || p.last_name) {
+              <p class="text-muted">{{ p.first_name }} {{ p.last_name }}</p>
+            }
+            @if (p.is_online) {
+              <ui-badge>{{ 'FRIENDS.ONLINE' | translate }}</ui-badge>
+            } @else if (p.last_seen) {
+              <p class="font-mono text-xs text-muted">
+                {{
+                  'USER_PROFILE.LAST_SEEN'
+                    | translate: { date: (p.last_seen | date: 'dd/MM/yyyy HH:mm') }
+                }}
+              </p>
+            } @else {
+              <ui-badge variant="neutral">{{ 'FRIENDS.OFFLINE' | translate }}</ui-badge>
+            }
+          </div>
+          <p class="w-full border-t border-line pt-4 text-left" [class.text-muted]="!p.bio">
+            {{ p.bio || ('USER_PROFILE.NO_BIO' | translate) }}
+          </p>
+        </div>
+      </ui-card>
+
+      <ui-card
+        class="min-w-0 grow-[999] basis-[420px]"
+        [heading]="'USER_PROFILE.RELATION' | translate"
+      >
+        @switch (relation()) {
+          @case ('friends') {
+            <p class="mb-4 text-muted">
+              {{ 'USER_PROFILE.IS_FRIEND' | translate: { name: p.username } }}
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button uiButton type="button" [disabled]="busy()" (click)="message(p)">
+                <ui-icon name="message" [size]="18" />{{ 'FRIENDS.MESSAGE' | translate }}
+              </button>
+              <button
+                uiButton
+                variant="ghost"
+                type="button"
+                [disabled]="busy()"
+                (click)="remove(friendship()!)"
+              >
+                <ui-icon name="trash" [size]="18" />{{ 'FRIENDS.REMOVE' | translate }}
+              </button>
+            </div>
+          }
+          @case ('sent') {
+            <p class="mb-4 text-muted">{{ 'USER_PROFILE.REQUEST_SENT' | translate }}</p>
+            <button
+              uiButton
+              variant="secondary"
+              type="button"
+              [disabled]="busy()"
+              (click)="remove(friendship()!)"
+            >
+              {{ 'FRIENDS.CANCEL' | translate }}
+            </button>
+          }
+          @case ('received') {
+            <p class="mb-4 text-muted">
+              {{ 'USER_PROFILE.REQUEST_RECEIVED' | translate: { name: p.username } }}
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button uiButton type="button" [disabled]="busy()" (click)="accept(friendship()!)">
+                <ui-icon name="check" [size]="18" />{{ 'FRIENDS.ACCEPT' | translate }}
+              </button>
+              <button
+                uiButton
+                variant="secondary"
+                type="button"
+                [disabled]="busy()"
+                (click)="reject(friendship()!)"
+              >
+                <ui-icon name="x" [size]="18" />{{ 'FRIENDS.REJECT' | translate }}
+              </button>
+            </div>
+          }
+          @case ('blocked') {
+            <p class="text-muted">{{ 'USER_PROFILE.BLOCKED' | translate }}</p>
+          }
+          @default {
+            <p class="mb-4 text-muted">
+              {{ 'USER_PROFILE.NOT_FRIEND' | translate: { name: p.username } }}
+            </p>
+            <button uiButton type="button" [disabled]="busy()" (click)="add(p)">
+              <ui-icon name="plus" [size]="18" />{{ 'USER_PROFILE.ADD_FRIEND' | translate }}
+            </button>
+          }
+        }
+      </ui-card>
+    </div>
+  </div>
+} @else if (loadError(); as message) {
+  <ui-alert variant="error">{{ message | translate }}</ui-alert>
+} @else {
+  <ui-spinner [label]="'PROFILE.LOADING' | translate" />
+}

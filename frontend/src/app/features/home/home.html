@@ -49,9 +49,11 @@
           } @else {
             <ul class="flex flex-col gap-3">
               @for (f of onlineFriends(); track f.friendship.id) {
-                <li class="flex items-center gap-3">
-                  <ui-avatar [name]="f.username" [src]="f.avatar" size="sm" status="online" />
-                  <span class="min-w-0 truncate">{{ f.username }}</span>
+                <li>
+                  <a [routerLink]="['/users', f.userId]" class="flex items-center gap-3 text-ink">
+                    <ui-avatar [name]="f.username" [src]="f.avatar" size="sm" status="online" />
+                    <span class="min-w-0 truncate">{{ f.username }}</span>
+                  </a>
                 </li>
               }
             </ul>

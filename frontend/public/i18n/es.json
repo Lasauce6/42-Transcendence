@@ -198,7 +198,8 @@
     "CHAT": "Mensajes",
     "API_DOCS": "Documentación de la API",
     "ADMIN": "Administración",
-    "FRIENDS": "Amigos"
+    "FRIENDS": "Amigos",
+    "USER_PROFILE": "Perfil de usuario"
   },
   "TOAST": {
     "REGION_LABEL": "Notificaciones",
@@ -475,5 +476,18 @@
     "MESSAGE": "Mensaje",
     "NONE_ONLINE": "Ningún amigo en línea por ahora.",
     "PENDING": "{{count}} solicitud(es) pendiente(s)"
+  },
+  "USER_PROFILE": {
+    "EYEBROW": "Perfil",
+    "UNAVAILABLE": "Este perfil no está disponible.",
+    "LAST_SEEN": "Visto el {{date}}",
+    "NO_BIO": "Todavía no hay biografía.",
+    "RELATION": "Amistad",
+    "IS_FRIEND": "Tú y {{name}} sois amigos.",
+    "REQUEST_SENT": "Tu solicitud está pendiente.",
+    "REQUEST_RECEIVED": "{{name}} te ha enviado una solicitud de amistad.",
+    "BLOCKED": "No puedes interactuar con este usuario.",
+    "NOT_FRIEND": "Todavía no eres amigo de {{name}}.",
+    "ADD_FRIEND": "Añadir amigo"
   }
 }

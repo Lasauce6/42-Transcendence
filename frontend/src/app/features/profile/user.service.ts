@@ -13,6 +13,10 @@ export class UserService {
   getMe() {
     return this.http.get<UserProfile>(`${environment.apiUrl}/users/me/`);
   }
+
+  getUser(id: string) {
+    return this.http.get<PublicProfile>(`${environment.apiUrl}/users/${id}/`);
+  }
   updateMe(payload: UpdateProfilePayload, avatar?: File | null) {
     if (!avatar) {
       return this.http.patch<UserProfile>(`${environment.apiUrl}/users/me/`, payload);
@@ -77,6 +81,15 @@ export class UserService {
 //   avatar: string | null;
 //   role: string;
 // }
+
+// Ce qu'on affiche du profil d'un autre utilisateur.
+export interface PublicProfile extends Pick<
+  UserProfile,
+  'id' | 'username' | 'first_name' | 'last_name' | 'bio' | 'avatar'
+> {
+  is_online: boolean;
+  last_seen: string | null;
+}
 
 export interface UpdateProfilePayload {
   username?: string;

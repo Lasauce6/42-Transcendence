@@ -42,6 +42,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'users/:id',
+    loadComponent: () =>
+      import('@features/profile/user-profile/user-profile').then((m) => m.UserProfile),
+    title: 'TITLES.USER_PROFILE',
+    canActivate: [authGuard],
+  },
+  {
     path: 'privacy',
     loadComponent: () => import('@features/legal/legal-page').then((m) => m.LegalPage),
     title: 'FOOTER.PRIVACY',

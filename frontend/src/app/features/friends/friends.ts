@@ -1,5 +1,5 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Observable, finalize, tap } from 'rxjs';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ChatService } from '@core/services/chat';
@@ -23,6 +23,7 @@ import { Friendship } from './friend.models';
 @Component({
   selector: 'app-friends',
   imports: [
+    RouterLink,
     TranslatePipe,
     UiAlert,
     UiAvatar,

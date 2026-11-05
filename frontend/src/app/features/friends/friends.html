@@ -17,18 +17,22 @@
         <ul class="p-1.5">
           @for (row of friendRows(); track row.friendship.id) {
             <li class="flex flex-wrap items-center gap-2 rounded-control pr-3.5 hover:bg-surface-2">
-              <ui-list-item
-                class="grow"
-                [heading]="row.username"
-                [subtitle]="(row.online ? 'FRIENDS.ONLINE' : 'FRIENDS.OFFLINE') | translate"
+              <a
+                [routerLink]="['/users', row.userId]"
+                class="min-w-0 grow text-ink no-underline hover:no-underline"
               >
-                <ui-avatar
-                  leading
-                  [name]="row.username"
-                  [src]="row.avatar"
-                  [status]="row.online ? 'online' : 'offline'"
-                />
-              </ui-list-item>
+                <ui-list-item
+                  [heading]="row.username"
+                  [subtitle]="(row.online ? 'FRIENDS.ONLINE' : 'FRIENDS.OFFLINE') | translate"
+                >
+                  <ui-avatar
+                    leading
+                    [name]="row.username"
+                    [src]="row.avatar"
+                    [status]="row.online ? 'online' : 'offline'"
+                  />
+                </ui-list-item>
+              </a>
               <div class="flex gap-2 pb-3 pl-3.5 sm:p-0">
                 <button
                   uiButton
@@ -89,7 +93,11 @@
           @for (row of receivedRows(); track row.friendship.id) {
             <li class="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
               <ui-avatar [name]="row.username" [src]="row.avatar" size="sm" />
-              <strong class="min-w-0 grow truncate">{{ row.username }}</strong>
+              <a
+                [routerLink]="['/users', row.userId]"
+                class="min-w-0 grow truncate font-bold text-ink"
+                >{{ row.username }}</a
+              >
               <button
                 uiButton
                 size="sm"
@@ -125,7 +133,11 @@
           @for (row of sentRows(); track row.friendship.id) {
             <li class="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
               <ui-avatar [name]="row.username" [src]="row.avatar" size="sm" />
-              <strong class="min-w-0 grow truncate">{{ row.username }}</strong>
+              <a
+                [routerLink]="['/users', row.userId]"
+                class="min-w-0 grow truncate font-bold text-ink"
+                >{{ row.username }}</a
+              >
               <button
                 uiButton
                 variant="ghost"
